@@ -1,0 +1,9 @@
+syntax = "proto3";
+package v1.observability;
+
+import "base/endpoints.proto";
+
+
+message ProjectInformationRequest {
+    string project = 1;
+}

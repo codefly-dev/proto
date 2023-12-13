@@ -1,0 +1,21 @@
+syntax = "proto3";
+package v1.observability;
+
+message DependencyGraphRequest {
+}
+
+
+message GraphNode {
+  string id = 1;
+  bool value = 2;
+}
+
+message GraphEdge {
+  string from = 1;
+  string to = 2;
+}
+
+message GraphResponse {
+  repeated GraphNode nodes = 1;
+  repeated GraphEdge edges = 2;
+}

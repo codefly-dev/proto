@@ -1,0 +1,18 @@
+syntax = "proto3";
+package v1.observability;
+
+
+import "base/endpoints.proto";
+import "agents/logs.proto";
+import "google/protobuf/timestamp.proto";
+
+
+message LogRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+
+message LogResponse {
+  repeated v1.agents.logs.LogSessionGroup groups = 1;
+}
