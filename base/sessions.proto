@@ -1,0 +1,32 @@
+syntax = "proto3";
+package v1.base;
+
+import "google/protobuf/timestamp.proto";
+
+message ProjectSnapshot {
+  string uuid = 1;
+  string name = 2;
+}
+
+message ApplicationSnapshot {
+  string uuid = 1;
+  string name = 2;
+  ProjectSnapshot project = 3;
+}
+
+message PartialSnapshot {
+  string uuid = 1;
+  string name = 2;
+  ProjectSnapshot project = 3;
+  repeated ApplicationSnapshot applications = 4;
+}
+
+
+message Session {
+  string uuid = 1;
+  google.protobuf.Timestamp at = 2;
+  oneof session {
+    PartialSnapshot partial = 3;
+    ApplicationSnapshot application = 4;
+  }
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package v1.base;
+
+import "base/service.proto";
+
+message Application {
+  string in_project = 1;
+  string name = 2;
+  string description = 3;
+  repeated Service services = 4;
+}

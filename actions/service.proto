@@ -1,0 +1,23 @@
+syntax = "proto3";
+package v1.actions;
+
+import "base/agent.proto";
+
+message AddService {
+    string kind = 1;
+    bool override = 2;
+    string name = 3;
+    string description = 4;
+    string in_application = 5;
+    string in_project = 6;
+    string namespace = 7;
+    v1.base.Agent agent = 8;
+    string path = 9;
+
+}
+
+message SetServiceActive {
+    string kind = 1;
+    string name = 2;
+    string application = 3;
+}

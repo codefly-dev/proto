@@ -1,0 +1,30 @@
+syntax = "proto3";
+package v1.services.agent;
+
+
+/*
+Agent service
+ */
+
+
+message Capability {
+  enum Type {
+    UNKNOWN = 0;
+    FACTORY = 1;
+    RUNTIME = 2;
+  }
+  Type type = 1;
+}
+
+message AgentInformation {
+  repeated Capability capabilities = 1;
+}
+
+message AgentInformationRequest {
+
+}
+
+
+service Agent {
+  rpc GetAgentInformation(AgentInformationRequest) returns (AgentInformation) {}
+}

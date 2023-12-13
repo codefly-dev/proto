@@ -1,0 +1,28 @@
+syntax = "proto3";
+package v1.services.runtime;
+
+
+message ProcessTracker {
+  int32 PID = 1;
+  string type = 2;
+}
+
+message DockerTracker {
+  string container_id = 1;
+}
+
+message Tracker {
+  string name = 1;
+  oneof tracker {
+    ProcessTracker process_tracker = 4;
+    DockerTracker docker_tracker = 5;
+  }
+}
+
+message TrackerList {
+  repeated Tracker trackers = 1;
+}
+
+message Trackers {
+  map<string, TrackerList> trackers = 1;
+}

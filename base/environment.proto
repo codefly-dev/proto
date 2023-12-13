@@ -1,0 +1,8 @@
+syntax = "proto3";
+package v1.base;
+
+
+message Environment {
+    string name = 1;
+    string description = 2;
+}

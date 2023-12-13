@@ -1,0 +1,106 @@
+syntax = "proto3";
+package v1.services.factory;
+
+import "base/endpoints.proto";
+import "base/environment.proto";
+import "agents/communicate.proto";
+import "services/init.proto";
+
+/*
+*/
+
+message InitResponse {
+  services.Version version = 1;
+  repeated v1.base.Endpoint endpoints = 2;
+  string read_me = 3;
+  InitStatus status = 4;
+}
+
+/*
+
+Creation
+
+ */
+
+message CreateRequest {
+}
+
+
+
+message CreateResponse {
+  repeated v1.base.Endpoint endpoints = 1; // The endpoints of the created service
+}
+
+/*
+
+Update
+
+*/
+
+message UpdateRequest {
+}
+
+message UpdateResponse {
+}
+
+
+/*
+
+Sync re-generate what needs to be re-generated
+
+ */
+
+message SyncRequest {
+  v1.base.EndpointGroup dependency_endpoint_group = 1;
+}
+
+message SyncResponse {
+  bool need_communication = 1;
+}
+
+/*
+
+Build is the first stage of Deployment
+
+*/
+
+
+message BuildRequest {
+  v1.base.EndpointGroup dependency_endpoint_group = 1;
+}
+
+message BuildResponse {
+}
+
+/*
+Deployment
+*/
+
+message DeploymentRequest {
+  v1.base.Environment environment = 1;
+  v1.base.EndpointGroup dependency_endpoint_group = 2;
+}
+
+message DeploymentResponse {
+}
+
+
+
+service Factory {
+  // Setup
+  rpc Init (services.InitRequest) returns (InitResponse) {}
+
+  // Affect Code
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc Update (UpdateRequest) returns (UpdateResponse) {}
+
+  // Affect Data
+  rpc Sync (SyncRequest) returns (SyncResponse) {}
+
+  // Deployment/Build only on init data
+  rpc Build (BuildRequest) returns (BuildResponse) {}
+  rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
+
+  // Communication helper
+  rpc Communicate(agents.communicate.Engage) returns (agents.communicate.InformationRequest) {}
+}

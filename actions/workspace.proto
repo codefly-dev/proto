@@ -1,0 +1,15 @@
+syntax = "proto3";
+package v1.actions;
+
+import "buf/validate/validate.proto";
+import "base/organization.proto";
+
+
+message AddWorkspace {
+    string kind = 1;
+    v1.base.Organization organization = 2;
+    string name = 3 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+    string description = 4;
+    string dir = 5;
+    string project_root = 6;
+}

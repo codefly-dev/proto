@@ -1,0 +1,154 @@
+syntax = "proto3";
+package v1.services.runtime;
+
+import "base/endpoints.proto";
+import "agents/communicate.proto";
+import "services/init.proto";
+import "services/runtime/tracker.proto";
+
+/*
+Running a service follow several steps where relevant information about the runtime environment is shared
+*/
+
+
+/*
+Init
+
+Input: common to Runtime and Factory -- see the init.proto
+Output:
+- Version of the service
+
+*/
+
+
+
+
+message InitResponse {
+  services.Version version = 1;
+  repeated v1.base.Endpoint endpoints = 2;
+  InitStatus status = 3;
+}
+
+
+/*
+Configure
+
+*/
+
+
+
+message ConfigureStatus {
+  enum State {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  State state = 1;
+  string message = 2;
+}
+
+message ConfigureRequest {
+}
+
+
+message ConfigureResponse {
+  ConfigureStatus status = 2;
+  repeated NetworkMapping network_mappings = 3;
+}
+
+
+
+
+
+/*
+Initialization of the service instance
+*/
+
+
+message NetworkMapping {
+  string application = 1; // Application name
+  string service = 2; // Service name
+  v1.base.Endpoint endpoint = 3;
+  repeated string addresses = 4; // List of addresses to map to
+}
+
+/*
+Start the service instance in a non-blocking way
+
+Restarting the service is handled on the tracking side from hygge
+ */
+
+message StartRequest {
+  repeated NetworkMapping network_mappings = 1;
+  v1.base.EndpointGroup dependency_endpoint_group = 2;
+}
+
+message StartStatus {
+  enum State {
+    UNKNOWN = 0;
+    STARTED = 1;
+    ERROR = 2;
+  }
+  State state = 1;
+  string message = 2;
+}
+
+message StartResponse {
+  StartStatus status = 1;
+  repeated v1.services.runtime.Tracker trackers = 2;
+}
+
+/*
+Get Information of the service instance
+ */
+
+message InformationRequest {
+}
+
+message InformationResponse {
+  enum Status {
+    UNKNOWN = 0;
+    INIT = 1;
+    STARTED = 2;
+    RESTART_WANTED = 3;
+    SYNC_WANTED = 4;
+    STOPPED = 5;
+    ERROR = 6;
+  }
+  Status status = 1;
+}
+
+/*
+Stop the service instance
+ */
+
+message StopRequest {
+  bool persist = 1; // Persist the service instance
+}
+
+message StopResponse {
+}
+
+/*
+Public API
+
+*/
+
+
+
+
+/*
+Runtime service
+ */
+
+service Runtime {
+  rpc Init (services.InitRequest) returns (InitResponse) {}
+  rpc Configure (ConfigureRequest) returns (ConfigureResponse) {}
+  rpc Start (StartRequest) returns (StartResponse) {}
+  rpc Information (InformationRequest) returns (InformationResponse) {}
+  rpc Stop (StopRequest) returns (StopResponse) {}
+
+
+  // Communication helper
+  rpc Communicate(agents.communicate.Engage) returns (agents.communicate.InformationRequest) {}
+}

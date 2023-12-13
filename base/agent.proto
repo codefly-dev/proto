@@ -1,0 +1,13 @@
+syntax = "proto3";
+package v1.base;
+
+message Agent {
+  enum Kind {
+    UNKNOWN = 0;
+    SERVICE = 1;
+  }
+  Kind kind = 1;
+  string name = 2;
+  string publisher = 3;
+  string version = 4;
+}

@@ -1,0 +1,51 @@
+syntax = "proto3";
+package v1.services;
+
+import "google/protobuf/empty.proto";
+import "base/endpoints.proto";
+
+/*
+
+Init Input
+
+- Identity: complete information about the service including the partitioning details
+
+
+*/
+
+
+
+message InitStatus {
+  enum State {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  State state = 1;
+  string message = 2;
+}
+
+message Version {
+  string version = 1;
+}
+
+message ServiceIdentity {
+  string name = 1; // The name of the service
+  string domain = 2; // The domain of the service
+  string application = 3; // The application of the service | logical partitioning
+  string namespace = 4; // The namespace of the service | resource partitioning
+}
+
+
+message InitRequest {
+  bool debug = 1; // Developer debug
+
+  // Location of the service on the filesystem
+  string location = 2;
+
+  // Identity of the service
+  ServiceIdentity identity = 3;
+
+  // Dependency EndpointGroup
+  v1.base.EndpointGroup dependency_endpoint_group = 4;
+}

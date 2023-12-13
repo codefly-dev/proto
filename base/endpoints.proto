@@ -1,0 +1,87 @@
+syntax = "proto3";
+package v1.base;
+
+
+/*
+
+Endpoints are the fundamental building block of communication between services or applications.
+
+Important:
+
+Only public endpoint can be accessed across applications
+
+
+*/
+
+
+message Endpoint {
+  string name = 1;
+  string description = 2;
+  string scope = 3;
+  API api = 4;
+  string application = 5;
+  string service = 6;
+  string namespace = 7;
+}
+
+// Groups of endpoints are very convenient to manage and organize endpoints
+
+message ServiceEndpointGroup {
+  string name = 1;
+  bool public = 2;
+  repeated Endpoint endpoints = 3;
+}
+
+message ApplicationEndpointGroup {
+  string name = 1;
+  bool public = 2;
+  repeated ServiceEndpointGroup service_endpoint_groups = 3;
+}
+
+
+message EndpointGroup {
+ repeated  ApplicationEndpointGroup application_endpoint_group = 2;
+}
+
+
+
+message API {
+  oneof value {
+    TcpAPI tcp = 1;
+    RestAPI rest = 2;
+    GrpcAPI grpc = 3;
+  }
+}
+
+enum HTTPMethod {
+  GET = 0;
+  POST = 1;
+  PUT = 2;
+  DELETE = 3;
+  PATCH = 4;
+  OPTIONS = 5;
+  HEAD = 6;
+  CONNECT = 7;
+  TRACE = 8;
+}
+
+message RestRoute {
+  repeated HTTPMethod methods = 1;
+  string path = 2;
+}
+
+
+message RestAPI {
+  bytes openapi = 1;
+  repeated RestRoute routes = 2;
+}
+
+message GrpcAPI {
+  bytes proto = 1;
+}
+
+message HttpAPI {
+}
+
+message TcpAPI {
+}
