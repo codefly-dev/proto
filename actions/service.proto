@@ -2,14 +2,15 @@ syntax = "proto3";
 package v1.actions;
 
 import "base/agent.proto";
+import "base/endpoint.proto";
 
 message AddService {
     string kind = 1;
     bool override = 2;
     string name = 3;
     string description = 4;
-    string in_application = 5;
-    string in_project = 6;
+    string application = 5;
+    string project = 6;
     string namespace = 7;
     v1.base.Agent agent = 8;
     string path = 9;
@@ -20,4 +21,14 @@ message SetServiceActive {
     string kind = 1;
     string name = 2;
     string application = 3;
+}
+
+message AddServiceDependency {
+    string kind = 1;
+    string name = 2;
+    string application = 3;
+    string dependency_name = 4;
+    string dependency_application = 5;
+    string project = 6;
+    repeated string endpoints = 7;
 }

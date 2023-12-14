@@ -17,7 +17,7 @@ Only public endpoint can be accessed across applications
 message Endpoint {
   string name = 1;
   string description = 2;
-  string scope = 3;
+  string visibility = 3;
   API api = 4;
   string application = 5;
   string service = 6;
@@ -76,9 +76,16 @@ message RestAPI {
   repeated RestRoute routes = 2;
 }
 
+message RPC {
+  string name = 1;
+}
+
 message GrpcAPI {
   bytes proto = 1;
+  repeated RPC rpcs = 2;
 }
+
+
 
 message HttpAPI {
 }

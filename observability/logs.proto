@@ -2,7 +2,7 @@ syntax = "proto3";
 package v1.observability;
 
 
-import "base/endpoints.proto";
+import "base/endpoint.proto";
 import "agents/logs.proto";
 import "google/protobuf/timestamp.proto";
 

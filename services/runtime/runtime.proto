@@ -1,7 +1,7 @@
 syntax = "proto3";
 package v1.services.runtime;
 
-import "base/endpoints.proto";
+import "base/endpoint.proto";
 import "agents/communicate.proto";
 import "services/init.proto";
 import "services/runtime/tracker.proto";

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package v1.services.factory;
 
-import "base/endpoints.proto";
+import "base/endpoint.proto";
 import "base/environment.proto";
 import "agents/communicate.proto";
 import "services/init.proto";
