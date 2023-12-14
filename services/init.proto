@@ -2,7 +2,7 @@ syntax = "proto3";
 package v1.services;
 
 import "google/protobuf/empty.proto";
-import "base/endpoint.proto";
+import "proto/base/endpoint.proto";
 
 /*
 

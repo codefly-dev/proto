@@ -1,10 +1,10 @@
 syntax = "proto3";
 package v1.services.factory;
 
-import "base/endpoint.proto";
-import "base/environment.proto";
-import "agents/communicate.proto";
-import "services/init.proto";
+import "proto/base/endpoint.proto";
+import "proto/base/environment.proto";
+import "proto/agents/communicate.proto";
+import "proto/services/init.proto";
 
 /*
 */
@@ -27,8 +27,19 @@ message CreateRequest {
 
 
 
+message CreateStatus {
+  enum Status {
+    UNKNOWN = 0;
+    CREATED = 1;
+    ERROR = 2;
+  }
+  Status status = 1;
+  string message = 2;
+}
+
 message CreateResponse {
-  repeated v1.base.Endpoint endpoints = 1; // The endpoints of the created service
+  CreateStatus status = 1;
+  repeated v1.base.Endpoint endpoints = 2; // The endpoints of the created service
 }
 
 /*

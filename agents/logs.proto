@@ -1,7 +1,7 @@
 syntax = "proto3";
 package v1.agents.logs;
 
-import "base/sessions.proto";
+import "proto/base/sessions.proto";
 import "google/protobuf/timestamp.proto";
 
 

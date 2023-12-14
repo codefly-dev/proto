@@ -1,8 +1,8 @@
 syntax = "proto3";
 package v1.base;
 
-import "base/organization.proto";
-import "base/application.proto";
+import "proto/base/organization.proto";
+import "proto/base/application.proto";
 
 message Project {
   Organization organization = 1;

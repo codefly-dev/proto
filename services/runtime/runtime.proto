@@ -1,10 +1,10 @@
 syntax = "proto3";
 package v1.services.runtime;
 
-import "base/endpoint.proto";
-import "agents/communicate.proto";
-import "services/init.proto";
-import "services/runtime/tracker.proto";
+import "proto/base/endpoint.proto";
+import "proto/agents/communicate.proto";
+import "proto/services/init.proto";
+import "proto/services/runtime/tracker.proto";
 
 /*
 Running a service follow several steps where relevant information about the runtime environment is shared

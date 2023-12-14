@@ -2,7 +2,7 @@ syntax = "proto3";
 package v1.actions;
 
 import "buf/validate/validate.proto";
-import "base/organization.proto";
+import "proto/base/organization.proto";
 
 
 message AddWorkspace {
