@@ -1,5 +1,5 @@
 syntax = "proto3";
-package v1.actions;
+package actions.v1;
 
 message AddEnvironment {
     string kind = 1;

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package v1.services.runtime;
+package services.runtime.v1;
 
 
 message ProcessTracker {

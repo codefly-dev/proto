@@ -1,11 +1,21 @@
 syntax = "proto3";
-package v1.services.agent;
+
+package services.agent.v1;
 
 
 /*
-Agent service
- */
+Agent
+*/
 
+message Language {
+  enum Type {
+    GO = 0;
+    PYTHON = 1;
+    JAVASCRIPT = 2;
+    TYPESCRIPT = 3;
+  }
+Type type = 1;
+}
 
 message Capability {
   enum Type {
@@ -17,7 +27,8 @@ message Capability {
 }
 
 message AgentInformation {
-  repeated Capability capabilities = 1;
+  repeated Language languages = 1;
+  repeated Capability capabilities = 2;
 }
 
 message AgentInformationRequest {

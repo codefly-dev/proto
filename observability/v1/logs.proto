@@ -1,8 +1,12 @@
 syntax = "proto3";
-package v1.agents.logs;
+package observability.v1;
 
-import "proto/base/sessions.proto";
+
+import "base/v1/endpoint.proto";
+import "observability/v1/sessions.proto";
+
 import "google/protobuf/timestamp.proto";
+
 
 
 message Log {
@@ -20,6 +24,17 @@ message Log {
 
 
 message LogSessionGroup {
-  v1.base.Session session = 1;
+  observability.v1.Session session = 1;
   repeated Log logs = 2;
+}
+
+
+message LogRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+
+message LogResponse {
+  repeated LogSessionGroup groups = 1;
 }

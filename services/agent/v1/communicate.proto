@@ -1,5 +1,6 @@
 syntax = "proto3";
-package v1.agents.communicate;
+
+package services.agent.v1;
 
 message Channel {
   string kind = 1;

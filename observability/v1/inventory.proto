@@ -1,7 +1,7 @@
 syntax = "proto3";
-package v1.observability;
+package observability.v1;
 
-import "proto/base/endpoint.proto";
+import "base/v1/endpoint.proto";
 
 
 message ProjectInformationRequest {

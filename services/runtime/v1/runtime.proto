@@ -1,10 +1,10 @@
 syntax = "proto3";
-package v1.services.runtime;
+package service.runtime.v1;
 
-import "proto/base/service.proto";
-import "proto/base/endpoint.proto";
-import "proto/agents/communicate.proto";
-import "proto/services/runtime/tracker.proto";
+import "base/v1/service.proto";
+import "base/v1/endpoint.proto";
+import "services/agent/v1/communicate.proto";
+import "services/runtime/v1/tracker.proto";
 
 /*
 Running a service follow several steps where relevant information about the runtime environment is shared
@@ -35,15 +35,15 @@ message InitRequest {
   bool debug = 1; // Developer debug
 
   // Identity of the service
-  v1.base.ServiceIdentity identity = 2;
+  base.v1.ServiceIdentity identity = 2;
 
   // Dependency EndpointGroup
-  v1.base.EndpointGroup dependency_endpoint_group = 3;
+  base.v1.EndpointGroup dependency_endpoint_group = 3;
 }
 
 message InitResponse {
-  v1.base.Version version = 1;
-  repeated v1.base.Endpoint endpoints = 2;
+  base.v1.Version version = 1;
+  repeated base.v1.Endpoint endpoints = 2;
   InitStatus status = 3;
 }
 
@@ -86,7 +86,7 @@ Initialization of the service instance
 message NetworkMapping {
   string application = 1; // Application name
   string service = 2; // Service name
-  v1.base.Endpoint endpoint = 3;
+  base.v1.Endpoint endpoint = 3;
   repeated string addresses = 4; // List of addresses to map to
 }
 
@@ -98,7 +98,7 @@ Restarting the service is handled on the tracking side from hygge
 
 message StartRequest {
   repeated NetworkMapping network_mappings = 1;
-  v1.base.EndpointGroup dependency_endpoint_group = 2;
+  base.v1.EndpointGroup dependency_endpoint_group = 2;
 }
 
 message StartStatus {
@@ -113,7 +113,7 @@ message StartStatus {
 
 message StartResponse {
   StartStatus status = 1;
-  repeated v1.services.runtime.Tracker trackers = 2;
+  repeated services.runtime.v1.Tracker trackers = 2;
 }
 
 /*
@@ -168,5 +168,5 @@ service Runtime {
 
 
   // Communication helper
-  rpc Communicate(agents.communicate.Engage) returns (agents.communicate.InformationRequest) {}
+  rpc Communicate(services.agent.v1.Engage) returns (services.agent.v1.InformationRequest) {}
 }
