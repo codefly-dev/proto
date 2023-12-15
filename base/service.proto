@@ -8,5 +8,17 @@ message Service {
   string description = 2;
   string application = 3;
   repeated Endpoint endpoints = 4;
+}
 
+
+message Version {
+  string version = 1;
+}
+
+message ServiceIdentity {
+  string name = 1; // The name of the service
+  string domain = 2; // The domain of the service
+  string application = 3; // The application of the service | logical partitioning
+  string namespace = 4; // The namespace of the service | resource partitioning
+  string location = 5; // The location of the service | physical partitioning
 }

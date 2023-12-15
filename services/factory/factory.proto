@@ -1,16 +1,40 @@
 syntax = "proto3";
 package v1.services.factory;
 
+import "proto/base/service.proto";
 import "proto/base/endpoint.proto";
 import "proto/base/environment.proto";
 import "proto/agents/communicate.proto";
-import "proto/services/init.proto";
 
 /*
 */
 
+
+message InitStatus {
+  enum State {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  State state = 1;
+  string message = 2;
+}
+
+message InitRequest {
+  bool debug = 1; // Developer debug
+
+  bool create = 2;
+
+  // Identity of the service
+  v1.base.ServiceIdentity identity = 3;
+
+  // Dependency EndpointGroup
+  v1.base.EndpointGroup dependency_endpoint_group = 4;
+}
+
+
 message InitResponse {
-  services.Version version = 1;
+  v1.base.Version version = 1;
   repeated v1.base.Endpoint endpoints = 2;
   string read_me = 3;
   InitStatus status = 4;
@@ -99,7 +123,7 @@ message DeploymentResponse {
 
 service Factory {
   // Setup
-  rpc Init (services.InitRequest) returns (InitResponse) {}
+  rpc Init (InitRequest) returns (InitResponse) {}
 
   // Affect Code
   rpc Create (CreateRequest) returns (CreateResponse) {}

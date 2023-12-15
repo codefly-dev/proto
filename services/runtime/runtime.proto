@@ -1,9 +1,9 @@
 syntax = "proto3";
 package v1.services.runtime;
 
+import "proto/base/service.proto";
 import "proto/base/endpoint.proto";
 import "proto/agents/communicate.proto";
-import "proto/services/init.proto";
 import "proto/services/runtime/tracker.proto";
 
 /*
@@ -14,7 +14,6 @@ Running a service follow several steps where relevant information about the runt
 /*
 Init
 
-Input: common to Runtime and Factory -- see the init.proto
 Output:
 - Version of the service
 
@@ -22,9 +21,28 @@ Output:
 
 
 
+message InitStatus {
+  enum State {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  State state = 1;
+  string message = 2;
+}
+
+message InitRequest {
+  bool debug = 1; // Developer debug
+
+  // Identity of the service
+  v1.base.ServiceIdentity identity = 2;
+
+  // Dependency EndpointGroup
+  v1.base.EndpointGroup dependency_endpoint_group = 3;
+}
 
 message InitResponse {
-  services.Version version = 1;
+  v1.base.Version version = 1;
   repeated v1.base.Endpoint endpoints = 2;
   InitStatus status = 3;
 }
@@ -142,7 +160,7 @@ Runtime service
  */
 
 service Runtime {
-  rpc Init (services.InitRequest) returns (InitResponse) {}
+  rpc Init (InitRequest) returns (InitResponse) {}
   rpc Configure (ConfigureRequest) returns (ConfigureResponse) {}
   rpc Start (StartRequest) returns (StartResponse) {}
   rpc Information (InformationRequest) returns (InformationResponse) {}
