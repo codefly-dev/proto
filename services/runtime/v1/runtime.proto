@@ -168,5 +168,5 @@ service Runtime {
 
 
   // Communication helper
-  rpc Communicate(services.agent.v1.Engage) returns (services.agent.v1.InformationRequest) {}
+  rpc Communicate(agent.v1.Engage) returns (agent.v1.InformationRequest) {}
 }

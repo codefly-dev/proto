@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package services.agent.v1;
+package agent.v1;
 
 
 /*
@@ -17,6 +17,14 @@ message Language {
 Type type = 1;
 }
 
+message Protocol {
+  enum Type {
+    HTTP = 0;
+    GRPC = 1;
+  }
+  Type type = 1;
+}
+
 message Capability {
   enum Type {
     UNKNOWN = 0;
@@ -27,8 +35,10 @@ message Capability {
 }
 
 message AgentInformation {
-  repeated Language languages = 1;
-  repeated Capability capabilities = 2;
+  repeated Capability capabilities = 1;
+  repeated Language languages = 2;
+  repeated Protocol protocols = 3;
+  string read_me = 4;
 }
 
 message AgentInformationRequest {

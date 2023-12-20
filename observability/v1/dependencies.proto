@@ -4,7 +4,6 @@ package observability.v1;
 message DependencyGraphRequest {
 }
 
-
 message GraphNode {
   string id = 1;
   bool value = 2;

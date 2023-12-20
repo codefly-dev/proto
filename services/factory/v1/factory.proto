@@ -36,7 +36,7 @@ message InitRequest {
 message InitResponse {
   base.v1.Version version = 1;
   repeated base.v1.Endpoint endpoints = 2;
-  string read_me = 3;
+  string getting_started = 3;
   InitStatus status = 4;
 }
 
@@ -137,5 +137,5 @@ service Factory {
   rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
 
   // Communication helper
-  rpc Communicate(services.agent.v1.Engage) returns (services.agent.v1.InformationRequest) {}
+  rpc Communicate(agent.v1.Engage) returns (agent.v1.InformationRequest) {}
 }
