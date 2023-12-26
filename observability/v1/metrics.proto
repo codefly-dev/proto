@@ -1,0 +1,19 @@
+syntax = "proto3";
+package observability.v1;
+
+
+import "google/protobuf/timestamp.proto";
+
+message CPU {
+    double usage = 1;
+}
+
+message Memory {
+    double usage = 1;
+}
+
+message Observation {
+    google.protobuf.Timestamp timestamp = 1;
+    CPU cpu = 2;
+    Memory memory = 3;
+}
