@@ -12,10 +12,44 @@ Running a service follow several steps where relevant information about the runt
 
 
 /*
-Init
+Load
 
 Output:
 - Version of the service
+
+*/
+
+
+
+message LoadStatus {
+  enum State {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  State state = 1;
+  string message = 2;
+}
+
+message LoadRequest {
+  bool debug = 1; // Developer debug
+
+  // Identity of the service
+  base.v1.ServiceIdentity identity = 2;
+
+  // Dependency EndpointGroup
+  base.v1.EndpointGroup dependency_endpoint_group = 3;
+}
+
+message LoadResponse {
+  base.v1.Version version = 1;
+  repeated base.v1.Endpoint endpoints = 2;
+  LoadStatus status = 3;
+}
+
+
+/*
+Init
 
 */
 
@@ -32,45 +66,11 @@ message InitStatus {
 }
 
 message InitRequest {
-  bool debug = 1; // Developer debug
-
-  // Identity of the service
-  base.v1.ServiceIdentity identity = 2;
-
-  // Dependency EndpointGroup
-  base.v1.EndpointGroup dependency_endpoint_group = 3;
 }
+
 
 message InitResponse {
-  base.v1.Version version = 1;
-  repeated base.v1.Endpoint endpoints = 2;
-  InitStatus status = 3;
-}
-
-
-/*
-Configure
-
-*/
-
-
-
-message ConfigureStatus {
-  enum State {
-    UNKNOWN = 0;
-    READY = 1;
-    ERROR = 2;
-  }
-  State state = 1;
-  string message = 2;
-}
-
-message ConfigureRequest {
-}
-
-
-message ConfigureResponse {
-  ConfigureStatus status = 2;
+  InitStatus status = 2;
   repeated NetworkMapping network_mappings = 3;
 }
 
@@ -79,7 +79,7 @@ message ConfigureResponse {
 
 
 /*
-Initialization of the service instance
+Loadialization of the service instance
 */
 
 
@@ -123,17 +123,33 @@ Get Information of the service instance
 message InformationRequest {
 }
 
+// InformationResponse represents the state of a service in different stages of its lifecycle
+// The status is a list of statuses that are relevant
 message InformationResponse {
   enum Status {
     UNKNOWN = 0;
-    INIT = 1;
-    STARTED = 2;
-    RESTART_WANTED = 3;
-    SYNC_WANTED = 4;
-    STOPPED = 5;
-    ERROR = 6;
+    LOAD_IN_PROGRESS = 1;
+    LOADED_SUCCESS = 2;
+    LOADED_FAILED = 3;
+    INIT_IN_PROGRESS = 4;
+    INIT_SUCCESS = 5;
+    INIT_FAILED = 6;
+    START_IN_PROGRESS = 7;
+    START_SUCCESS = 8;
+    START_FAILED = 9;
+    STOP_IN_PROGRESS = 10;
+    STOP_SUCCESS = 11;
+    STOP_FAILED = 12;
   }
   Status status = 1;
+enum DesiredState {
+    NOOP = 0;
+    STARTED = 1;
+    STOPPED = 2;
+    RESTARTED = 3;
+  }
+  DesiredState desired_state = 2;
+  string message = 3;
 }
 
 /*
@@ -141,7 +157,6 @@ Stop the service instance
  */
 
 message StopRequest {
-  bool persist = 1; // Persist the service instance
 }
 
 message StopResponse {
@@ -160,12 +175,21 @@ Runtime service
  */
 
 service Runtime {
+
+  // Lifecycle
+
+  // Load the Service Agent: this should be a NoOp and never fails
+  rpc Load (LoadRequest) returns (LoadResponse) {}
+  // Init the Service Agent: could include steps like compilation, configuration, etc.
+  // An important step of Initialization is to get the list of network mappings
   rpc Init (InitRequest) returns (InitResponse) {}
-  rpc Configure (ConfigureRequest) returns (ConfigureResponse) {}
+  // Start the underlying service
   rpc Start (StartRequest) returns (StartResponse) {}
-  rpc Information (InformationRequest) returns (InformationResponse) {}
+  // Stop the underlying service and cleanup
   rpc Stop (StopRequest) returns (StopResponse) {}
 
+  // Information about the state of the service
+  rpc Information (InformationRequest) returns (InformationResponse) {}
 
   // Communication helper
   rpc Communicate(agent.v1.Engage) returns (agent.v1.InformationRequest) {}

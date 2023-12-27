@@ -4,6 +4,10 @@ package base.v1;
 import "buf/validate/validate.proto";
 
 
+
+// Organization represents the owner of a software system
+// The Domain corresponds to a URI for that organization
+// A Github organization URL is a good example of this
 message Organization {
   string name = 1 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
   string domain = 2;

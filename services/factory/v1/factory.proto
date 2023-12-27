@@ -6,11 +6,8 @@ import "base/v1/endpoint.proto";
 import "base/v1/environment.proto";
 import "services/agent/v1/communicate.proto";
 
-/*
-*/
 
-
-message InitStatus {
+message LoadStatus {
   enum State {
     UNKNOWN = 0;
     READY = 1;
@@ -20,7 +17,7 @@ message InitStatus {
   string message = 2;
 }
 
-message InitRequest {
+message LoadRequest {
   bool debug = 1; // Developer debug
 
   bool create = 2;
@@ -33,11 +30,11 @@ message InitRequest {
 }
 
 
-message InitResponse {
+message LoadResponse {
   base.v1.Version version = 1;
   repeated base.v1.Endpoint endpoints = 2;
   string getting_started = 3;
-  InitStatus status = 4;
+  LoadStatus status = 4;
 }
 
 /*
@@ -90,7 +87,6 @@ message SyncRequest {
 }
 
 message SyncResponse {
-  bool need_communication = 1;
 }
 
 /*
@@ -123,7 +119,7 @@ message DeploymentResponse {
 
 service Factory {
   // Setup
-  rpc Init (InitRequest) returns (InitResponse) {}
+  rpc Load (LoadRequest) returns (LoadResponse) {}
 
   // Affect Code
   rpc Create (CreateRequest) returns (CreateResponse) {}

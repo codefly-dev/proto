@@ -4,6 +4,10 @@ package base.v1;
 import "base/v1/endpoint.proto";
 import "base/v1/agent.proto";
 
+// Service is the fundamental "live" computing unit of a system
+// It belongs to an application
+// It is "hosted" by an agent
+// It has a set of endpoints
 message Service {
   string name = 1;
   string description = 2;
@@ -17,10 +21,15 @@ message Version {
   string version = 1;
 }
 
+// ServiceIdentity is the identity of a service
+// It has several component depending on how we look at a software system:
+// - Logical: corresponds to the Bounded Context of DDD
+// - Resource: corresponds to a logical or computational group
+// - Physical: corresponds to a physical group, where the code lives!
 message ServiceIdentity {
-  string name = 1; // The name of the service
-  string domain = 2; // The domain of the service
-  string application = 3; // The application of the service | logical partitioning
-  string namespace = 4; // The namespace of the service | resource partitioning
-  string location = 5; // The location of the service | physical partitioning
+  string name = 1;
+  string domain = 2;
+  string application = 3;
+  string namespace = 4;
+  string location = 5;
 }
