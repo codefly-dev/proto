@@ -11,6 +11,13 @@ Running a service follow several steps where relevant information about the runt
 */
 
 
+message NetworkMapping {
+  string application = 1; // Application name
+  string service = 2; // Service name
+  base.v1.Endpoint endpoint = 3;
+  repeated string addresses = 4; // List of addresses to map to
+}
+
 /*
 Load
 
@@ -36,9 +43,6 @@ message LoadRequest {
 
   // Identity of the service
   base.v1.ServiceIdentity identity = 2;
-
-  // Dependency EndpointGroup
-  base.v1.EndpointGroup dependency_endpoint_group = 3;
 }
 
 message LoadResponse {
@@ -50,7 +54,6 @@ message LoadResponse {
 
 /*
 Init
-
 */
 
 
@@ -66,6 +69,8 @@ message InitStatus {
 }
 
 message InitRequest {
+  // Dependency EndpointGroup
+  base.v1.EndpointGroup dependency_endpoint_group = 3;
 }
 
 
@@ -78,17 +83,6 @@ message InitResponse {
 
 
 
-/*
-Loadialization of the service instance
-*/
-
-
-message NetworkMapping {
-  string application = 1; // Application name
-  string service = 2; // Service name
-  base.v1.Endpoint endpoint = 3;
-  repeated string addresses = 4; // List of addresses to map to
-}
 
 /*
 Start the service instance in a non-blocking way
