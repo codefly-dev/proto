@@ -1,9 +1,16 @@
 syntax = "proto3";
 package observability.v1;
 
+// GraphNode represents a node in an architecture graph
+// Type can be "application", "service" or "endpoint"
 message GraphNode {
   string id = 1;
-  bool value = 2;
+  enum Type {
+    APPLICATION = 0;
+    SERVICE = 1;
+    ENDPOINT = 2;
+  }
+  Type type = 2;
 }
 
 message GraphEdge {
