@@ -21,6 +21,7 @@ message SetServiceActive {
     string kind = 1;
     string name = 2;
     string application = 3;
+    string project = 4;
 }
 
 message AddServiceDependency {
