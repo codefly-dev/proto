@@ -27,8 +27,9 @@ message Endpoint {
 message API {
   oneof value {
     TcpAPI tcp = 1;
-    RestAPI rest = 2;
-    GrpcAPI grpc = 3;
+    HttpAPI http = 2;
+    RestAPI rest = 3;
+    GrpcAPI grpc = 4;
   }
 }
 
@@ -63,7 +64,6 @@ message GrpcAPI {
   bytes proto = 1;
   repeated RPC rpcs = 2;
 }
-
 
 
 message HttpAPI {

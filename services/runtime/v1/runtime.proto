@@ -105,7 +105,7 @@ message StartStatus {
 
 message StartResponse {
   StartStatus status = 1;
-  repeated services.runtime.v1.Tracker trackers = 2;
+  repeated service.runtime.v1.Tracker trackers = 2;
 }
 
 /*
