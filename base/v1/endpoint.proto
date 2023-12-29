@@ -24,27 +24,6 @@ message Endpoint {
   string namespace = 7;
 }
 
-// Groups of endpoints are very convenient to manage and organize endpoints
-
-message ServiceEndpointGroup {
-  string name = 1;
-  bool public = 2;
-  repeated Endpoint endpoints = 3;
-}
-
-message ApplicationEndpointGroup {
-  string name = 1;
-  bool public = 2;
-  repeated ServiceEndpointGroup service_endpoint_groups = 3;
-}
-
-
-message EndpointGroup {
- repeated  ApplicationEndpointGroup application_endpoint_group = 2;
-}
-
-
-
 message API {
   oneof value {
     TcpAPI tcp = 1;

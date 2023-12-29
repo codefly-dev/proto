@@ -24,9 +24,6 @@ message LoadRequest {
 
   // Identity of the service
   base.v1.ServiceIdentity identity = 3;
-
-  // Dependency EndpointGroup
-  base.v1.EndpointGroup dependency_endpoint_group = 4;
 }
 
 
@@ -83,7 +80,7 @@ Sync re-generate what needs to be re-generated
  */
 
 message SyncRequest {
-  base.v1.EndpointGroup dependency_endpoint_group = 1;
+  repeated  base.v1.Endpoint dependencies_endpoints = 1;
 }
 
 message SyncResponse {
@@ -97,7 +94,7 @@ Build is the first stage of Deployment
 
 
 message BuildRequest {
-  base.v1.EndpointGroup dependency_endpoint_group = 1;
+  repeated base.v1.Endpoint dependencies_endpoints = 1;
 }
 
 message BuildResponse {
@@ -109,7 +106,7 @@ Deployment
 
 message DeploymentRequest {
   base.v1.Environment environment = 1;
-  base.v1.EndpointGroup dependency_endpoint_group = 2;
+  repeated base.v1.Endpoint dependencies_endpoints = 2;
 }
 
 message DeploymentResponse {

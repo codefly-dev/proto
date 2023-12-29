@@ -69,8 +69,7 @@ message InitStatus {
 }
 
 message InitRequest {
-  // Dependency EndpointGroup
-  base.v1.EndpointGroup dependency_endpoint_group = 3;
+  repeated base.v1.Endpoint dependencies_endpoints = 3;
 }
 
 
@@ -92,7 +91,6 @@ Restarting the service is handled on the tracking side from hygge
 
 message StartRequest {
   repeated NetworkMapping network_mappings = 1;
-  base.v1.EndpointGroup dependency_endpoint_group = 2;
 }
 
 message StartStatus {
