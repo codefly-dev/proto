@@ -62,6 +62,20 @@ message CreateResponse {
 
 /*
 
+Init
+
+*/
+
+message InitRequest {
+  repeated base.v1.Endpoint dependencies_endpoints = 1;
+}
+
+message InitResponse {
+}
+
+
+/*
+
 Update
 
 */
@@ -80,7 +94,6 @@ Sync re-generate what needs to be re-generated
  */
 
 message SyncRequest {
-  repeated  base.v1.Endpoint dependencies_endpoints = 1;
 }
 
 message SyncResponse {
@@ -94,7 +107,6 @@ Build is the first stage of Deployment
 
 
 message BuildRequest {
-  repeated base.v1.Endpoint dependencies_endpoints = 1;
 }
 
 message BuildResponse {
@@ -106,7 +118,6 @@ Deployment
 
 message DeploymentRequest {
   base.v1.Environment environment = 1;
-  repeated base.v1.Endpoint dependencies_endpoints = 2;
 }
 
 message DeploymentResponse {
@@ -117,6 +128,9 @@ message DeploymentResponse {
 service Factory {
   // Setup
   rpc Load (LoadRequest) returns (LoadResponse) {}
+
+  // Init
+  rpc Init (InitRequest) returns (InitResponse) {}
 
   // Affect Code
   rpc Create (CreateRequest) returns (CreateResponse) {}
