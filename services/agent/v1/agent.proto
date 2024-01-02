@@ -34,11 +34,22 @@ message Capability {
   Type type = 1;
 }
 
+message RuntimeRequirement {
+  enum Type {
+    UNKNOWN = 0;
+    DOCKER = 1;
+    GO = 2;
+    NPM = 3;
+  }
+  Type type = 1;
+}
+
 message AgentInformation {
-  repeated Capability capabilities = 1;
-  repeated Language languages = 2;
+  repeated RuntimeRequirement runtime_requirements = 1;
+  repeated Capability capabilities = 2;
   repeated Protocol protocols = 3;
-  string read_me = 4;
+  repeated Language languages = 4;
+  string read_me = 5;
 }
 
 message AgentInformationRequest {
