@@ -34,7 +34,7 @@ message Capability {
   Type type = 1;
 }
 
-message RuntimeRequirement {
+message Runtime {
   enum Type {
     UNKNOWN = 0;
     DOCKER = 1;
@@ -45,7 +45,7 @@ message RuntimeRequirement {
 }
 
 message AgentInformation {
-  repeated RuntimeRequirement runtime_requirements = 1;
+  repeated Runtime runtime_requirements = 1;
   repeated Capability capabilities = 2;
   repeated Protocol protocols = 3;
   repeated Language languages = 4;

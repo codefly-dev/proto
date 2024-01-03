@@ -3,6 +3,7 @@ package service.runtime.v1;
 
 import "base/v1/service.proto";
 import "base/v1/endpoint.proto";
+import "services/agent/v1/agent.proto";
 import "services/agent/v1/communicate.proto";
 
 /*
@@ -104,6 +105,7 @@ message StartStatus {
 
 message StartResponse {
   StartStatus status = 1;
+  repeated agent.v1.Runtime runtime = 2;
 }
 
 /*

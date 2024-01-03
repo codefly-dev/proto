@@ -109,7 +109,7 @@ message SyncRequest {
 message SyncStatus {
   enum Status {
     UNKNOWN = 0;
-    SUCESS = 1;
+    SUCCESS = 1;
     ERROR = 2;
   }
   Status status = 1;
