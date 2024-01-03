@@ -65,12 +65,22 @@ message CreateResponse {
 Init
 
 */
+message InitStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCESS = 1;
+    ERROR = 2;
+  }
+  Status status = 1;
+  string message = 2;
+}
 
 message InitRequest {
   repeated base.v1.Endpoint dependencies_endpoints = 1;
 }
 
 message InitResponse {
+  InitStatus status = 1;
 }
 
 
