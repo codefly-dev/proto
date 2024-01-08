@@ -1,10 +1,10 @@
 syntax = "proto3";
-package service.factory.v1;
+package services.factory.v0;
 
-import "base/v1/service.proto";
-import "base/v1/endpoint.proto";
-import "base/v1/environment.proto";
-import "services/agent/v1/communicate.proto";
+import "base/v0/service.proto";
+import "base/v0/endpoint.proto";
+import "base/v0/environment.proto";
+import "services/agent/v0/communicate.proto";
 
 
 message LoadStatus {
@@ -23,13 +23,13 @@ message LoadRequest {
   bool create = 2;
 
   // Identity of the service
-  base.v1.ServiceIdentity identity = 3;
+  base.v0.ServiceIdentity identity = 3;
 }
 
 
 message LoadResponse {
-  base.v1.Version version = 1;
-  repeated base.v1.Endpoint endpoints = 2;
+  base.v0.Version version = 1;
+  repeated base.v0.Endpoint endpoints = 2;
   string getting_started = 3;
   LoadStatus status = 4;
 }
@@ -57,7 +57,7 @@ message CreateStatus {
 
 message CreateResponse {
   CreateStatus status = 1;
-  repeated base.v1.Endpoint endpoints = 2; // The endpoints of the created service
+  repeated base.v0.Endpoint endpoints = 2; // The endpoints of the created service
 }
 
 /*
@@ -76,7 +76,7 @@ message InitStatus {
 }
 
 message InitRequest {
-  repeated base.v1.Endpoint dependencies_endpoints = 1;
+  repeated base.v0.Endpoint dependencies_endpoints = 1;
 }
 
 message InitResponse {
@@ -128,7 +128,7 @@ Build is the first stage of Deployment
 
 
 message BuildRequest {
-  repeated base.v1.Endpoint dependencies_endpoints = 1;
+  repeated base.v0.Endpoint dependencies_endpoints = 1;
 }
 
 
@@ -151,7 +151,7 @@ Deployment
 */
 
 message DeploymentRequest {
-  base.v1.Environment environment = 1;
+  base.v0.Environment environment = 1;
 }
 
 message DeploymentResponse {
@@ -178,5 +178,5 @@ service Factory {
   rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
 
   // Communication helper
-  rpc Communicate(agent.v1.Engage) returns (agent.v1.InformationRequest) {}
+  rpc Communicate(agent.v0.Engage) returns (agent.v0.InformationRequest) {}
 }

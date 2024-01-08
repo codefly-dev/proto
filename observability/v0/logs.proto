@@ -1,9 +1,9 @@
 syntax = "proto3";
-package observability.v1;
+package observability.v0;
 
 
-import "base/v1/endpoint.proto";
-import "observability/v1/sessions.proto";
+import "base/v0/endpoint.proto";
+import "observability/v0/sessions.proto";
 
 import "google/protobuf/timestamp.proto";
 
@@ -24,7 +24,7 @@ message Log {
 
 
 message LogSessionGroup {
-  observability.v1.Session session = 1;
+  observability.v0.Session session = 1;
   repeated Log logs = 2;
 }
 

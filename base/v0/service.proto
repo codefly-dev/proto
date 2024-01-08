@@ -1,8 +1,8 @@
 syntax = "proto3";
-package base.v1;
+package base.v0;
 
-import "base/v1/endpoint.proto";
-import "base/v1/agent.proto";
+import "base/v0/endpoint.proto";
+import "base/v0/agent.proto";
 
 // Service is the fundamental "live" computing unit of a system
 // It belongs to an application

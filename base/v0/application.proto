@@ -1,7 +1,7 @@
 syntax = "proto3";
-package base.v1;
+package base.v0;
 
-import "base/v1/service.proto";
+import "base/v0/service.proto";
 
 message Application {
   string name = 1;

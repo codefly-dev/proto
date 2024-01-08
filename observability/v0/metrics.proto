@@ -1,5 +1,5 @@
 syntax = "proto3";
-package observability.v1;
+package observability.v0;
 
 import "google/protobuf/timestamp.proto";
 

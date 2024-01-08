@@ -1,10 +1,10 @@
 syntax = "proto3";
-package service.runtime.v1;
+package services.runtime.v0;
 
-import "base/v1/service.proto";
-import "base/v1/endpoint.proto";
-import "services/agent/v1/agent.proto";
-import "services/agent/v1/communicate.proto";
+import "base/v0/service.proto";
+import "base/v0/endpoint.proto";
+import "services/agent/v0/agent.proto";
+import "services/agent/v0/communicate.proto";
 
 /*
 Running a service follow several steps where relevant information about the runtime environment is shared
@@ -14,7 +14,7 @@ Running a service follow several steps where relevant information about the runt
 message NetworkMapping {
   string application = 1; // Application name
   string service = 2; // Service name
-  base.v1.Endpoint endpoint = 3;
+  base.v0.Endpoint endpoint = 3;
   repeated string addresses = 4; // List of addresses to map to
 }
 
@@ -42,12 +42,12 @@ message LoadRequest {
   bool debug = 1; // Developer debug
 
   // Identity of the service
-  base.v1.ServiceIdentity identity = 2;
+  base.v0.ServiceIdentity identity = 2;
 }
 
 message LoadResponse {
-  base.v1.Version version = 1;
-  repeated base.v1.Endpoint endpoints = 2;
+  base.v0.Version version = 1;
+  repeated base.v0.Endpoint endpoints = 2;
   LoadStatus status = 3;
 }
 
@@ -69,7 +69,7 @@ message InitStatus {
 }
 
 message InitRequest {
-  repeated base.v1.Endpoint dependencies_endpoints = 3;
+  repeated base.v0.Endpoint dependencies_endpoints = 3;
 }
 
 
@@ -105,7 +105,7 @@ message StartStatus {
 
 message StartResponse {
   StartStatus status = 1;
-  repeated agent.v1.Runtime runtime = 2;
+  repeated agent.v0.Runtime runtime = 2;
 }
 
 /*
@@ -184,5 +184,5 @@ service Runtime {
   rpc Information (InformationRequest) returns (InformationResponse) {}
 
   // Communication helper
-  rpc Communicate(agent.v1.Engage) returns (agent.v1.InformationRequest) {}
+  rpc Communicate(agent.v0.Engage) returns (agent.v0.InformationRequest) {}
 }

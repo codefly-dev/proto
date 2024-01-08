@@ -1,5 +1,5 @@
 syntax = "proto3";
-package observability.v1;
+package observability.v0;
 
 // GraphNode represents a node in an architecture graph
 // Type can be "application", "service" or "endpoint"

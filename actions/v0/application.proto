@@ -1,5 +1,5 @@
 syntax = "proto3";
-package actions.v1;
+package actions.v0;
 
 import "buf/validate/validate.proto";
 
