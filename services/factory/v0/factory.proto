@@ -81,6 +81,7 @@ message InitRequest {
 
 message InitResponse {
   InitStatus status = 1;
+  string run_hash = 2; // A run hash is a proxy for the uniqueness of the behavior of a service
 }
 
 
