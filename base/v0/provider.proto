@@ -1,0 +1,6 @@
+syntax = "proto3";
+package base.v0;
+
+message ProviderInformation {
+  map<string, string> data = 1;
+}

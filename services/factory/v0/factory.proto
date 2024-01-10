@@ -4,6 +4,7 @@ package services.factory.v0;
 import "base/v0/service.proto";
 import "base/v0/endpoint.proto";
 import "base/v0/environment.proto";
+import "base/v0/provider.proto";
 import "services/agent/v0/communicate.proto";
 
 
@@ -77,6 +78,7 @@ message InitStatus {
 
 message InitRequest {
   repeated base.v0.Endpoint dependencies_endpoints = 1;
+  repeated base.v0.ProviderInformation provider_infos = 2;
 }
 
 message InitResponse {
