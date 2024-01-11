@@ -45,12 +45,20 @@ message LoadRequest {
 
   // Identity of the service
   base.v0.ServiceIdentity identity = 2;
+
+  // Provider information required by the service
+  repeated base.v0.ProviderInformation provider_infos = 3;
 }
 
 message LoadResponse {
   base.v0.Version version = 1;
-  repeated base.v0.Endpoint endpoints = 2;
-  LoadStatus status = 3;
+  LoadStatus status = 2;
+
+  // Endpoints exposed by the service
+  repeated base.v0.Endpoint endpoints = 3;
+
+  // Each service can act as a service provider in its own right
+  repeated base.v0.ProviderInformation service_provider_infos = 4;
 }
 
 
@@ -72,7 +80,6 @@ message InitStatus {
 
 message InitRequest {
   repeated base.v0.Endpoint dependencies_endpoints = 1;
-  repeated base.v0.ProviderInformation provider_infos = 2;
 }
 
 

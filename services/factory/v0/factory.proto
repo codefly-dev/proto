@@ -21,18 +21,29 @@ message LoadStatus {
 message LoadRequest {
   bool debug = 1; // Developer debug
 
-  bool create = 2;
-
   // Identity of the service
   base.v0.ServiceIdentity identity = 3;
+
+  // Provider information required by the service
+  repeated base.v0.ProviderInformation provider_infos = 2;
+
+
 }
 
 
 message LoadResponse {
-  base.v0.Version version = 1;
-  repeated base.v0.Endpoint endpoints = 2;
-  string getting_started = 3;
-  LoadStatus status = 4;
+  LoadStatus status = 1;
+  base.v0.Version version = 2;
+
+  // Endpoints exposed by the service
+  repeated base.v0.Endpoint endpoints = 3;
+
+
+  // Each service can act as a service provider in its own right
+  repeated base.v0.ProviderInformation service_provider_infos = 4;
+
+  // For logging to console
+  string getting_started = 5;
 }
 
 /*
@@ -78,7 +89,6 @@ message InitStatus {
 
 message InitRequest {
   repeated base.v0.Endpoint dependencies_endpoints = 1;
-  repeated base.v0.ProviderInformation provider_infos = 2;
 }
 
 message InitResponse {
