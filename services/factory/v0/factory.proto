@@ -24,8 +24,6 @@ message LoadRequest {
   // Identity of the service
   base.v0.ServiceIdentity identity = 3;
 
-  // Provider information required by the service
-  repeated base.v0.ProviderInformation provider_infos = 2;
 
 
 }
@@ -38,12 +36,9 @@ message LoadResponse {
   // Endpoints exposed by the service
   repeated base.v0.Endpoint endpoints = 3;
 
-
-  // Each service can act as a service provider in its own right
-  repeated base.v0.ProviderInformation service_provider_infos = 4;
-
   // For logging to console
-  string getting_started = 5;
+  string getting_started = 4;
+
 }
 
 /*
@@ -88,12 +83,21 @@ message InitStatus {
 }
 
 message InitRequest {
+  // Endpoints of the dependencies
   repeated base.v0.Endpoint dependencies_endpoints = 1;
+
+  // Provider information required by the service
+  repeated base.v0.ProviderInformation provider_infos = 2;
 }
 
 message InitResponse {
   InitStatus status = 1;
+
   string run_hash = 2; // A run hash is a proxy for the uniqueness of the behavior of a service
+
+
+  // A Service can serve as a provider as well
+  repeated base.v0.ProviderInformation provider_infos = 3;
 }
 
 

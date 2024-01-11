@@ -46,8 +46,6 @@ message LoadRequest {
   // Identity of the service
   base.v0.ServiceIdentity identity = 2;
 
-  // Provider information required by the service
-  repeated base.v0.ProviderInformation provider_infos = 3;
 }
 
 message LoadResponse {
@@ -79,13 +77,23 @@ message InitStatus {
 }
 
 message InitRequest {
+
+  // Endpoints for the dependencies
   repeated base.v0.Endpoint dependencies_endpoints = 1;
+
+  // Provider information required by the service
+  repeated base.v0.ProviderInformation provider_infos = 2;
 }
 
 
 message InitResponse {
-  InitStatus status = 2;
-  repeated NetworkMapping network_mappings = 3;
+  InitStatus status = 1;
+
+  // Actualized endpoints are Network Mappings
+  repeated NetworkMapping network_mappings = 2;
+
+  // A Service can act as a provider
+  repeated base.v0.ProviderInformation service_provider_infos = 3;
 }
 
 
