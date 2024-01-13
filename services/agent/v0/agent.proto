@@ -40,6 +40,7 @@ message Runtime {
     DOCKER = 1;
     GO = 2;
     NPM = 3;
+    PYTHON = 4;
   }
   Type type = 1;
 }
