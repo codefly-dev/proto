@@ -41,6 +41,7 @@ message Runtime {
     GO = 2;
     NPM = 3;
     PYTHON = 4;
+    PYTHON_POETRY = 5;
   }
   Type type = 1;
 }
