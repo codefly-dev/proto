@@ -16,12 +16,12 @@ Only public endpoint can be accessed across applications
 
 message Endpoint {
   string name = 1;
-  string description = 2;
-  string visibility = 3;
-  API api = 4;
-  string application = 5;
-  string service = 6;
-  string namespace = 7;
+  string service = 2;
+  string application = 3;
+  string namespace = 4;
+  string description = 5;
+  string visibility = 6;
+  API api = 7;
 }
 
 message API {
@@ -45,24 +45,38 @@ enum HTTPMethod {
   TRACE = 8;
 }
 
+message RestRouteGroup {
+  repeated RestRoute routes = 1;
+}
+
+// RestRoute represents the data of the route itself
+// It is usually found through a Route group
 message RestRoute {
-  repeated HTTPMethod methods = 1;
+  HTTPMethod method = 1;
   string path = 2;
 }
 
 
 message RestAPI {
-  bytes openapi = 1;
-  repeated RestRoute routes = 2;
+  string service = 1;
+  string application = 2;
+  RestRouteGroup group = 3;
+  bytes openapi = 4;
 }
 
 message RPC {
   string name = 1;
 }
 
+message GRPCGroup {
+  repeated RPC rpcs = 1;
+}
+
 message GrpcAPI {
-  bytes proto = 1;
-  repeated RPC rpcs = 2;
+  string service = 1;
+  string application = 2;
+  GRPCGroup group = 3;
+  bytes proto = 4;
 }
 
 
