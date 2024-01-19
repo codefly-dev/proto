@@ -1,13 +1,15 @@
 syntax = "proto3";
 package base.v0;
 
+import "buf/validate/validate.proto";
+
 message Agent {
   enum Kind {
     UNKNOWN = 0;
     SERVICE = 1;
   }
   Kind kind = 1;
-  string name = 2;
-  string publisher = 3;
+  string name = 2 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  string publisher = 3 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
   string version = 4;
 }
