@@ -60,7 +60,7 @@ message RestRoute {
 message RestAPI {
   string service = 1;
   string application = 2;
-  RestRouteGroup group = 3;
+  repeated RestRouteGroup groups = 3;
   bytes openapi = 4;
 }
 
@@ -68,14 +68,11 @@ message RPC {
   string name = 1;
 }
 
-message GRPCGroup {
-  repeated RPC rpcs = 1;
-}
 
 message GrpcAPI {
   string service = 1;
   string application = 2;
-  GRPCGroup group = 3;
+  repeated RPC rpcs = 3;
   bytes proto = 4;
 }
 
