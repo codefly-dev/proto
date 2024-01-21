@@ -1,5 +1,5 @@
 syntax = "proto3";
-package services.factory.v0;
+package services.builder.v0;
 
 import "base/v0/service.proto";
 import "base/v0/endpoint.proto";
