@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package codefly.cli.v0;
+
+message FileInfo {
+  string path = 1;
+  bytes content = 2;
+  bool is_directory = 3;
+}
+
+message DirectoryRequest {
+  repeated FileInfo files = 1;
+}
+
+message DirectoryResponse {}

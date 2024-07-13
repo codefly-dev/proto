@@ -1,0 +1,98 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "buf/validate/validate.proto";
+
+/*
+
+Endpoints are the fundamental building block of communication between services or modules.
+
+Important:
+
+Only public endpoint can be accessed across modules
+
+*/
+
+
+message Endpoint {
+  // Name of the endpoint: in lots of cases, the name of the endpoint will be the API name (http, grpc, tcp, etc...)
+  string name = 1 [(buf.validate.field).string.hostname = true,  (buf.validate.field).string.pattern = "^[a-z]+$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 20];
+  // Service name
+  string service = 2  [(buf.validate.field).string.hostname = true,  (buf.validate.field).string.pattern = "^[a-z0-9-]+$", (buf.validate.field).string.not_contains = "--", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+  // Module name
+  string module = 3  [(buf.validate.field).string.hostname = true,  (buf.validate.field).string.pattern = "^[a-z0-9-]+$", (buf.validate.field).string.not_contains = "--", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+  // Description of the endpoint
+  string description = 4;
+  // Visibility of the endpoint
+  string visibility = 5 [(buf.validate.field).string.in = "external", (buf.validate.field).string.in = "public", (buf.validate.field).string.in = "module",(buf.validate.field).string.in = "private"];
+  string api = 6 [(buf.validate.field).string.in = "http", (buf.validate.field).string.in = "grpc", (buf.validate.field).string.in = "tcp", (buf.validate.field).string.in = "rest"];
+  API api_details = 7;
+}
+
+message API {
+  oneof value {
+    TcpAPI tcp = 1;
+    HttpAPI http = 2;
+    RestAPI rest = 3;
+    GrpcAPI grpc = 4;
+  }
+}
+
+enum HTTPMethod {
+  GET = 0;
+  POST = 1;
+  PUT = 2;
+  DELETE = 3;
+  PATCH = 4;
+  OPTIONS = 5;
+  HEAD = 6;
+  CONNECT = 7;
+  TRACE = 8;
+}
+
+// A RestRouteGroup is a collection of routes that share the same path
+message RestRouteGroup {
+  string path = 1;
+  // TODO [(buf.validate.field).string.pattern = "^/([a-z0-9-/]+)*$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+  repeated RestRoute routes = 2;
+}
+
+// RestRoute represents the data of the route itself
+// It is usually found through a Route group
+message RestRoute {
+  string path = 1;
+  // TODO [(buf.validate.field).string.pattern = "^/([a-z0-9-/]+)*$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+  HTTPMethod method = 2;
+}
+
+
+message RestAPI {
+  string service = 1;
+  string module = 2;
+  repeated RestRouteGroup groups = 3;
+  bytes openapi = 4;
+  bool secured = 5;
+}
+
+message RPC {
+  string service_name = 1;
+  string name = 2;
+}
+
+
+message GrpcAPI {
+  string service = 1;
+  string module = 2;
+  string package = 3;
+  repeated RPC rpcs = 4;
+  bytes proto = 5;
+  bool secured = 6;
+}
+
+
+message HttpAPI {
+  bool secured = 1;
+}
+
+message TcpAPI {
+}

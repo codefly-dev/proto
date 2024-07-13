@@ -1,0 +1,18 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "google/protobuf/any.proto";
+
+
+message GenericValue {
+    bytes value = 1; // Could also be a string if you prefer JSON
+}
+
+message SpecValue {
+    google.protobuf.Any value = 1;
+}
+
+
+message Specs {
+    map<string, SpecValue> fields = 1;
+}

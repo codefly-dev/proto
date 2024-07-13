@@ -1,8 +1,0 @@
-syntax = "proto3";
-package base.v0;
-
-message ProviderInformation {
-  string name = 1;
-  string origin = 2;
-  map<string, string> data = 3;
-}

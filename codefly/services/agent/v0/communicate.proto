@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package codefly.services.agent.v0;
+
+message Channel {
+  string kind = 1;
+}
+
+
+message Message {
+  string name = 1;
+  string message = 2;
+  string description = 3;
+}
+
+// Simple message NoOp
+
+message Display {
+  map<string, string> data = 1;
+}
+
+// Yes/No
+
+message Confirm {
+  bool default = 1;
+}
+
+message ConfirmAnswer {
+  bool confirmed = 1;
+}
+
+// Input
+
+message Input {
+  oneof default {
+    string string_default = 1;
+    int32 int_default = 2;
+  }
+}
+
+message InputAnswer {
+  oneof answer {
+    string string_value = 1;
+    int32 int_value = 2;
+  }
+}
+
+
+message Choice {
+  repeated Message options = 1;
+}
+
+message ChoiceAnswer {
+  string option = 1;
+}
+
+
+message Selection {
+  repeated Message options = 1;
+}
+
+message SelectionAnswer {
+  repeated string selected = 1;
+}
+
+/*
+More powerful dialog system
+*/
+
+
+message Question {
+  Channel channel = 1;
+  int32 round = 2;
+  Message message = 3;
+  oneof value {
+    Display display = 4;
+    Confirm confirm = 5;
+    Input input = 6;
+    Choice choice = 7;
+    Selection selection = 8;
+  }
+}
+
+message Answer {
+  bool done = 1;
+  Channel channel = 2;
+  int32 round = 3;
+  string error = 4;
+  oneof value {
+    ConfirmAnswer confirm = 5;
+    InputAnswer input = 6;
+    ChoiceAnswer choice = 7;
+    SelectionAnswer selection = 8;
+  }
+}
+
+message Engage {
+  enum Mode {
+    UNKNOWN = 0;
+    START = 1;
+    END = 2;
+  }
+  Mode mode = 1;
+  string stage = 2;
+  Channel channel = 3;
+  Answer answer = 4;
+}
+
+message InformationRequest {
+  Question question = 1;
+  bool done = 2;
+}

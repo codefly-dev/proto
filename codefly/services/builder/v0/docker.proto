@@ -1,0 +1,11 @@
+syntax = "proto3";
+package codefly.services.builder.v0;
+
+
+message DockerBuildContext {
+  string docker_repository = 1;
+}
+
+message DockerBuildResult {
+  repeated string images = 1;
+}

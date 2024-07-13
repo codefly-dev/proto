@@ -1,0 +1,25 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "codefly/base/v0/scope.proto";
+
+message ConfigurationValue {
+  string key = 1;
+  string value = 2;
+  bool secret = 3;
+}
+
+message ConfigurationInformation {
+  string name = 1;
+  repeated ConfigurationValue configuration_values = 4;
+}
+
+// Configuration can come from
+// - workspace: origin is _workspace
+// - service: origin is the service unique
+// Information is a grouping of configuration values
+message Configuration {
+  string origin = 1;
+  RuntimeContext runtime_context = 2;
+  repeated ConfigurationInformation infos = 3;
+}

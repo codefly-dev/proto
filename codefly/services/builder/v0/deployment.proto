@@ -1,0 +1,35 @@
+syntax = "proto3";
+package codefly.services.builder.v0;
+
+import "codefly/services/builder/v0/docker.proto";
+
+enum DeploymentKind {
+  KUSTOMIZE = 0;
+}
+
+message Deployment {
+  oneof kind {
+    KubernetesDeployment kubernetes = 2;
+  }
+  bool load_balancer = 3;
+}
+
+message KubernetesDeployment {
+  string namespace = 1;
+  string destination = 2;
+  DockerBuildContext build_context = 3;
+}
+
+message DeploymentOutput {
+  oneof kind {
+    KubernetesDeploymentOutput kubernetes = 2;
+  }
+}
+
+
+message KubernetesDeploymentOutput {
+  enum Kind {
+    Kustomize = 0;
+  }
+  Kind kind = 1;
+}

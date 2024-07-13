@@ -1,0 +1,59 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "codefly/base/v0/scope.proto";
+import "codefly/base/v0/endpoint.proto";
+
+/*
+An endpoint to be accessed needs Network Mapping.
+
+Network Mappings come with different scopes
+
+- FromContainer: This is the mapping we want to use inside Container
+- FromHost: This is the mapping we want to use from the Host
+- Public: This is the mapping we want to use if something is publicly accessible: match to a DNS record
+
+*/
+message NetworkMapping {
+  // The endpoint to be accessed
+  Endpoint endpoint = 1;
+  // The network instances corresponding to the endpoint
+  repeated NetworkInstance instances = 2;
+}
+
+/*
+DNS is a message that represents a DNS record
+
+Different DNS will be obtained based of the environment
+*/
+
+message DNS {
+  // The name of the DNS record
+  string name = 1;
+  // The module name
+  string module = 2;
+  // The service name
+  string service = 3;
+  // The endpoint name
+  string endpoint = 4;
+  // The network instance name
+  string host = 5;
+  // The network instance port
+  uint32 port = 6;
+  // Secured
+  bool secured = 7;
+}
+
+
+message NetworkInstance {
+  // The scope of the mapping
+  base.v0.NetworkAccess access = 1;
+  // The host for the instance
+  string host = 3;
+  // The hostname for the instance
+  string hostname = 4;
+  // The port for the instance
+  uint32 port = 5;
+  // The address for the instance
+  string address = 6;
+}

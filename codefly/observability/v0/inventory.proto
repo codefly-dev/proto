@@ -1,0 +1,9 @@
+syntax = "proto3";
+package codefly.observability.v0;
+
+import "codefly/base/v0/endpoint.proto";
+
+
+message WorkspaceInformationRequest {
+    string workspace = 1;
+}

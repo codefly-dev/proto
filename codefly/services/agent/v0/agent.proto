@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package codefly.services.agent.v0;
+
+/*
+Agent
+*/
+
+message Language {
+  enum Type {
+    GO = 0;
+    PYTHON = 1;
+    JAVASCRIPT = 2;
+    TYPESCRIPT = 3;
+    RUBY = 4;
+  }
+Type type = 1;
+}
+
+message Protocol {
+  enum Type {
+    HTTP = 0;
+    GRPC = 1;
+  }
+  Type type = 1;
+}
+
+message Capability {
+  enum Type {
+    UNKNOWN = 0;
+    BUILDER = 1;
+    RUNTIME = 2;
+    // Hot Reload is a runtime where a running process will NOT be restarted
+    HOT_RELOAD = 3;
+  }
+  Type type = 1;
+}
+
+message Runtime {
+  enum Type {
+    UNKNOWN = 0;
+    GO = 1;
+    NPM = 2;
+    PYTHON = 3;
+    PYTHON_POETRY = 4;
+    RUBY = 5;
+    RUBY_GEM = 6;
+    RUBY_BUNDLE = 7;
+  }
+  Type type = 1;
+  string version = 2;
+}
+
+message ConfigurationValueInformation {
+  string name = 1;
+  string description = 2;
+}
+
+message ConfigurationValueDetail {
+  string name = 1;
+  string description = 2;
+  repeated ConfigurationValueInformation fields = 3;
+}
+
+message AgentInformation {
+  repeated Runtime runtime_requirements = 1;
+  repeated Capability capabilities = 2;
+  repeated Protocol protocols = 3;
+  repeated Language languages = 4;
+  string read_me = 5;
+  repeated ConfigurationValueDetail configuration_details = 6;
+}
+
+message AgentInformationRequest {
+
+}
+
+
+service Agent {
+  rpc GetAgentInformation(AgentInformationRequest) returns (AgentInformation) {}
+}

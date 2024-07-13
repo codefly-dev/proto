@@ -1,0 +1,44 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "buf/validate/validate.proto";
+import "codefly/base/v0/endpoint.proto";
+import "codefly/base/v0/agent.proto";
+
+
+message ServiceReference {
+  string name = 1  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  string module = 2  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+}
+
+// Service is the fundamental "live" computing unit of a system
+// It belongs to a module
+// It is "hosted" by an agent
+// It has a set of endpoints
+message Service {
+  // Name of the service
+  string name = 1  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  // Short description of the the service
+  string description = 2;
+  // Agent that represents the service
+  Agent agent = 3;
+  // Endpoints exposed by the service
+  repeated Endpoint endpoints = 4;
+  // Dependencies
+  repeated ServiceReference service_dependencies = 5;
+}
+
+
+message Version {
+  string version = 1;
+}
+
+// ServiceIdentity is the identity of a service in a workspace
+message ServiceIdentity {
+  string name = 1  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  string module = 2  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  string workspace = 3  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  string version = 4 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 10];
+  string workspace_path = 5 [(buf.validate.field).string.min_len = 3];
+  string relative_to_workspace = 6 [(buf.validate.field).string.min_len = 3];
+}

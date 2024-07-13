@@ -1,0 +1,22 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "buf/validate/validate.proto";
+
+import "codefly/base/v0/service.proto";
+
+message Module {
+  // The name of the module
+  string name = 1;
+  // A description of the module
+  string description = 2;
+  // Services that are provided by this module
+  repeated Service services = 4;
+  // (Optional) The entry point for the module
+  string service_entry = 5;
+}
+
+message ManagedModule {
+  string id = 1 [(buf.validate.field).string.pattern = "^[a-z]{10}$"];
+  Module module = 2;
+}

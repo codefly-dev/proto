@@ -1,0 +1,258 @@
+syntax = "proto3";
+
+package codefly.services.builder.v0;
+
+import "codefly/base/v0/service.proto";
+import "codefly/base/v0/network.proto";
+import "codefly/base/v0/endpoint.proto";
+import "codefly/base/v0/environment.proto";
+import "codefly/base/v0/configuration.proto";
+import "codefly/services/agent/v0/communicate.proto";
+import "codefly/services/builder/v0/docker.proto";
+import "codefly/services/builder/v0/deployment.proto";
+
+
+message LoadStatus {
+  enum Status {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message LoadRequest {
+  // Developer debug
+  bool developer_debug = 1;
+  // Disable catch
+  bool disable_catch = 2;
+
+  // Identity of the service
+  codefly.base.v0.ServiceIdentity identity = 3;
+
+  // Details for creation
+  CreationMode creation_mode = 4;
+
+  // Details for sync
+  SyncMode sync_mode = 5;
+
+}
+
+message CreationMode {
+  bool communicate = 1;
+}
+
+message SyncMode {
+  bool communicate = 1;
+}
+
+
+message LoadResponse {
+  LoadStatus state = 1;
+  codefly.base.v0.Version version = 2;
+
+  // Endpoints exposed by the service
+  repeated codefly.base.v0.Endpoint endpoints = 3;
+
+  // For logging to console
+  string getting_started = 4;
+
+}
+
+/*
+
+Creation
+
+ */
+
+message CreateRequest {
+}
+
+
+message CreateStatus {
+  enum Status {
+    UNKNOWN = 0;
+    CREATED = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message CreateResponse {
+  CreateStatus state = 1;
+  repeated codefly.base.v0.Endpoint endpoints = 2; // The endpoints of the created service
+}
+
+/*
+
+Init
+
+*/
+message InitStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message InitRequest {
+  // Endpoints of the dependencies
+  repeated codefly.base.v0.Endpoint dependencies_endpoints = 1;
+}
+
+message InitResponse {
+  InitStatus state = 1;
+}
+
+
+/*
+
+Update
+
+*/
+
+message UpdateStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message UpdateRequest {
+}
+
+message UpdateResponse {
+  UpdateStatus state = 1;
+}
+
+
+/*
+
+Sync re-generate what needs to be re-generated
+
+ */
+
+message SyncRequest {
+}
+
+message SyncStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message SyncResponse {
+  SyncStatus state = 1;
+}
+
+/*
+
+Build is the first stage of Deployment
+
+*/
+
+message BuildContext {
+  oneof kind {
+    DockerBuildContext docker_build_context = 1;
+  }
+}
+
+message BuildRequest {
+  BuildContext build_context = 1;
+}
+
+message BuildResult {
+  string version = 1;
+  string running_hash = 2;
+  string api_hash = 3;
+  oneof kind {
+    DockerBuildResult docker_build_result = 4;
+  }
+}
+
+
+message BuildStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+    NOOP = 3;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message BuildResponse {
+  BuildStatus state = 1;
+  BuildResult result = 2;
+}
+
+/*
+Deployment
+*/
+
+message DeploymentRequest {
+  codefly.base.v0.Environment environment = 1;
+  codefly.services.builder.v0.Deployment deployment = 2;
+  codefly.base.v0.Configuration configuration = 3;
+  repeated codefly.base.v0.Configuration dependencies_configurations = 4;
+  repeated codefly.base.v0.NetworkMapping network_mappings = 5;
+  repeated codefly.base.v0.NetworkMapping dependencies_network_mappings = 6;
+}
+
+message DeploymentStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+    NOOP = 3;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message DeploymentResponse {
+  DeploymentStatus state = 1;
+  codefly.base.v0.Configuration configuration = 2;
+  DeploymentOutput deployment = 3;
+}
+
+
+// Builder is responsible for:
+// - creation
+// - Docker build
+// - Deployment manifests
+service Builder {
+
+  // Load the service
+  rpc Load (LoadRequest) returns (LoadResponse) {}
+
+  // Init
+  rpc Init (InitRequest) returns (InitResponse) {}
+
+  // Affect Code
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc Update (UpdateRequest) returns (UpdateResponse) {}
+
+  // Affect Data
+  rpc Sync (SyncRequest) returns (SyncResponse) {}
+
+  // Deployment/Build only on init data
+  rpc Build (BuildRequest) returns (BuildResponse) {}
+  rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
+
+  // Communication helper
+  rpc Communicate(codefly.services.agent.v0.Engage) returns (codefly.services.agent.v0.InformationRequest) {}
+}

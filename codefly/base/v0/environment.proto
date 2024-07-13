@@ -1,0 +1,26 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "buf/validate/validate.proto";
+
+/*
+Environment is a fundamental building block in your system. It represents a specific setup where your services or modules run.
+
+Each environment has a unique name, a description, and a load balancer. The load balancer distributes network traffic across multiple servers to ensure that no single server bears too much demand.
+
+This allows for maximum speed and availability. The load balancer should be specified by its unique identifier.
+*/
+
+message Environment {
+    // The name of the environment
+    // Must be unique within a workspace
+    string name = 1;
+    // A brief description of the environment.
+    string description = 2;
+    // Naming scope -- useful for testing environment to avoid conflicts
+    string naming_scope = 3;
+}
+
+message ManagedEnvironment {
+    string id = 1 [(buf.validate.field).string.pattern = "^[a-z]{10}$"];;
+}

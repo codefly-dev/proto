@@ -1,0 +1,17 @@
+syntax = "proto3";
+package codefly.actions.v0;
+
+import "buf/validate/validate.proto";
+
+message NewWorkspace {
+    // Kind is the kind of the message.
+    string kind = 1;
+    // Name is the name of the workspace.
+    string name = 2 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+    // Description is the description of the workspace.
+    string description = 3;
+    // Path is where the workspace will be created.
+    string path = 4 [(buf.validate.field).string.min_len = 3];
+    // layout is how the workspace is structure
+    string layout = 5 [(buf.validate.field).string.in = "flat", (buf.validate.field).string.in = "modules", (buf.validate.field).string.in = "hybrid"];
+}

@@ -1,0 +1,22 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "buf/validate/validate.proto";
+
+message RuntimeContext {
+  // RuntimeContext is used to define the scope of a runtime resource
+  // - "free" lets the runtime decide the scope
+  // - "container" scope should be used inside containers
+  // - "native" scope should be used when running "natively" on the host
+  string kind = 1 [(buf.validate.field).string.in = "free", (buf.validate.field).string.in = "container", (buf.validate.field).string.in = "native"];
+  // Name enables to "tag" the runtime context: useful for test
+  string name = 2;
+}
+
+message NetworkAccess {
+  // NetworkContext is used to define
+  // - "container" should be used to access system resources inside containers
+  // - "native scope should be used to access system resources from the host
+  // - "public" scope should be used when this should be accessible outside of the system
+  string kind = 1  [(buf.validate.field).string.in = "container", (buf.validate.field).string.in = "native", (buf.validate.field).string.in = "public"];
+}

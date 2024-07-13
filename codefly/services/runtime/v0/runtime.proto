@@ -1,0 +1,290 @@
+syntax = "proto3";
+package codefly.services.runtime.v0;
+
+
+import "codefly/base/v0/scope.proto";
+import "codefly/base/v0/spec.proto";
+import "codefly/base/v0/environment.proto";
+import "codefly/base/v0/service.proto";
+import "codefly/base/v0/endpoint.proto";
+import "codefly/base/v0/network.proto";
+import "codefly/base/v0/configuration.proto";
+
+import "codefly/services/agent/v0/agent.proto";
+import "codefly/services/agent/v0/communicate.proto";
+
+/*
+Running a service follow several steps where relevant information about the runtime environment is shared
+*/
+
+
+/*
+Load
+
+Output:
+- Version of the service
+
+*/
+
+
+
+message LoadStatus {
+  enum Status {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+
+message LoadRequest {
+  // Developer debug
+  bool developer_debug = 1;
+
+  // Disable catch
+  bool disable_catch = 2;
+
+  // Identity of the service
+  codefly.base.v0.ServiceIdentity identity = 3;
+
+  // Environment
+  codefly.base.v0.Environment environment = 4;
+
+}
+
+message LoadResponse {
+  codefly. base.v0.Version version = 1;
+
+  LoadStatus status = 2;
+
+  // Endpoints exposed by the service
+  repeated codefly.base.v0.Endpoint endpoints = 3;
+
+}
+
+
+/*
+Init
+*/
+
+
+
+message InitStatus {
+  enum Status {
+    UNKNOWN = 0;
+    READY = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message InitRequest {
+  // RuntimeContext for the service
+  codefly.base.v0.RuntimeContext runtime_context = 1;
+
+  // Configuration of the service
+  codefly.base.v0.Configuration configuration = 2;
+
+  // Proposed Network mappings for the service
+  repeated codefly.base.v0.NetworkMapping proposed_network_mappings = 3;
+
+  // Endpoints for the dependencies
+  repeated codefly.base.v0.Endpoint dependencies_endpoints = 4;
+
+  // Configurations exposed by the dependencies
+  repeated codefly.base.v0.Configuration dependencies_configurations = 5;
+
+  // Project configurations
+  repeated codefly.base.v0.Configuration project_configurations = 6;
+
+}
+
+
+message InitResponse {
+  InitStatus status = 1;
+
+  codefly.base.v0.RuntimeContext runtime_context = 2;
+
+  // Actual Network mappings for the service
+  repeated codefly.base.v0.NetworkMapping network_mappings = 3;
+
+  // A service provides configurations for different runtime contexts to other services
+  repeated codefly.base.v0.Configuration runtime_configurations = 4;
+}
+
+
+
+
+
+
+/*
+Start the service instance in a non-blocking way
+
+ */
+
+message StartRequest {
+  // Specs affecting the runner
+  codefly.base.v0.Specs specs = 1;
+  // Network mappings for the dependencies
+  repeated codefly.base.v0.NetworkMapping dependencies_network_mappings = 2;
+  // Optional fixture
+  string fixture = 3;
+}
+
+message StartStatus {
+  enum Status {
+    UNKNOWN = 0;
+    STARTED = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message StartResponse {
+  StartStatus status = 1;
+}
+
+/*
+Test
+*/
+
+message TestStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message TestRequest {
+}
+
+message TestResponse {
+  TestStatus status = 1;
+}
+
+/*
+Get Information of the service instance
+ */
+
+/*
+Stop the service instance
+ */
+
+
+message StopRequest {
+}
+
+
+message StopStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message StopResponse {
+  StopStatus status = 1;
+}
+
+
+/*
+Destroy the service instance
+ */
+
+
+message DestroyRequest {
+}
+
+
+message DestroyStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message DestroyResponse {
+  DestroyStatus status = 1;
+}
+
+
+
+message InformationRequest {
+}
+
+
+message DesiredState {
+  enum Stage {
+    UNKNOWN = 0;
+    NOOP = 1;
+    LOAD = 2;
+    INIT = 3;
+    START = 4;
+  }
+  Stage stage = 1;
+}
+
+// InformationResponse represents the overall state of the service
+message InformationResponse {
+  DesiredState desired_state = 1;
+
+  LoadStatus load_status = 2;
+  InitStatus init_status = 3;
+  StartStatus start_status = 4;
+  StopStatus stop_status = 5;
+  DestroyStatus Destroy_status = 6;
+  TestStatus test_status = 7;
+
+}
+
+
+/*
+Public API
+
+*/
+
+
+
+
+/*
+Runtime service
+ */
+
+service Runtime {
+
+  // Lifecycle
+
+  // Load the Service Agent: this should be a NoOp and never fails
+  rpc Load (LoadRequest) returns (LoadResponse) {}
+  // Init the Service Agent: could include steps like compilation, configuration, etc.
+  // An important step of Initialization is to get the list of network mappings
+  rpc Init (InitRequest) returns (InitResponse) {}
+  // Start the underlying service
+  rpc Start (StartRequest) returns (StartResponse) {}
+  // Stop the underlying service
+  rpc Stop (StopRequest) returns (StopResponse) {}
+  // Destroy the underlying service
+  rpc Destroy (DestroyRequest) returns (DestroyResponse) {}
+
+  // Test the service
+  rpc Test (TestRequest) returns (TestResponse) {}
+
+  // Information about the state of the service
+  rpc Information (InformationRequest) returns (InformationResponse) {}
+
+  // Communication helper
+  rpc Communicate(codefly.services.agent.v0.Engage) returns (codefly.services.agent.v0.InformationRequest) {}
+}

@@ -1,0 +1,204 @@
+syntax = "proto3";
+
+package codefly.cli.v0;
+
+import "codefly/base/v0/endpoint.proto";
+import "codefly/base/v0/network.proto";
+import "codefly/base/v0/workspace.proto";
+import "codefly/base/v0/configuration.proto";
+
+import "codefly/services/agent/v0/agent.proto";
+import "codefly/services/runtime/v0/runtime.proto";
+
+import "codefly/observability/v0/inventory.proto";
+import "codefly/observability/v0/dependencies.proto";
+import "codefly/observability/v0/logs.proto";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+
+import "google/protobuf/timestamp.proto";
+
+
+/* Overall information */
+
+
+message GetAgentInformationRequest {
+  string agent = 1;
+}
+
+message MultiGraphResponse {
+  repeated codefly.observability.v0.GraphResponse graphs = 1;
+}
+
+/* Active information
+*/
+
+message ActiveResponse {
+  string workspace = 1;
+  string module = 2;
+  string service = 3;
+}
+
+message RunningInformation {
+  string module = 1;
+  string service = 2;
+  int32 agent_pid = 3;
+}
+
+message GetAddressRequest {
+  string module = 1;
+  string service = 2;
+  string endpoint = 3;
+}
+
+message GetAddressResponse {
+  string address = 1;
+}
+
+// Get Network Mappings
+message GetNetworkMappingsRequest {
+  string module = 1;
+  string service = 2;
+}
+
+message GetNetworkMappingsResponse {
+  repeated codefly.base.v0.NetworkMapping network_mappings = 1;
+}
+
+
+message GetConfigurationRequest {
+  string module = 1;
+  string service = 2;
+}
+
+message GetConfigurationResponse {
+  codefly.base.v0.Configuration configuration = 1;
+}
+
+
+message GetConfigurationsResponse {
+  repeated codefly.base.v0.Configuration configurations = 1;
+}
+
+message FlowStatus {
+  bool ready = 1;
+}
+
+message StopFlowRequest {
+}
+
+message StopFlowResponse {
+}
+
+message DestroyFlowRequest {
+}
+
+message DestroyFlowResponse {
+}
+
+service CLI {
+
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/ping"
+    };
+  }
+
+  /* Overall information
+  */
+
+  rpc GetAgentInformation(GetAgentInformationRequest) returns (codefly.services.agent.v0.AgentInformation) {
+    option (google.api.http) = {
+      get: "/agent/{agent}/information"
+    };
+  }
+
+
+  rpc GetWorkspaceInventory(google.protobuf.Empty) returns (codefly.base.v0.Workspace) {
+    option (google.api.http) = {
+      get: "/workspace/inventory"
+    };
+  }
+
+  rpc GetWorkspaceServiceDependencyGraph(google.protobuf.Empty) returns (codefly.observability.v0.GraphResponse) {
+    option (google.api.http) = {
+      get: "/workspace/service-dependency-graph"
+    };
+  }
+
+  rpc GetWorkspacePublicModulesDependencyGraph(google.protobuf.Empty) returns (MultiGraphResponse) {
+    option (google.api.http) = {
+      get: "/workspace/public-endpoints-graph"
+    };
+  }
+
+  rpc GetActive(google.protobuf.Empty) returns (ActiveResponse) {
+    option (google.api.http) = {
+      get: "/workspace/information"
+    };
+  }
+
+
+  rpc GetAddresses(GetAddressRequest) returns (GetAddressResponse) {
+    option (google.api.http) = {
+      get: "/workspace/network-mapping/{module}/{service}/{endpoint}"
+    };
+  }
+
+  rpc GetConfiguration(GetConfigurationRequest) returns (GetConfigurationResponse) {
+    option (google.api.http) = {
+      get: "/workspace/configuration/{module}/{service}"
+    };
+  }
+
+  rpc GetDependenciesConfigurations(GetConfigurationRequest) returns (GetConfigurationsResponse) {
+    option (google.api.http) = {
+      get: "/workspace/dependencies-configurations/{module}/{service}"
+    };
+  }
+
+  rpc GetDependenciesNetworkMappings(GetNetworkMappingsRequest) returns (GetNetworkMappingsResponse) {
+    option (google.api.http) = {
+      get: "/workspace/dependencies-network-mappings/{module}/{service}"
+    };
+  }
+
+  rpc GetRuntimeConfigurations(GetConfigurationRequest) returns (GetConfigurationsResponse) {
+    option (google.api.http) = {
+      get: "/workspace/runtime-configurations/{module}/{service}"
+    };
+  }
+
+  rpc Logs(google.protobuf.Empty)  returns (stream observability.v0.Log) {
+    option (google.api.http) = {
+      get: "/workspace/logs"
+    };
+  }
+
+  rpc ActiveLogHistory(codefly.observability.v0.LogRequest) returns (codefly.observability.v0.LogResponse) {
+    option (google.api.http) = {
+      get: "/workspace/logs/history"
+    };
+  }
+
+  rpc GetFlowStatus(google.protobuf.Empty) returns (FlowStatus) {
+    option (google.api.http) = {
+      get: "/workspace/flow/status"
+    };
+  }
+
+  rpc StopFlow(StopFlowRequest) returns (StopFlowResponse) {
+    option (google.api.http) = {
+      post: "/workspace/flow/stop"
+    };
+  }
+
+
+  rpc DestroyFlow(DestroyFlowRequest) returns (DestroyFlowResponse) {
+    option (google.api.http) = {
+      post: "/workspace/flow/destroy"
+    };
+  }
+}

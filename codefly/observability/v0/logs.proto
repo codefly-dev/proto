@@ -1,0 +1,35 @@
+syntax = "proto3";
+package codefly.observability.v0;
+
+
+import "codefly/base/v0/endpoint.proto";
+import "codefly/observability/v0/sessions.proto";
+
+import "google/protobuf/timestamp.proto";
+
+
+
+message Log {
+  google.protobuf.Timestamp at = 1;
+  string module = 2;
+  string service = 3;
+  string kind = 4;
+  string message = 5;
+}
+
+
+message LogSessionGroup {
+  observability.v0.Session session = 1;
+  repeated Log logs = 2;
+}
+
+
+message LogRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+
+message LogResponse {
+  repeated LogSessionGroup groups = 1;
+}

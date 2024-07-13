@@ -1,9 +1,0 @@
-syntax = "proto3";
-package observability.v0;
-
-import "base/v0/endpoint.proto";
-
-
-message ProjectInformationRequest {
-    string project = 1;
-}

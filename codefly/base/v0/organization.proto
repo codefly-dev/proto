@@ -1,0 +1,18 @@
+syntax = "proto3";
+package codefly.base.v0;
+
+import "buf/validate/validate.proto";
+
+/*
+Organization represents the owner of workspaces
+*/
+message Organization {
+    // Name is the name of the organization.
+    string name = 1 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+}
+
+message ManagedOrganization {
+    string id = 1 [(buf.validate.field).string.pattern = "^[a-z]{10}$"];
+    // Organization is the organization that is managed.
+    Organization organization = 2;
+}

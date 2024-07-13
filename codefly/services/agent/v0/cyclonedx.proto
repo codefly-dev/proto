@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package codefly.services.agent.v0;
+
+// Represents a component in the SBOM
+message Component {
+  string name = 1;
+  string version = 2;
+  ComponentType type = 3;
+  string group = 4; // Optional
+  string purl = 5; // Package URL
+  // Add other fields as per the CycloneDX spec
+}
+
+enum ComponentType {
+  LIBRARY = 0;
+  FRAMEWORK = 1;
+  MODULE = 2;
+  CONTAINER = 3;
+  // Add other component types
+}
+
+// Represents the entire SBOM
+message Bom {
+  string bomFormat = 1; // Always "CycloneDX"
+  string specVersion = 2;
+  string serialNumber = 3;
+  int32 version = 4;
+  repeated Component components = 5;
+  // Add other fields like metadata, dependencies, vulnerabilities, etc.
+}
