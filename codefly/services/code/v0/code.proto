@@ -1,0 +1,640 @@
+syntax = "proto3";
+package codefly.services.code.v0;
+
+/*
+Code service: provides code-level access to a service's codebase.
+
+Every service agent plugin (go-grpc, python-fastapi, etc.) implements this
+service. The heavy lifting (LSP, compilation) is delegated to the plugin's
+Docker companion.
+
+The MCP server in the CLI dispatches tool calls to these RPCs via go-plugin.
+*/
+
+// --- ListSymbols ---
+
+// SymbolKind enumerates the kinds of code symbols.
+enum SymbolKind {
+  SYMBOL_KIND_UNKNOWN = 0;
+  SYMBOL_KIND_FUNCTION = 1;
+  SYMBOL_KIND_METHOD = 2;
+  SYMBOL_KIND_STRUCT = 3;
+  SYMBOL_KIND_INTERFACE = 4;
+  SYMBOL_KIND_CONSTANT = 5;
+  SYMBOL_KIND_VARIABLE = 6;
+  SYMBOL_KIND_TYPE_ALIAS = 7;
+  SYMBOL_KIND_PACKAGE = 8;
+  SYMBOL_KIND_FIELD = 9;
+  SYMBOL_KIND_ENUM = 10;
+  SYMBOL_KIND_CLASS = 11;
+}
+
+// Location identifies where a symbol lives in the source code.
+message Location {
+  string file = 1;     // Relative path within the service, e.g. "pkg/handlers/health.go"
+  int32  line = 2;     // 1-based line number
+  int32  column = 3;   // 1-based column number
+  int32  end_line = 4;
+  int32  end_column = 5;
+}
+
+// Symbol represents a single code symbol (function, type, method, etc.).
+message Symbol {
+  string     name = 1;          // e.g. "HandleHealth"
+  SymbolKind kind = 2;
+  Location   location = 3;
+  string     signature = 4;     // e.g. "func HandleHealth(w http.ResponseWriter, r *http.Request)"
+  string     documentation = 5; // Doc comment, if present
+  string     parent = 6;        // Containing symbol name, e.g. "Server" for a method
+  repeated Symbol children = 7; // Nested symbols (struct fields, interface methods, etc.)
+}
+
+message ListSymbolsRequest {
+  // Optional: restrict to a single file (relative path). If empty, returns
+  // symbols for all source files in the service.
+  string file = 1;
+}
+
+message ListSymbolsStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message ListSymbolsResponse {
+  ListSymbolsStatus status = 1;
+  repeated Symbol symbols = 2;
+}
+
+// --- File Operations ---
+
+message ReadFileRequest {
+  string path = 1;  // relative path within the service
+}
+
+message ReadFileResponse {
+  string content = 1;
+  bool exists = 2;
+}
+
+message WriteFileRequest {
+  string path = 1;     // relative path within the service
+  string content = 2;
+}
+
+message WriteFileResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message ListFilesRequest {
+  string path = 1;                // optional: subdirectory (empty = root)
+  repeated string extensions = 2; // optional: filter by extension (e.g. ".go", ".py")
+  bool recursive = 3;             // if true, list recursively
+}
+
+message FileInfo {
+  string path = 1;       // relative path within the service
+  int64 size_bytes = 2;
+  bool is_directory = 3;
+}
+
+message ListFilesResponse {
+  repeated FileInfo files = 1;
+}
+
+// --- Fix ---
+
+// FixRequest asks the agent to run language-specific fixers on a file.
+// For Go: goimports + gofmt. For Python: ruff/isort + black. For TS: prettier.
+message FixRequest {
+  string file = 1;  // relative path within the service
+}
+
+message FixResponse {
+  bool success = 1;
+  string content = 2;          // the fixed file content (empty if unchanged)
+  string error = 3;            // non-fatal: fixer not available, etc.
+  repeated string actions = 4; // what was done: "goimports", "gofmt", etc.
+}
+
+// --- ApplyEdit ---
+
+// ApplyEdit performs a smart FIND/REPLACE on a file at the plugin level.
+// The plugin owns the matching strategies because it knows the language:
+// exact match, whitespace-normalized, indent-shifted, anchor-based, fuzzy scored.
+// After a successful edit, the plugin runs Fix (goimports, gofmt, etc.) automatically.
+message ApplyEditRequest {
+  string file = 1;        // relative path within the service
+  string find = 2;        // text to find (may not be an exact match)
+  string replace = 3;     // replacement text
+  bool auto_fix = 4;      // if true, run language-specific fixers after edit
+}
+
+message ApplyEditResponse {
+  bool success = 1;
+  string content = 2;              // the file content after edit + fix
+  string error = 3;                // why the edit failed (e.g. "FIND block not matched")
+  string strategy = 4;             // which matching strategy was used: "exact", "trailing", "trimmed", "indent_shifted", "anchor", "fuzzy_score", "fuzzy_block"
+  repeated string fix_actions = 5; // what fixers ran: "goimports", "gofmt", etc.
+}
+
+// --- Search ---
+
+message SearchRequest {
+  string pattern = 1;              // regex or literal pattern
+  bool literal = 2;                // if true, treat pattern as literal string (no regex)
+  bool case_insensitive = 3;
+  string path = 4;                 // optional: restrict to subdirectory
+  repeated string extensions = 5;  // optional: filter by extension (e.g. ".go", ".py")
+  repeated string exclude = 6;     // optional: glob patterns to exclude
+  int32 max_results = 7;           // 0 = default (100)
+  int32 context_lines = 8;         // lines of context around each match
+}
+
+message SearchMatch {
+  string file = 1;                 // relative path within the service
+  int32 line = 2;                  // 1-based line number
+  string text = 3;                 // the matching line (trimmed)
+  repeated string context_before = 4;
+  repeated string context_after = 5;
+}
+
+message SearchResponse {
+  repeated SearchMatch matches = 1;
+  bool truncated = 2;              // true if max_results was hit
+  int32 total_matches = 3;
+}
+
+// --- DeleteFile ---
+
+// DeleteFile removes a file from the service's source tree.
+message DeleteFileRequest {
+  string path = 1;  // relative path within the service
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// --- MoveFile ---
+
+// MoveFile renames or moves a file within the service, optionally updating imports.
+message MoveFileRequest {
+  string old_path = 1;       // current relative path
+  string new_path = 2;       // target relative path
+  bool update_imports = 3;   // if true, rewrite imports across the codebase
+}
+
+message MoveFileResponse {
+  bool success = 1;
+  string error = 2;
+  repeated string updated_files = 3; // files whose imports were rewritten
+}
+
+// --- CreateFile ---
+
+// CreateFile creates a new file. Fails if the file already exists unless overwrite is set.
+message CreateFileRequest {
+  string path = 1;       // relative path within the service
+  string content = 2;
+  bool overwrite = 3;    // if true, overwrite existing file
+}
+
+message CreateFileResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// --- GetDiagnostics ---
+
+// Diagnostic represents a compiler error, warning, or hint from the language server.
+message Diagnostic {
+  string file = 1;         // relative path
+  int32 line = 2;          // 1-based line number
+  int32 column = 3;        // 1-based column number
+  int32 end_line = 4;
+  int32 end_column = 5;
+  string message = 6;
+  DiagnosticSeverity severity = 7;
+  string source = 8;       // e.g. "gopls", "pylsp", "typescript"
+  string code = 9;         // diagnostic code (e.g. "unusedimport")
+}
+
+// DiagnosticSeverity mirrors LSP DiagnosticSeverity.
+enum DiagnosticSeverity {
+  DIAGNOSTIC_SEVERITY_UNKNOWN = 0;
+  DIAGNOSTIC_SEVERITY_ERROR = 1;
+  DIAGNOSTIC_SEVERITY_WARNING = 2;
+  DIAGNOSTIC_SEVERITY_INFORMATION = 3;
+  DIAGNOSTIC_SEVERITY_HINT = 4;
+}
+
+// GetDiagnostics returns compiler/linter diagnostics from the language server.
+message GetDiagnosticsRequest {
+  string file = 1;  // optional: restrict to a single file; empty = all files
+}
+
+message GetDiagnosticsResponse {
+  repeated Diagnostic diagnostics = 1;
+}
+
+// --- GoToDefinition ---
+
+// GoToDefinition finds where a symbol at a given position is defined.
+message GoToDefinitionRequest {
+  string file = 1;     // relative path
+  int32 line = 2;      // 1-based
+  int32 column = 3;    // 1-based
+}
+
+message GoToDefinitionResponse {
+  repeated Location locations = 1;
+}
+
+// --- FindReferences ---
+
+// FindReferences finds all usages of a symbol at a given position.
+message FindReferencesRequest {
+  string file = 1;     // relative path
+  int32 line = 2;      // 1-based
+  int32 column = 3;    // 1-based
+}
+
+message FindReferencesResponse {
+  repeated Location locations = 1;
+}
+
+// --- RenameSymbol ---
+
+// TextEdit represents a single text replacement in a file.
+message TextEdit {
+  string file = 1;       // relative path
+  int32 start_line = 2;  // 1-based
+  int32 start_column = 3;
+  int32 end_line = 4;
+  int32 end_column = 5;
+  string new_text = 6;
+}
+
+// RenameSymbol performs a language-aware rename of a symbol across all files.
+message RenameSymbolRequest {
+  string file = 1;       // relative path
+  int32 line = 2;        // 1-based
+  int32 column = 3;      // 1-based
+  string new_name = 4;
+}
+
+message RenameSymbolResponse {
+  bool success = 1;
+  string error = 2;
+  repeated TextEdit edits = 3;    // the edits that were applied
+  repeated string files = 4;      // files that were modified
+}
+
+// --- GetHoverInfo ---
+
+// GetHoverInfo returns type information and documentation at a position.
+message GetHoverInfoRequest {
+  string file = 1;     // relative path
+  int32 line = 2;      // 1-based
+  int32 column = 3;    // 1-based
+}
+
+message GetHoverInfoResponse {
+  string content = 1;       // the hover content (may contain markdown)
+  string language = 2;      // language hint for code blocks (e.g. "go")
+  Location range = 3;       // the range the hover applies to
+}
+
+// --- GetCompletions ---
+
+// CompletionKind mirrors LSP CompletionItemKind.
+enum CompletionKind {
+  COMPLETION_KIND_UNKNOWN = 0;
+  COMPLETION_KIND_TEXT = 1;
+  COMPLETION_KIND_METHOD = 2;
+  COMPLETION_KIND_FUNCTION = 3;
+  COMPLETION_KIND_CONSTRUCTOR = 4;
+  COMPLETION_KIND_FIELD = 5;
+  COMPLETION_KIND_VARIABLE = 6;
+  COMPLETION_KIND_CLASS = 7;
+  COMPLETION_KIND_INTERFACE = 8;
+  COMPLETION_KIND_MODULE = 9;
+  COMPLETION_KIND_PROPERTY = 10;
+  COMPLETION_KIND_UNIT = 11;
+  COMPLETION_KIND_VALUE = 12;
+  COMPLETION_KIND_ENUM = 13;
+  COMPLETION_KIND_KEYWORD = 14;
+  COMPLETION_KIND_SNIPPET = 15;
+  COMPLETION_KIND_COLOR = 16;
+  COMPLETION_KIND_FILE = 17;
+  COMPLETION_KIND_REFERENCE = 18;
+  COMPLETION_KIND_FOLDER = 19;
+  COMPLETION_KIND_ENUM_MEMBER = 20;
+  COMPLETION_KIND_CONSTANT = 21;
+  COMPLETION_KIND_STRUCT = 22;
+  COMPLETION_KIND_EVENT = 23;
+  COMPLETION_KIND_OPERATOR = 24;
+  COMPLETION_KIND_TYPE_PARAMETER = 25;
+}
+
+// CompletionItem represents a single completion suggestion.
+message CompletionItem {
+  string label = 1;            // the text to display and insert
+  CompletionKind kind = 2;
+  string detail = 3;           // short description (e.g. type signature)
+  string documentation = 4;    // longer documentation (may be markdown)
+  string insert_text = 5;      // text to insert (if different from label)
+  string sort_text = 6;        // text used for sorting
+}
+
+// GetCompletions returns context-aware code completions at a position.
+message GetCompletionsRequest {
+  string file = 1;     // relative path
+  int32 line = 2;      // 1-based
+  int32 column = 3;    // 1-based
+}
+
+message GetCompletionsResponse {
+  repeated CompletionItem items = 1;
+  bool is_incomplete = 2;  // if true, further typing may refine results
+}
+
+// --- ListDependencies ---
+
+// Dependency represents a package/module dependency.
+message Dependency {
+  string name = 1;       // e.g. "github.com/gin-gonic/gin", "requests"
+  string version = 2;    // e.g. "v1.9.1", "2.31.0"
+  bool direct = 3;       // true if directly imported (vs transitive)
+}
+
+message ListDependenciesRequest {}
+
+message ListDependenciesResponse {
+  repeated Dependency dependencies = 1;
+  string error = 2;
+}
+
+// --- AddDependency ---
+
+// AddDependency adds a package/module via the language package manager.
+message AddDependencyRequest {
+  string package_name = 1;   // e.g. "github.com/gin-gonic/gin"
+  string version = 2;        // optional: specific version
+}
+
+message AddDependencyResponse {
+  bool success = 1;
+  string error = 2;
+  string installed_version = 3;
+}
+
+// --- RemoveDependency ---
+
+// RemoveDependency removes a package/module via the language package manager.
+message RemoveDependencyRequest {
+  string package_name = 1;
+}
+
+message RemoveDependencyResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// --- GetProjectInfo ---
+
+// PackageInfo describes a single package/module within the project.
+message PackageInfo {
+  string name = 1;           // e.g. "github.com/codefly-dev/mind/pkg/run"
+  string relative_path = 2;  // e.g. "pkg/run"
+  repeated string files = 3; // Go files in the package
+  repeated string imports = 4; // direct imports
+  string doc = 5;            // package doc comment
+}
+
+// GetProjectInfo returns rich, language-specific project metadata.
+message GetProjectInfoRequest {}
+
+message GetProjectInfoResponse {
+  string module = 1;                    // e.g. "github.com/codefly-dev/mind"
+  string language = 2;                  // e.g. "go"
+  string language_version = 3;          // e.g. "1.25"
+  repeated PackageInfo packages = 4;    // package structure
+  repeated Dependency dependencies = 5; // reuse existing Dependency message
+  map<string, string> file_hashes = 6;  // path -> SHA-256 for change detection
+  string error = 7;
+}
+
+// --- Git Operations ---
+
+// GitLogRequest returns recent commit history.
+message GitLogRequest {
+  int32 max_count = 1;         // 0 = default (50)
+  string since = 2;            // optional: ISO date or relative (e.g. "2 weeks ago")
+  string path = 3;             // optional: restrict to commits touching this path
+  string ref = 4;              // optional: branch/tag/ref (default: HEAD)
+}
+
+message GitCommit {
+  string hash = 1;             // full SHA
+  string short_hash = 2;       // abbreviated SHA
+  string author = 3;
+  string date = 4;             // ISO 8601
+  string message = 5;          // first line of commit message
+  int32 files_changed = 6;
+}
+
+message GitLogResponse {
+  repeated GitCommit commits = 1;
+  string error = 2;
+}
+
+// GitDiffRequest returns a unified diff between two refs or the working tree.
+message GitDiffRequest {
+  string base_ref = 1;         // e.g. "HEAD~3", a commit SHA, or empty for working tree
+  string head_ref = 2;         // e.g. "HEAD" or empty for working tree
+  string path = 3;             // optional: restrict to a specific file or directory
+  bool stat_only = 4;          // if true, return only file stats (no diff text)
+  int32 context_lines = 5;     // lines of context around changes (default: 3)
+}
+
+message GitDiffFile {
+  string path = 1;
+  int32 additions = 2;
+  int32 deletions = 3;
+  string status = 4;           // "added", "modified", "deleted", "renamed"
+}
+
+message GitDiffResponse {
+  string diff = 1;             // unified diff text (empty if stat_only)
+  repeated GitDiffFile files = 2;
+  string error = 3;
+}
+
+// GitShowRequest returns file content at a specific git ref.
+message GitShowRequest {
+  string ref = 1;              // commit hash, branch, tag (e.g. "HEAD~5", "abc123")
+  string path = 2;             // relative path within the service
+}
+
+message GitShowResponse {
+  string content = 1;
+  bool exists = 2;             // false if the file didn't exist at that ref
+  string error = 3;
+}
+
+// GitBlameRequest returns per-line blame information for a file.
+message GitBlameRequest {
+  string path = 1;             // relative path within the service
+  int32 start_line = 2;        // optional: 1-based start line (0 = from beginning)
+  int32 end_line = 3;          // optional: 1-based end line (0 = to end)
+}
+
+message GitBlameLine {
+  string hash = 1;             // commit SHA
+  string author = 2;
+  string date = 3;             // ISO 8601
+  int32 line = 4;              // 1-based line number
+  string content = 5;          // the line content
+}
+
+message GitBlameResponse {
+  repeated GitBlameLine lines = 1;
+  string error = 2;
+}
+
+// --- GetCallGraph ---
+
+// CallEdge represents a function call from one symbol to another.
+message CallEdge {
+  string caller_id = 1;       // qualified name of the calling function
+  string callee_id = 2;       // qualified name of the called function
+  string call_type = 3;       // "static", "interface", "closure"
+  Location call_site = 4;     // where the call happens in source
+}
+
+// ImplementsEdge records that a concrete type implements an interface.
+message ImplementsEdge {
+  string type_id = 1;         // qualified name of the concrete type
+  string interface_id = 2;    // qualified name of the interface
+}
+
+// GetCallGraph computes the entire call graph and interface implementations
+// for the project using whole-program analysis (VTA for Go).
+message GetCallGraphRequest {
+  string algorithm = 1;       // "vta" (default), "cha", "rta"
+}
+
+message GetCallGraphResponse {
+  repeated CallEdge calls = 1;
+  repeated ImplementsEdge implements = 2;
+  int32 functions_analyzed = 3;
+  string algorithm_used = 4;
+  string error = 5;
+}
+
+// --- Unified Request/Response ---
+
+// CodeRequest wraps all code operations into a single dispatch envelope.
+// Plugins implement one Execute RPC; core provides default handlers for
+// filesystem, search, and project-info operations.
+message CodeRequest {
+  oneof operation {
+    ReadFileRequest read_file = 1;
+    WriteFileRequest write_file = 2;
+    ListFilesRequest list_files = 3;
+    DeleteFileRequest delete_file = 4;
+    MoveFileRequest move_file = 5;
+    CreateFileRequest create_file = 6;
+    ListSymbolsRequest list_symbols = 7;
+    GetDiagnosticsRequest get_diagnostics = 8;
+    GoToDefinitionRequest go_to_definition = 9;
+    FindReferencesRequest find_references = 10;
+    RenameSymbolRequest rename_symbol = 11;
+    GetHoverInfoRequest get_hover_info = 12;
+    FixRequest fix = 13;
+    ApplyEditRequest apply_edit = 14;
+    SearchRequest search = 15;
+    ListDependenciesRequest list_dependencies = 16;
+    AddDependencyRequest add_dependency = 17;
+    RemoveDependencyRequest remove_dependency = 18;
+    GetProjectInfoRequest get_project_info = 19;
+    GetCompletionsRequest get_completions = 20;
+    GitLogRequest git_log = 21;
+    GitDiffRequest git_diff = 22;
+    GitShowRequest git_show = 23;
+    GitBlameRequest git_blame = 24;
+    GetCallGraphRequest get_call_graph = 25;
+  }
+}
+
+// CodeResponse wraps all code operation results.
+message CodeResponse {
+  oneof result {
+    ReadFileResponse read_file = 1;
+    WriteFileResponse write_file = 2;
+    ListFilesResponse list_files = 3;
+    DeleteFileResponse delete_file = 4;
+    MoveFileResponse move_file = 5;
+    CreateFileResponse create_file = 6;
+    ListSymbolsResponse list_symbols = 7;
+    GetDiagnosticsResponse get_diagnostics = 8;
+    GoToDefinitionResponse go_to_definition = 9;
+    FindReferencesResponse find_references = 10;
+    RenameSymbolResponse rename_symbol = 11;
+    GetHoverInfoResponse get_hover_info = 12;
+    FixResponse fix = 13;
+    ApplyEditResponse apply_edit = 14;
+    SearchResponse search = 15;
+    ListDependenciesResponse list_dependencies = 16;
+    AddDependencyResponse add_dependency = 17;
+    RemoveDependencyResponse remove_dependency = 18;
+    GetProjectInfoResponse get_project_info = 19;
+    GetCompletionsResponse get_completions = 20;
+    GitLogResponse git_log = 21;
+    GitDiffResponse git_diff = 22;
+    GitShowResponse git_show = 23;
+    GitBlameResponse git_blame = 24;
+    GetCallGraphResponse get_call_graph = 25;
+  }
+}
+
+// --- Service definition ---
+
+service Code {
+  // Execute dispatches any code operation via a single RPC.
+  // The DefaultCodeServer in core handles filesystem, search, and project-info
+  // operations automatically; plugins override only language-specific handlers
+  // (LSP, Fix, dependency management).
+  rpc Execute(CodeRequest) returns (CodeResponse) {}
+
+  // --- Deprecated individual RPCs (kept for migration) ---
+
+  rpc ReadFile(ReadFileRequest) returns (ReadFileResponse) {}
+  rpc WriteFile(WriteFileRequest) returns (WriteFileResponse) {}
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse) {}
+  rpc MoveFile(MoveFileRequest) returns (MoveFileResponse) {}
+  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse) {}
+  rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse) {}
+  rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse) {}
+  rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse) {}
+  rpc FindReferences(FindReferencesRequest) returns (FindReferencesResponse) {}
+  rpc RenameSymbol(RenameSymbolRequest) returns (RenameSymbolResponse) {}
+  rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse) {}
+  rpc Fix(FixRequest) returns (FixResponse) {}
+  rpc ApplyEdit(ApplyEditRequest) returns (ApplyEditResponse) {}
+  rpc Search(SearchRequest) returns (SearchResponse) {}
+  rpc ListDependencies(ListDependenciesRequest) returns (ListDependenciesResponse) {}
+  rpc AddDependency(AddDependencyRequest) returns (AddDependencyResponse) {}
+  rpc RemoveDependency(RemoveDependencyRequest) returns (RemoveDependencyResponse) {}
+  rpc GetProjectInfo(GetProjectInfoRequest) returns (GetProjectInfoResponse) {}
+  rpc GetCallGraph(GetCallGraphRequest) returns (GetCallGraphResponse) {}
+}

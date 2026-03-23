@@ -97,8 +97,8 @@ message InitRequest {
   // Configurations exposed by the dependencies
   repeated codefly.base.v0.Configuration dependencies_configurations = 5;
 
-  // Project configurations
-  repeated codefly.base.v0.Configuration project_configurations = 6;
+  // Workspace configurations
+  repeated codefly.base.v0.Configuration workspace_configurations = 6;
 
 }
 
@@ -149,6 +149,28 @@ message StartResponse {
 }
 
 /*
+Build (dev compile check)
+*/
+
+message BuildStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message BuildRequest {
+}
+
+message BuildResponse {
+  BuildStatus status = 1;
+  string output = 2;
+}
+
+/*
 Test
 */
 
@@ -167,6 +189,35 @@ message TestRequest {
 
 message TestResponse {
   TestStatus status = 1;
+  string output = 2;
+  int32 tests_run = 3;
+  int32 tests_passed = 4;
+  int32 tests_failed = 5;
+  int32 tests_skipped = 6;
+  float coverage_pct = 7;
+  repeated string failures = 8;
+}
+
+/*
+Lint
+*/
+
+message LintStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message LintRequest {
+}
+
+message LintResponse {
+  LintStatus status = 1;
+  string output = 2;
 }
 
 /*
@@ -247,6 +298,8 @@ message InformationResponse {
   StopStatus stop_status = 5;
   DestroyStatus Destroy_status = 6;
   TestStatus test_status = 7;
+  BuildStatus build_status = 8;
+  LintStatus lint_status = 9;
 
 }
 
@@ -279,12 +332,19 @@ service Runtime {
   // Destroy the underlying service
   rpc Destroy (DestroyRequest) returns (DestroyResponse) {}
 
+  // Dev compile check
+  rpc Build (BuildRequest) returns (BuildResponse) {}
+
   // Test the service
   rpc Test (TestRequest) returns (TestResponse) {}
+
+  // Lint the service
+  rpc Lint (LintRequest) returns (LintResponse) {}
 
   // Information about the state of the service
   rpc Information (InformationRequest) returns (InformationResponse) {}
 
-  // Communication helper
-  rpc Communicate(codefly.services.agent.v0.Engage) returns (codefly.services.agent.v0.InformationRequest) {}
+  // Bidirectional streaming for interactive Q&A.
+  // Plugin streams Questions, CLI streams Answers.
+  rpc Communicate(stream codefly.services.agent.v0.Answer) returns (stream codefly.services.agent.v0.Question) {}
 }

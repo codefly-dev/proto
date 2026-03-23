@@ -46,6 +46,7 @@ message Runtime {
     RUBY = 5;
     RUBY_GEM = 6;
     RUBY_BUNDLE = 7;
+    NIX = 8;
   }
   Type type = 1;
   string version = 2;
@@ -62,6 +63,14 @@ message ConfigurationValueDetail {
   repeated ConfigurationValueInformation fields = 3;
 }
 
+message AgentTechnique {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string tags = 4;
+  string prompt = 5;
+}
+
 message AgentInformation {
   repeated Runtime runtime_requirements = 1;
   repeated Capability capabilities = 2;
@@ -69,6 +78,7 @@ message AgentInformation {
   repeated Language languages = 4;
   string read_me = 5;
   repeated ConfigurationValueDetail configuration_details = 6;
+  repeated AgentTechnique techniques = 7;
 }
 
 message AgentInformationRequest {
@@ -76,6 +86,44 @@ message AgentInformationRequest {
 }
 
 
+// --- Plugin Commands ---
+
+// CommandDefinition describes a command that a plugin agent provides.
+// Commands are registered at startup and routed through the Gateway.
+message CommandDefinition {
+  string name = 1;             // e.g. "reset_db", "deploy", "migrate"
+  string description = 2;     // "Reset the database to a clean state"
+  string usage = 3;           // "! reset_db [--seed]"
+  repeated string aliases = 4; // ["reset-db", "db-reset"]
+  repeated string tags = 5;   // ["database", "destructive"]
+  string plugin = 6;          // which plugin provides this command
+  bool destructive = 7;       // if true, requires confirmation before execution
+  bool needs_gateway = 8;     // if true, requires a gateway connection
+}
+
+message ListCommandsRequest {}
+
+message ListCommandsResponse {
+  repeated CommandDefinition commands = 1;
+}
+
+message RunPluginCommandRequest {
+  string command = 1;
+  repeated string args = 2;
+}
+
+message RunPluginCommandResponse {
+  bool success = 1;
+  string output = 2;
+  string error = 3;
+}
+
 service Agent {
   rpc GetAgentInformation(AgentInformationRequest) returns (AgentInformation) {}
+
+  // ListCommands returns the commands this plugin agent provides.
+  rpc ListCommands(ListCommandsRequest) returns (ListCommandsResponse) {}
+
+  // RunPluginCommand executes a plugin-provided command.
+  rpc RunPluginCommand(RunPluginCommandRequest) returns (RunPluginCommandResponse) {}
 }

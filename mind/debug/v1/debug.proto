@@ -1,0 +1,442 @@
+syntax = "proto3";
+package mind.debug.v1;
+
+option go_package = "github.com/codefly-dev/core/generated/go/mind/debug/v1;debugv1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// DebugService exposes Mind's internal state for the debug web UI.
+// All RPCs map directly to display view types in pkg/display.
+service DebugService {
+
+  // Dashboard returns an overview KPI snapshot.
+  rpc GetDashboard(GetDashboardRequest) returns (GetDashboardResponse) {
+    option (google.api.http) = { get: "/v1/debug/dashboard" };
+  }
+
+  // Context returns the 3-layer prompt state (System / State / Turn).
+  rpc GetContext(GetContextRequest) returns (GetContextResponse) {
+    option (google.api.http) = { get: "/v1/debug/context" };
+  }
+
+  // Memory returns the current working memory state.
+  rpc GetMemory(GetMemoryRequest) returns (GetMemoryResponse) {
+    option (google.api.http) = { get: "/v1/debug/memory" };
+  }
+
+  // Session returns session timeline and events.
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse) {
+    option (google.api.http) = { get: "/v1/debug/session" };
+  }
+
+  // ObjectiveGraph returns the objective DAG.
+  rpc GetObjectiveGraph(GetObjectiveGraphRequest) returns (GetObjectiveGraphResponse) {
+    option (google.api.http) = { get: "/v1/debug/objectives" };
+  }
+
+  // Trace returns the agent execution trace tree.
+  rpc GetTrace(GetTraceRequest) returns (GetTraceResponse) {
+    option (google.api.http) = { get: "/v1/debug/trace" };
+  }
+
+  // Metrics returns token and cost metrics.
+  rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse) {
+    option (google.api.http) = { get: "/v1/debug/metrics" };
+  }
+
+  // CostBreakdown returns hierarchical cost attribution.
+  rpc GetCostBreakdown(GetCostBreakdownRequest) returns (GetCostBreakdownResponse) {
+    option (google.api.http) = { get: "/v1/debug/cost" };
+  }
+
+  // SymbolMap returns the code symbol graph.
+  rpc GetSymbolMap(GetSymbolMapRequest) returns (GetSymbolMapResponse) {
+    option (google.api.http) = { get: "/v1/debug/symbols" };
+  }
+
+  // FileChanges returns file operations and diffs from the current run.
+  rpc GetFileChanges(GetFileChangesRequest) returns (GetFileChangesResponse) {
+    option (google.api.http) = { get: "/v1/debug/files" };
+  }
+
+  // LastSummary returns the post-run summary.
+  rpc GetLastSummary(GetLastSummaryRequest) returns (GetLastSummaryResponse) {
+    option (google.api.http) = { get: "/v1/debug/summary" };
+  }
+
+  // Rules returns loaded rules with scope and match info.
+  rpc GetRules(GetRulesRequest) returns (GetRulesResponse) {
+    option (google.api.http) = { get: "/v1/debug/rules" };
+  }
+
+  // LLMCalls returns the full call log.
+  rpc GetLLMCalls(GetLLMCallsRequest) returns (GetLLMCallsResponse) {
+    option (google.api.http) = { get: "/v1/debug/llm-calls" };
+  }
+
+  // MiddlewareState returns the middleware pipeline status.
+  rpc GetMiddlewareState(GetMiddlewareStateRequest) returns (GetMiddlewareStateResponse) {
+    option (google.api.http) = { get: "/v1/debug/middleware" };
+  }
+
+  // StreamEvents pushes real-time events to the client.
+  rpc StreamEvents(StreamEventsRequest) returns (stream DebugEvent) {
+    option (google.api.http) = { get: "/v1/debug/events" };
+  }
+}
+
+// ─── Dashboard ─────────────────────────────────────────────────
+
+message GetDashboardRequest {}
+
+message GetDashboardResponse {
+  string active_objective = 1;
+  int32 iteration = 2;
+  string phase = 3;
+  double cost_usd = 4;
+  int32 tokens_used = 5;
+  int32 context_window = 6;
+  double budget_remaining = 7;
+  google.protobuf.Duration uptime = 8;
+  int32 checks_passed = 9;
+  int32 checks_total = 10;
+  int32 llm_calls = 11;
+  int32 input_tokens = 12;
+  int32 output_tokens = 13;
+  int32 cached_tokens = 14;
+  bool achieved = 15;
+}
+
+// ─── Context ───────────────────────────────────────────────────
+
+message GetContextRequest {}
+
+message GetContextResponse {
+  string project_name = 1;
+  string service_name = 2;
+  bool has_conventions = 3;
+  bool has_rules = 4;
+  bool has_symbol_map = 5;
+  bool has_memory = 6;
+  bool has_session = 7;
+  string system_preview = 8;
+  string state_preview = 9;
+  string turn_preview = 10;
+  MetricsSummary metrics = 11;
+  repeated ConventionEntry conventions = 12;
+}
+
+message MetricsSummary {
+  int32 system_tokens = 1;
+  int32 state_tokens = 2;
+  int32 turn_tokens = 3;
+  int32 total_tokens = 4;
+  int32 saved_tokens = 5;
+  double cacheable_ratio = 6;
+}
+
+message ConventionEntry {
+  string category = 1;
+  string package = 2;
+  string pattern = 3;
+  string usage = 4;
+}
+
+// ─── Memory ────────────────────────────────────────────────────
+
+message GetMemoryRequest {}
+
+message GetMemoryResponse {
+  string objective = 1;
+  string approach = 2;
+  map<string, string> files_modified = 3;
+  map<string, string> files_read = 4;
+  repeated SymbolEntry symbols = 5;
+  repeated string hypotheses = 6;
+  repeated string blockers = 7;
+  repeated string next_steps = 8;
+  repeated IterationEntry iterations = 9;
+  string thread_summary = 10;
+}
+
+message SymbolEntry {
+  string name = 1;
+  string file = 2;
+  string relevance = 3;
+}
+
+message IterationEntry {
+  int32 number = 1;
+  string outcome = 2;
+  string insight = 3;
+  repeated string files = 4;
+}
+
+// ─── Session ───────────────────────────────────────────────────
+
+message GetSessionRequest {}
+
+message GetSessionResponse {
+  string id = 1;
+  string objective = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Duration duration = 4;
+  int32 iteration = 5;
+  bool achieved = 6;
+  repeated EventEntry events = 7;
+}
+
+message EventEntry {
+  google.protobuf.Timestamp timestamp = 1;
+  string kind = 2;
+  string agent = 3;
+  string message = 4;
+}
+
+// ─── Objective Graph ───────────────────────────────────────────
+
+message GetObjectiveGraphRequest {}
+
+message GetObjectiveGraphResponse {
+  repeated ObjectiveNode nodes = 1;
+  repeated ObjectiveEdge edges = 2;
+}
+
+message ObjectiveNode {
+  string id = 1;
+  string description = 2;
+  string status = 3;
+  repeated CheckEntry checks = 4;
+  repeated ChangeEntry changes = 5;
+  repeated ObjectiveNode children = 6;
+  double wall_clock_s = 7;
+  double work_time_s = 8;
+  double cost_usd = 9;
+}
+
+message ObjectiveEdge {
+  string from = 1;
+  string to = 2;
+  string kind = 3;
+}
+
+message CheckEntry {
+  string name = 1;
+  string type = 2;
+  bool passed = 3;
+  bool has_result = 4;
+  string error = 5;
+}
+
+message ChangeEntry {
+  string file = 1;
+  string action = 2;
+  string what = 3;
+}
+
+// ─── Trace ─────────────────────────────────────────────────────
+
+message GetTraceRequest {}
+
+message GetTraceResponse {
+  TraceNode root = 1;
+}
+
+message TraceNode {
+  string agent = 1;
+  google.protobuf.Duration duration = 2;
+  repeated TraceEvent events = 3;
+  repeated TraceNode children = 4;
+  TraceStats stats = 5;
+}
+
+message TraceEvent {
+  string kind = 1;
+  string agent = 2;
+  string message = 3;
+  map<string, string> data = 4;
+}
+
+message TraceStats {
+  int32 llm_calls = 1;
+  int32 tool_calls = 2;
+  int32 errors = 3;
+}
+
+// ─── Metrics ───────────────────────────────────────────────────
+
+message GetMetricsRequest {}
+
+message GetMetricsResponse {
+  int32 llm_calls = 1;
+  int32 input_tokens = 2;
+  int32 output_tokens = 3;
+  int32 cached_tokens = 4;
+  double cost_usd = 5;
+  google.protobuf.Duration duration = 6;
+  int32 iterations = 7;
+  MetricsSummary context = 8;
+}
+
+// ─── Cost Breakdown ────────────────────────────────────────────
+
+message GetCostBreakdownRequest {}
+
+message GetCostBreakdownResponse {
+  string title = 1;
+  CostEntry total = 2;
+  repeated CostEntry entries = 3;
+}
+
+message CostEntry {
+  string name = 1;
+  int32 calls = 2;
+  int32 input_tokens = 3;
+  int32 output_tokens = 4;
+  int32 cached_tokens = 5;
+  double cost_usd = 6;
+}
+
+// ─── Symbol Map ────────────────────────────────────────────────
+
+message GetSymbolMapRequest {}
+
+message GetSymbolMapResponse {
+  int32 total_symbols = 1;
+  int32 total_files = 2;
+  bool overlay_active = 3;
+  repeated FileSymbols files = 4;
+}
+
+message FileSymbols {
+  string path = 1;
+  repeated SymbolNode symbols = 2;
+}
+
+message SymbolNode {
+  string name = 1;
+  string kind = 2;
+  string signature = 3;
+  bool overlay = 4;
+}
+
+// ─── File Changes ──────────────────────────────────────────────
+
+message GetFileChangesRequest {}
+
+message GetFileChangesResponse {
+  repeated FileChange files = 1;
+}
+
+message FileChange {
+  string path = 1;
+  string op = 2;
+  string reason = 3;
+  string diff = 4;
+}
+
+// ─── Last Summary ──────────────────────────────────────────────
+
+message GetLastSummaryRequest {}
+
+message GetLastSummaryResponse {
+  bool achieved = 1;
+  int32 iterations = 2;
+  google.protobuf.Duration duration = 3;
+  double cost_usd = 4;
+  int32 llm_calls = 5;
+  int32 input_tokens = 6;
+  int32 output_tokens = 7;
+  int32 cached_tokens = 8;
+  repeated FileChange files = 9;
+  repeated CheckResult checks = 10;
+  string trace_compact = 11;
+}
+
+message CheckResult {
+  string name = 1;
+  bool passed = 2;
+  string error = 3;
+}
+
+// ─── Rules ─────────────────────────────────────────────────────
+
+message GetRulesRequest {}
+
+message GetRulesResponse {
+  repeated RuleEntry rules = 1;
+}
+
+message RuleEntry {
+  string id = 1;
+  RuleScope scope = 2;
+  string text = 3;
+  bool matched_current = 4;
+}
+
+message RuleScope {
+  repeated string agents = 1;
+  repeated string objectives = 2;
+  string code = 3;
+}
+
+// ─── LLM Calls ────────────────────────────────────────────────
+
+message GetLLMCallsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message GetLLMCallsResponse {
+  repeated LLMCallEntry calls = 1;
+  int32 total = 2;
+}
+
+message LLMCallEntry {
+  google.protobuf.Timestamp timestamp = 1;
+  string model = 2;
+  string agent = 3;
+  string prompt_hash = 4;
+  string prompt_preview = 5;
+  string response_preview = 6;
+  int32 input_tokens = 7;
+  int32 output_tokens = 8;
+  int32 cached_tokens = 9;
+  double cost_usd = 10;
+  int64 duration_ms = 11;
+  bool cache_hit = 12;
+  int32 tool_call_count = 13;
+  string full_prompt = 14;
+  string full_response = 15;
+}
+
+// ─── Middleware ─────────────────────────────────────────────────
+
+message GetMiddlewareStateRequest {}
+
+message GetMiddlewareStateResponse {
+  repeated MiddlewareEntry chain = 1;
+}
+
+message MiddlewareEntry {
+  string name = 1;
+  string status = 2;
+  map<string, string> details = 3;
+}
+
+// ─── Streaming Events ──────────────────────────────────────────
+
+message StreamEventsRequest {
+  repeated string kinds = 1;
+  string agent_filter = 2;
+}
+
+message DebugEvent {
+  google.protobuf.Timestamp timestamp = 1;
+  string kind = 2;
+  string agent = 3;
+  string message = 4;
+  map<string, string> data = 5;
+}

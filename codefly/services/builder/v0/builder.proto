@@ -253,6 +253,7 @@ service Builder {
   rpc Build (BuildRequest) returns (BuildResponse) {}
   rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
 
-  // Communication helper
-  rpc Communicate(codefly.services.agent.v0.Engage) returns (codefly.services.agent.v0.InformationRequest) {}
+  // Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).
+  // Plugin streams Questions, CLI streams Answers.
+  rpc Communicate(stream codefly.services.agent.v0.Answer) returns (stream codefly.services.agent.v0.Question) {}
 }

@@ -1,0 +1,956 @@
+syntax = "proto3";
+package mind.v1;
+
+option go_package = "github.com/codefly-dev/core/generated/go/mind/v1;mindv1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+
+// MindService is the complete API for Mind — the AI coding agent.
+//
+// It supports three usage modes through a single interface:
+//   1. In-process: CLI embeds the server, zero latency (current behavior)
+//   2. Local:      CLI connects to localhost Mind server
+//   3. Remote:     Any client connects to a remote Mind-as-a-service
+//
+// Organized into five logical groups:
+//   - Sessions:    Lifecycle management
+//   - Chat:        Interactive conversation with LLM
+//   - Execution:   Objective planning and execution with live progress
+//   - Code:        File and symbol operations (proxied through Gateway)
+//   - Observation: Read-only introspection of internal state (superset of debug.proto)
+service MindService {
+
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║  SESSIONS                                                    ║
+  // ╚══════════════════════════════════════════════════════════════╝
+
+  // CreateSession opens a new session scoped to a working directory.
+  // All subsequent RPCs reference this session_id.
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse) {
+    option (google.api.http) = { post: "/v1/sessions" body: "*" };
+  }
+
+  // ListSessions returns recent sessions.
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse) {
+    option (google.api.http) = { get: "/v1/sessions" };
+  }
+
+  // GetSession returns details of a specific session.
+  rpc GetSessionDetail(GetSessionDetailRequest) returns (GetSessionDetailResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}" };
+  }
+
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║  CHAT                                                        ║
+  // ╚══════════════════════════════════════════════════════════════╝
+
+  // SendMessage sends a user message and streams back the response.
+  // The stream includes token chunks (for live typing), tool calls,
+  // and a final summary event. Supports all input modes:
+  //   - plain text (LLM chat)
+  //   - /command   (slash command dispatch)
+  //   - !command   (bang command dispatch)
+  //   - ?question  (read-only ask mode)
+  //   - ~plan      (plan-only mode)
+  rpc SendMessage(SendMessageRequest) returns (stream ChatEvent) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/messages" body: "*" };
+  }
+
+  // CancelOperation cancels the currently running operation in a session.
+  rpc CancelOperation(CancelOperationRequest) returns (CancelOperationResponse) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/cancel" };
+  }
+
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║  EXECUTION                                                   ║
+  // ╚══════════════════════════════════════════════════════════════╝
+
+  // InitContext initializes the codebase context: connects to Gateway,
+  // discovers services, indexes files and symbols, detects conventions,
+  // builds embeddings, loads rules. Streams progress events.
+  rpc InitContext(InitContextRequest) returns (stream InitEvent) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/init" body: "*" };
+  }
+
+  // RunObjective executes a single objective (from YAML or inline spec).
+  // Streams the full execution lifecycle: iterations, LLM calls, tool
+  // calls, file ops, check results, strategy decisions.
+  rpc RunObjective(RunObjectiveRequest) returns (stream ExecutionEvent) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/run" body: "*" };
+  }
+
+  // PlanAndExecute takes a free-text request, plans it (UNDERSTAND →
+  // PLAN → DETAIL), then executes all objectives. Streams planning
+  // events followed by execution events.
+  rpc PlanAndExecute(PlanAndExecuteRequest) returns (stream ExecutionEvent) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/plan-and-execute" body: "*" };
+  }
+
+  // ApproveChanges commits overlay changes to the real filesystem.
+  // Only meaningful after a successful run with changes pending.
+  rpc ApproveChanges(ApproveChangesRequest) returns (ApproveChangesResponse) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/approve" body: "*" };
+  }
+
+  // RevertChanges discards pending overlay changes.
+  rpc RevertChanges(RevertChangesRequest) returns (RevertChangesResponse) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/revert" body: "*" };
+  }
+
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║  CODE OPERATIONS (proxied through Gateway)                   ║
+  // ╚══════════════════════════════════════════════════════════════╝
+
+  rpc ReadFile(ReadFileRequest) returns (ReadFileResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/files/{path=**}" };
+  }
+
+  rpc WriteFile(WriteFileRequest) returns (WriteFileResponse) {
+    option (google.api.http) = { put: "/v1/sessions/{session_id}/files/{path=**}" body: "*" };
+  }
+
+  rpc SearchCode(SearchCodeRequest) returns (SearchCodeResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/search" };
+  }
+
+  rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/symbols" };
+  }
+
+  rpc Build(BuildRequest) returns (BuildResponse) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/build" };
+  }
+
+  rpc Test(TestRequest) returns (TestResponse) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/test" };
+  }
+
+  rpc Lint(LintRequest) returns (LintResponse) {
+    option (google.api.http) = { post: "/v1/sessions/{session_id}/lint" };
+  }
+
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║  OBSERVATION (superset of debug.proto)                       ║
+  // ╚══════════════════════════════════════════════════════════════╝
+
+  rpc GetDashboard(GetDashboardRequest) returns (GetDashboardResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/dashboard" };
+  }
+
+  rpc GetContextState(GetContextStateRequest) returns (GetContextStateResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/context" };
+  }
+
+  rpc GetMemory(GetMemoryRequest) returns (GetMemoryResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/memory" };
+  }
+
+  rpc GetObjectiveGraph(GetObjectiveGraphRequest) returns (GetObjectiveGraphResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/objectives" };
+  }
+
+  rpc GetTrace(GetTraceRequest) returns (GetTraceResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/trace" };
+  }
+
+  rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/metrics" };
+  }
+
+  rpc GetCostBreakdown(GetCostBreakdownRequest) returns (GetCostBreakdownResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/cost" };
+  }
+
+  rpc GetSymbolMap(GetSymbolMapRequest) returns (GetSymbolMapResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/symbols" };
+  }
+
+  rpc GetFileChanges(GetFileChangesRequest) returns (GetFileChangesResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/files" };
+  }
+
+  rpc GetLastSummary(GetLastSummaryRequest) returns (GetLastSummaryResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/summary" };
+  }
+
+  rpc GetRules(GetRulesRequest) returns (GetRulesResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/rules" };
+  }
+
+  rpc GetLLMCalls(GetLLMCallsRequest) returns (GetLLMCallsResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/llm-calls" };
+  }
+
+  rpc GetMiddleware(GetMiddlewareRequest) returns (GetMiddlewareResponse) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/middleware" };
+  }
+
+  // StreamEvents pushes all real-time events: LLM calls, tool calls,
+  // file ops, check results, agent lifecycle, errors. Filterable by
+  // kind and agent. This is the single unified event bus.
+  rpc StreamEvents(StreamEventsRequest) returns (stream MindEvent) {
+    option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/events" };
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// SESSION MESSAGES
+// ═══════════════════════════════════════════════════════════════════
+
+message CreateSessionRequest {
+  string work_dir = 1;                // absolute path to project root
+  string codefly_bin = 2;             // path to codefly binary (optional)
+  string objective_path = 3;          // default objective.yaml (optional)
+  map<string, string> env = 4;        // extra env vars (LLM keys, etc.)
+}
+
+message CreateSessionResponse {
+  string session_id = 1;
+  string project_name = 2;            // auto-detected from mind.yaml
+  string plugin = 3;                  // detected plugin (e.g. "go-generic")
+}
+
+message ListSessionsRequest {
+  int32 limit = 1;                    // max sessions to return (default 20)
+}
+
+message ListSessionsResponse {
+  repeated SessionSummary sessions = 1;
+}
+
+message SessionSummary {
+  string id = 1;
+  string project = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Duration duration = 4;
+  double cost_usd = 5;
+  int32 llm_calls = 6;
+  bool achieved = 7;
+  string last_objective = 8;
+}
+
+message GetSessionDetailRequest {
+  string session_id = 1;
+}
+
+message GetSessionDetailResponse {
+  SessionSummary session = 1;
+  repeated EventEntry events = 2;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// CHAT MESSAGES
+// ═══════════════════════════════════════════════════════════════════
+
+message SendMessageRequest {
+  string session_id = 1;
+  string text = 2;                    // user input (plain, /slash, !bang, ?ask, ~plan)
+}
+
+// ChatEvent is a streaming response chunk from SendMessage.
+// Exactly one of the oneof fields is set per event.
+message ChatEvent {
+  oneof event {
+    ChatTokenChunk token = 1;         // incremental token for live typing
+    ChatToolCall tool_call = 2;       // tool invocation (read_file, search, etc.)
+    ChatToolResult tool_result = 3;   // tool result
+    ChatCommandOutput command = 4;    // slash/bang command output
+    ChatComplete complete = 5;        // final response with full text
+    ChatError error = 6;              // error
+  }
+}
+
+message ChatTokenChunk {
+  string text = 1;                    // token text fragment
+}
+
+message ChatToolCall {
+  string tool = 1;                    // tool name (read_file, search, etc.)
+  map<string, string> args = 2;       // tool arguments
+}
+
+message ChatToolResult {
+  string tool = 1;
+  string output = 2;
+  bool is_error = 3;
+}
+
+message ChatCommandOutput {
+  string command = 1;                 // command name
+  string output = 2;                  // formatted output
+}
+
+message ChatComplete {
+  string text = 1;                    // full response text
+  ContextMetrics metrics = 2;         // token usage for this turn
+}
+
+message ChatError {
+  string message = 1;
+  bool cancelled = 2;                 // true if cancelled by user
+}
+
+message CancelOperationRequest {
+  string session_id = 1;
+}
+
+message CancelOperationResponse {}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// EXECUTION MESSAGES
+// ═══════════════════════════════════════════════════════════════════
+
+message InitContextRequest {
+  string session_id = 1;
+}
+
+message InitEvent {
+  string phase = 1;                   // "gateway", "services", "symbols", "conventions", "embeddings", "rules"
+  string message = 2;
+  double progress = 3;                // 0.0 - 1.0
+  bool done = 4;
+}
+
+message RunObjectiveRequest {
+  string session_id = 1;
+  oneof source {
+    string objective_path = 2;        // path to objective.yaml
+    ObjectiveSpec inline = 3;         // inline objective spec
+  }
+  int32 max_iterations = 4;           // override default (0 = use default)
+  bool dry_run = 5;                   // show changes without applying
+}
+
+message PlanAndExecuteRequest {
+  string session_id = 1;
+  string request = 2;                 // free-text feature request
+  int32 max_iterations = 3;
+  bool dry_run = 4;
+}
+
+// ObjectiveSpec is the proto representation of objective.yaml.
+message ObjectiveSpec {
+  string id = 1;
+  string do = 2;                      // what to accomplish
+  string service = 3;
+  ObjectiveScope scope = 4;
+  repeated CheckSpec checks = 5;
+  ObjectivePolicy policy = 6;
+}
+
+message ObjectiveScope {
+  repeated string write = 1;          // files the agent may modify
+  repeated string read = 2;           // files the agent should read for context
+}
+
+message CheckSpec {
+  string type = 1;                    // "build", "test", "lint", "command", "http"
+  string name = 2;
+  string run = 3;                     // for "command" type
+  string method = 4;                  // for "http" type
+  string path = 5;
+  string body = 6;
+  string expect = 7;
+}
+
+message ObjectivePolicy {
+  int32 max_iterations = 1;
+  double max_cost_usd = 2;
+  bool allow_decompose = 3;
+}
+
+// ExecutionEvent is the unified stream for objective execution.
+// This maps to agent.ProgressEvent + planning phases.
+message ExecutionEvent {
+  google.protobuf.Timestamp timestamp = 1;
+  ExecutionEventKind kind = 2;
+  string agent = 3;
+  string message = 4;
+  map<string, string> data = 5;
+
+  // Phase-specific payloads (at most one set per event).
+  PlanPhaseEvent plan = 10;
+  IterationEvent iteration = 11;
+  CheckResultEvent check = 12;
+  FileOpEvent file_op = 13;
+  StrategyEvent strategy = 14;
+  LLMEvent llm = 15;
+  ToolEvent tool = 16;
+  CompletionEvent completion = 17;
+}
+
+enum ExecutionEventKind {
+  EXECUTION_EVENT_KIND_UNSPECIFIED = 0;
+
+  // Planning phases
+  PLAN_UNDERSTAND_START = 1;
+  PLAN_UNDERSTAND_DONE = 2;
+  PLAN_PLAN_START = 3;
+  PLAN_PLAN_DONE = 4;
+  PLAN_DETAIL_START = 5;
+  PLAN_DETAIL_DONE = 6;
+  PLAN_REVIEW = 7;
+
+  // Execution lifecycle
+  OBJECTIVE_START = 10;
+  OBJECTIVE_DONE = 11;
+  ITERATION_START = 12;
+  ITERATION_DONE = 13;
+
+  // Agent lifecycle
+  AGENT_START = 20;
+  AGENT_DONE = 21;
+
+  // LLM
+  LLM_START = 30;
+  LLM_DONE = 31;
+
+  // Tools
+  TOOL_CALL = 40;
+  TOOL_RESULT = 41;
+
+  // File operations
+  FILE_OP = 50;
+
+  // Checks
+  CHECK_START = 60;
+  CHECK_RESULT = 61;
+
+  // Strategy
+  STRATEGY_DECISION = 70;
+
+  // Terminal
+  ERROR = 80;
+  INFO = 81;
+  COMPLETE = 90;
+}
+
+message PlanPhaseEvent {
+  string phase = 1;                   // "understand", "plan", "detail", "review"
+  ObjectiveGraphSnapshot graph = 2;   // current objective graph state
+}
+
+message ObjectiveGraphSnapshot {
+  repeated ObjectiveNode nodes = 1;
+  repeated ObjectiveEdge edges = 2;
+}
+
+message IterationEvent {
+  int32 number = 1;
+  string objective_id = 2;
+  string objective_do = 3;
+  string outcome = 4;                 // "achieved", "failed", "decomposed"
+  int32 checks_passed = 5;
+  int32 checks_total = 6;
+}
+
+message CheckResultEvent {
+  string name = 1;
+  string type = 2;
+  bool passed = 3;
+  string error = 4;
+  string output = 5;
+}
+
+message FileOpEvent {
+  string op = 1;                      // "create", "edit", "delete"
+  string path = 2;
+  string diff = 3;                    // unified diff (optional, may be large)
+}
+
+message StrategyEvent {
+  string action = 1;                  // "pivot", "widen", "decompose", "escalate"
+  string reasoning = 2;
+}
+
+message LLMEvent {
+  string model = 1;
+  int32 input_tokens = 2;
+  int32 output_tokens = 3;
+  int32 cached_tokens = 4;
+  double cost_usd = 5;
+  int64 duration_ms = 6;
+}
+
+message ToolEvent {
+  string tool = 1;
+  map<string, string> args = 2;
+  string output = 3;
+  bool is_error = 4;
+  bool cached = 5;
+}
+
+message CompletionEvent {
+  bool achieved = 1;
+  int32 iterations = 2;
+  double cost_usd = 3;
+  repeated FileChange files_changed = 4;
+  repeated CheckResult checks = 5;
+  bool pending_approval = 6;          // true if changes need ApproveChanges
+}
+
+message ApproveChangesRequest {
+  string session_id = 1;
+  string objective_id = 2;            // optional: approve specific objective
+}
+
+message ApproveChangesResponse {
+  repeated string files_committed = 1;
+}
+
+message RevertChangesRequest {
+  string session_id = 1;
+  string objective_id = 2;
+}
+
+message RevertChangesResponse {
+  repeated string files_reverted = 1;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// CODE OPERATION MESSAGES
+// ═══════════════════════════════════════════════════════════════════
+
+message ReadFileRequest {
+  string session_id = 1;
+  string path = 2;
+}
+
+message ReadFileResponse {
+  string path = 1;
+  string content = 2;
+  string language = 3;
+}
+
+message WriteFileRequest {
+  string session_id = 1;
+  string path = 2;
+  string content = 3;
+}
+
+message WriteFileResponse {}
+
+message SearchCodeRequest {
+  string session_id = 1;
+  string pattern = 2;
+  bool case_insensitive = 3;
+  string file_pattern = 4;            // glob filter (e.g. "*.go")
+  int32 limit = 5;
+}
+
+message SearchCodeResponse {
+  repeated SearchMatch matches = 1;
+  int32 total = 2;
+}
+
+message SearchMatch {
+  string file = 1;
+  int32 line = 2;
+  string text = 3;
+}
+
+message ListSymbolsRequest {
+  string session_id = 1;
+  string filter = 2;
+}
+
+message ListSymbolsResponse {
+  repeated SymbolInfo symbols = 1;
+}
+
+message SymbolInfo {
+  string name = 1;
+  string kind = 2;
+  string file = 3;
+  int32 line = 4;
+  string signature = 5;
+}
+
+message BuildRequest {
+  string session_id = 1;
+}
+
+message BuildResponse {
+  bool success = 1;
+  string output = 2;
+}
+
+message TestRequest {
+  string session_id = 1;
+  string pattern = 2;                 // optional: test name filter
+}
+
+message TestResponse {
+  bool success = 1;
+  string output = 2;
+  int32 passed = 3;
+  int32 failed = 4;
+}
+
+message LintRequest {
+  string session_id = 1;
+}
+
+message LintResponse {
+  bool success = 1;
+  string output = 2;
+  int32 issues = 3;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// OBSERVATION MESSAGES (superset of debug.proto)
+// ═══════════════════════════════════════════════════════════════════
+
+message ContextMetrics {
+  int32 system_tokens = 1;
+  int32 state_tokens = 2;
+  int32 turn_tokens = 3;
+  int32 total_tokens = 4;
+  int32 saved_tokens = 5;
+  double cacheable_ratio = 6;
+}
+
+// ── Dashboard ──
+
+message GetDashboardRequest { string session_id = 1; }
+
+message GetDashboardResponse {
+  string active_objective = 1;
+  int32 iteration = 2;
+  string phase = 3;
+  double cost_usd = 4;
+  int32 tokens_used = 5;
+  int32 context_window = 6;
+  double budget_remaining = 7;
+  google.protobuf.Duration uptime = 8;
+  int32 checks_passed = 9;
+  int32 checks_total = 10;
+  int32 llm_calls = 11;
+  int32 input_tokens = 12;
+  int32 output_tokens = 13;
+  int32 cached_tokens = 14;
+  bool achieved = 15;
+}
+
+// ── Context State ──
+
+message GetContextStateRequest { string session_id = 1; }
+
+message GetContextStateResponse {
+  string project_name = 1;
+  string service_name = 2;
+  bool has_conventions = 3;
+  bool has_rules = 4;
+  bool has_symbol_map = 5;
+  bool has_memory = 6;
+  bool has_session = 7;
+  string system_preview = 8;
+  string state_preview = 9;
+  string turn_preview = 10;
+  ContextMetrics metrics = 11;
+  repeated ConventionEntry conventions = 12;
+}
+
+message ConventionEntry {
+  string category = 1;
+  string package = 2;
+  string pattern = 3;
+  string usage = 4;
+}
+
+// ── Memory ──
+
+message GetMemoryRequest { string session_id = 1; }
+
+message GetMemoryResponse {
+  string objective = 1;
+  string approach = 2;
+  map<string, string> files_modified = 3;
+  map<string, string> files_read = 4;
+  repeated SymbolRef symbols = 5;
+  repeated string hypotheses = 6;
+  repeated string blockers = 7;
+  repeated string next_steps = 8;
+  repeated IterationRecord iterations = 9;
+  string thread_summary = 10;
+}
+
+message SymbolRef {
+  string name = 1;
+  string file = 2;
+  string relevance = 3;
+}
+
+message IterationRecord {
+  int32 number = 1;
+  string outcome = 2;
+  string insight = 3;
+  repeated string files = 4;
+}
+
+// ── Objective Graph ──
+
+message GetObjectiveGraphRequest { string session_id = 1; }
+
+message GetObjectiveGraphResponse {
+  repeated ObjectiveNode nodes = 1;
+  repeated ObjectiveEdge edges = 2;
+}
+
+message ObjectiveNode {
+  string id = 1;
+  string description = 2;
+  string status = 3;
+  repeated CheckEntry checks = 4;
+  repeated ChangeEntry changes = 5;
+  repeated ObjectiveNode children = 6;
+  double wall_clock_s = 7;
+  double work_time_s = 8;
+  double cost_usd = 9;
+}
+
+message ObjectiveEdge {
+  string from = 1;
+  string to = 2;
+  string kind = 3;
+}
+
+message CheckEntry {
+  string name = 1;
+  string type = 2;
+  bool passed = 3;
+  bool has_result = 4;
+  string error = 5;
+}
+
+message ChangeEntry {
+  string file = 1;
+  string action = 2;
+  string what = 3;
+}
+
+// ── Trace ──
+
+message GetTraceRequest { string session_id = 1; }
+
+message GetTraceResponse {
+  TraceNode root = 1;
+}
+
+message TraceNode {
+  string agent = 1;
+  google.protobuf.Duration duration = 2;
+  repeated TraceEvent events = 3;
+  repeated TraceNode children = 4;
+  TraceStats stats = 5;
+}
+
+message TraceEvent {
+  string kind = 1;
+  string agent = 2;
+  string message = 3;
+  map<string, string> data = 4;
+}
+
+message TraceStats {
+  int32 llm_calls = 1;
+  int32 tool_calls = 2;
+  int32 errors = 3;
+}
+
+// ── Metrics ──
+
+message GetMetricsRequest { string session_id = 1; }
+
+message GetMetricsResponse {
+  int32 llm_calls = 1;
+  int32 input_tokens = 2;
+  int32 output_tokens = 3;
+  int32 cached_tokens = 4;
+  double cost_usd = 5;
+  google.protobuf.Duration duration = 6;
+  int32 iterations = 7;
+  ContextMetrics context = 8;
+}
+
+// ── Cost Breakdown ──
+
+message GetCostBreakdownRequest { string session_id = 1; }
+
+message GetCostBreakdownResponse {
+  string title = 1;
+  CostEntry total = 2;
+  repeated CostEntry entries = 3;
+}
+
+message CostEntry {
+  string name = 1;
+  int32 calls = 2;
+  int32 input_tokens = 3;
+  int32 output_tokens = 4;
+  int32 cached_tokens = 5;
+  double cost_usd = 6;
+}
+
+// ── Symbol Map ──
+
+message GetSymbolMapRequest { string session_id = 1; }
+
+message GetSymbolMapResponse {
+  int32 total_symbols = 1;
+  int32 total_files = 2;
+  bool overlay_active = 3;
+  repeated FileSymbols files = 4;
+}
+
+message FileSymbols {
+  string path = 1;
+  repeated SymbolNode symbols = 2;
+}
+
+message SymbolNode {
+  string name = 1;
+  string kind = 2;
+  string signature = 3;
+  bool overlay = 4;
+}
+
+// ── File Changes ──
+
+message GetFileChangesRequest { string session_id = 1; }
+
+message GetFileChangesResponse {
+  repeated FileChange files = 1;
+}
+
+message FileChange {
+  string path = 1;
+  string op = 2;
+  string reason = 3;
+  string diff = 4;
+}
+
+// ── Last Summary ──
+
+message GetLastSummaryRequest { string session_id = 1; }
+
+message GetLastSummaryResponse {
+  bool achieved = 1;
+  int32 iterations = 2;
+  google.protobuf.Duration duration = 3;
+  double cost_usd = 4;
+  int32 llm_calls = 5;
+  int32 input_tokens = 6;
+  int32 output_tokens = 7;
+  int32 cached_tokens = 8;
+  repeated FileChange files = 9;
+  repeated CheckResult checks = 10;
+  string trace_compact = 11;
+}
+
+message CheckResult {
+  string name = 1;
+  bool passed = 2;
+  string error = 3;
+}
+
+// ── Rules ──
+
+message GetRulesRequest { string session_id = 1; }
+
+message GetRulesResponse {
+  repeated RuleEntry rules = 1;
+}
+
+message RuleEntry {
+  string id = 1;
+  RuleScope scope = 2;
+  string text = 3;
+  bool matched_current = 4;
+}
+
+message RuleScope {
+  repeated string agents = 1;
+  repeated string objectives = 2;
+  string code = 3;
+}
+
+// ── LLM Calls ──
+
+message GetLLMCallsRequest {
+  string session_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetLLMCallsResponse {
+  repeated LLMCallEntry calls = 1;
+  int32 total = 2;
+}
+
+message LLMCallEntry {
+  google.protobuf.Timestamp timestamp = 1;
+  string model = 2;
+  string agent = 3;
+  string prompt_hash = 4;
+  string prompt_preview = 5;
+  string response_preview = 6;
+  int32 input_tokens = 7;
+  int32 output_tokens = 8;
+  int32 cached_tokens = 9;
+  double cost_usd = 10;
+  int64 duration_ms = 11;
+  bool cache_hit = 12;
+  int32 tool_call_count = 13;
+  string full_prompt = 14;
+  string full_response = 15;
+}
+
+// ── Middleware ──
+
+message GetMiddlewareRequest { string session_id = 1; }
+
+message GetMiddlewareResponse {
+  repeated MiddlewareEntry chain = 1;
+}
+
+message MiddlewareEntry {
+  string name = 1;
+  string status = 2;
+  map<string, string> details = 3;
+}
+
+// ── Event Stream ──
+
+message StreamEventsRequest {
+  string session_id = 1;
+  repeated string kinds = 2;          // filter by event kind (empty = all)
+  string agent_filter = 3;            // filter by agent name
+}
+
+// MindEvent is the unified event type for all real-time streaming.
+// Superset of the debug.proto DebugEvent — includes execution progress.
+message MindEvent {
+  google.protobuf.Timestamp timestamp = 1;
+  string kind = 2;                    // "llm_call", "tool_call", "file_op", "check", "iteration", "strategy", "error", "info"
+  string agent = 3;
+  string message = 4;
+  map<string, string> data = 5;
+}
+
+// ── Event Entry (for session history) ──
+
+message EventEntry {
+  google.protobuf.Timestamp timestamp = 1;
+  string kind = 2;
+  string agent = 3;
+  string message = 4;
+}

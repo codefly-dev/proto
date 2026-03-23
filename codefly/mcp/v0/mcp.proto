@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package codefly.mcp.v0;
+
+option go_package = "github.com/codefly-dev/core/generated/go/codefly/mcp/v0";
+
+// MCP Tool Definition (aligned with Model Context Protocol spec)
+message Tool {
+    string name = 1;
+    string description = 2;
+    InputSchema input_schema = 3;
+}
+
+message InputSchema {
+    string type = 1;  // "object"
+    map<string, PropertySchema> properties = 2;
+    repeated string required = 3;
+}
+
+message PropertySchema {
+    string type = 1;
+    string description = 2;
+    repeated string enum_values = 3;  // For enum types
+}
+
+// MCP Resource Definition
+message Resource {
+    string uri = 1;
+    string name = 2;
+    string mime_type = 3;
+    string description = 4;
+}
+
+// Content types returned by tools and resources
+message TextContent {
+    string type = 1;  // "text"
+    string text = 2;
+}
+
+message ImageContent {
+    string type = 1;  // "image"
+    string data = 2;
+    string mime_type = 3;
+}
+
+message ResourceContent {
+    string type = 1;  // "resource"
+    Resource resource = 2;
+    string text = 3;
+    string blob = 4;
+}
+
+message Content {
+    oneof content {
+        TextContent text = 1;
+        ImageContent image = 2;
+        ResourceContent resource = 3;
+    }
+}
+
+// Tool execution
+message CallToolRequest {
+    string name = 1;
+    map<string, string> arguments = 2;
+}
+
+message CallToolResponse {
+    repeated Content content = 1;
+    bool is_error = 2;
+}
+
+// Resource operations
+message ReadResourceRequest {
+    string uri = 1;
+}
+
+message ReadResourceResponse {
+    repeated Content contents = 1;
+}
+
+message ListResourcesRequest {
+}
+
+message ListResourcesResponse {
+    repeated Resource resources = 1;
+}
+
+// Tool listing
+message ListToolsRequest {
+}
+
+message ListToolsResponse {
+    repeated Tool tools = 1;
+}
+
+// Server info
+message ServerInfo {
+    string name = 1;
+    string version = 2;
+    ServerCapabilities capabilities = 3;
+}
+
+message ServerCapabilities {
+    bool tools = 1;
+    bool resources = 2;
+    bool prompts = 3;
+}
+
+// Initialize
+message InitializeRequest {
+    string protocol_version = 1;
+    ClientInfo client_info = 2;
+}
+
+message ClientInfo {
+    string name = 1;
+    string version = 2;
+}
+
+message InitializeResponse {
+    string protocol_version = 1;
+    ServerInfo server_info = 2;
+}
+
+// MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
+service MCP {
+    rpc Initialize(InitializeRequest) returns (InitializeResponse);
+    rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+    rpc CallTool(CallToolRequest) returns (CallToolResponse);
+    rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+    rpc ReadResource(ReadResourceRequest) returns (ReadResourceResponse);
+}

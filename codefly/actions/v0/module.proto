@@ -2,6 +2,7 @@ syntax = "proto3";
 package codefly.actions.v0;
 
 import "buf/validate/validate.proto";
+import "codefly/base/v0/agent.proto";
 
 message NewModule {
     // Kind is the kind of the message.
@@ -10,4 +11,6 @@ message NewModule {
     string name = 2 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
     // description provides a brief explanation of the module.
     string description = 3;
+    // (Optional) agent that provides the module template
+    codefly.base.v0.Agent agent = 4;
 }

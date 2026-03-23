@@ -4,6 +4,22 @@ package codefly.base.v0;
 import "buf/validate/validate.proto";
 
 import "codefly/base/v0/service.proto";
+import "codefly/base/v0/agent.proto";
+
+// InterfaceEndpoint declares a single endpoint exposed by the module.
+message InterfaceEndpoint {
+  // The service that owns this endpoint
+  string service = 1;
+  // The endpoint name within the service
+  string endpoint = 2;
+  // Visibility level: "module" or "public"
+  string visibility = 3;
+}
+
+// ModuleInterface is the formal contract of what a module exposes.
+message ModuleInterface {
+  repeated InterfaceEndpoint endpoints = 1;
+}
 
 message Module {
   // The name of the module
@@ -14,6 +30,10 @@ message Module {
   repeated Service services = 4;
   // (Optional) The entry point for the module
   string service_entry = 5;
+  // (Optional) The formal interface contract
+  ModuleInterface interface = 6;
+  // (Optional) The agent that created this module (for templated modules)
+  Agent agent = 7;
 }
 
 message ManagedModule {

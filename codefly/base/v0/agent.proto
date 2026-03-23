@@ -7,6 +7,9 @@ message Agent {
   enum Kind {
     UNKNOWN = 0;
     SERVICE = 1;
+    JOB = 2;
+    APPLICATION = 3;
+    MODULE = 4;
   }
   Kind kind = 1;
   string name = 2 [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];

@@ -11,7 +11,6 @@ message Deployment {
   oneof kind {
     KubernetesDeployment kubernetes = 2;
   }
-  bool load_balancer = 3;
 }
 
 message KubernetesDeployment {

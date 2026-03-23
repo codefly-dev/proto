@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package codefly.actions.v0;
+
+option go_package = "github.com/codefly-dev/core/generated/go/codefly/actions/v0";
+
+import "codefly/base/v0/library.proto";
+
+// AddLibrary creates a new library in the workspace
+message AddLibrary {
+    string kind = 1;
+    string name = 2;
+    string description = 3;
+    repeated string languages = 4;      // Languages to support: ["go", "python"]
+    codefly.base.v0.GitConfig git = 5;  // Optional git configuration
+}
+
+// UpdateLibrary updates a library's version
+message UpdateLibrary {
+    string kind = 1;
+    string name = 2;
+    string version = 3;                 // New version to set
+    bool create_tag = 4;                // Whether to create git tag
+}
+
+// DeleteLibrary removes a library from the workspace
+message DeleteLibrary {
+    string kind = 1;
+    string name = 2;
+    bool remove_submodule = 3;          // If true, also remove git submodule
+}
+
+// AddLibraryDependency adds a library dependency to a service
+message AddLibraryDependency {
+    string kind = 1;
+    string service_name = 2;
+    string service_module = 3;
+    string library_name = 4;
+    string version_constraint = 5;      // Semver constraint
+    repeated string languages = 6;      // Which language exports to use
+}
+
+// RemoveLibraryDependency removes a library dependency from a service
+message RemoveLibraryDependency {
+    string kind = 1;
+    string service_name = 2;
+    string service_module = 3;
+    string library_name = 4;
+}
+
+// SyncLibraries synchronizes all library submodules
+message SyncLibraries {
+    string kind = 1;
+    bool update_to_latest = 2;          // If true, update to latest matching version
+}

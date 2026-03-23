@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package codefly.base.v0;
+
+option go_package = "github.com/codefly-dev/core/generated/go/codefly/base/v0";
+
+// Library represents internal shared code that can be used by services
+message Library {
+    string name = 1;
+    string description = 2;
+    string version = 3;
+    repeated LanguageExport languages = 4;
+    GitConfig git = 5;
+    repeated LibraryReference library_dependencies = 6;
+}
+
+// LanguageExport defines how a library is exported for a specific language
+message LanguageExport {
+    string name = 1;              // Language name: "go", "python", "typescript"
+    string agent = 2;             // Library agent identifier
+    string path = 3;              // Relative path to language-specific code
+    repeated string exports = 4;  // Package/module names exported
+}
+
+// GitConfig for libraries that are git repositories (or submodules)
+message GitConfig {
+    string remote = 1;            // Git remote URL (optional for local libs)
+    string branch = 2;            // Default branch
+    string commit = 3;            // Pinned commit hash (optional)
+    string tag = 4;               // Version tag (optional)
+}
+
+// LibraryReference is used for dependencies between libraries
+message LibraryReference {
+    string name = 1;
+    string version = 2;           // Semver constraint (e.g., ">=1.0.0")
+}
+
+// LibraryDependency is used when a service depends on a library
+message LibraryDependency {
+    string name = 1;
+    string version = 2;           // Semver constraint
+    repeated string languages = 3; // Which language exports are needed
+}
+
+// LibraryIdentity uniquely identifies a library
+message LibraryIdentity {
+    string name = 1;
+    string workspace = 2;
+    string version = 3;
+    string path = 4;              // Absolute path to library
+}

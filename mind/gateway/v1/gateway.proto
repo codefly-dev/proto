@@ -1,0 +1,668 @@
+syntax = "proto3";
+package mind.gateway.v1;
+
+option go_package = "github.com/codefly-dev/core/generated/go/mind/gateway/v1;gatewayv1";
+
+// Gateway is the ONLY service Mind talks to.
+// Codefly CLI implements it. Everything else is behind this wall.
+//
+// Mind sees: services, symbols, build results, check results, diagnostics,
+// definitions, references, dependencies, git state, and command output.
+// Mind never sees: agents, processes, containers, addresses.
+
+service Gateway {
+
+  // ─── Topology ───────────────────────────────────────────────
+
+  // ListServices returns all services known to the gateway.
+  rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
+
+  // ─── File Operations ────────────────────────────────────────
+
+  // ReadFile reads a file from a service's source tree.
+  rpc ReadFile(ReadFileRequest) returns (ReadFileResponse);
+
+  // WriteFile writes (creates or overwrites) a file in a service's source tree.
+  rpc WriteFile(WriteFileRequest) returns (WriteFileResponse);
+
+  // ListFiles lists files in a service's source tree.
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
+
+  // DeleteFile removes a file from a service's source tree.
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+
+  // MoveFile renames or moves a file, optionally updating imports.
+  rpc MoveFile(MoveFileRequest) returns (MoveFileResponse);
+
+  // CreateFile creates a new file (fails if exists unless overwrite set).
+  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse);
+
+  // ─── Code Intelligence (LSP) ────────────────────────────────
+
+  // ListSymbols returns code symbols from a service via LSP.
+  // If service is empty, returns symbols across all services.
+  rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse);
+
+  // GetDiagnostics returns compiler/linter diagnostics from the language server.
+  rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse);
+
+  // GoToDefinition finds where a symbol at a given position is defined.
+  rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse);
+
+  // FindReferences finds all usages of a symbol at a given position.
+  rpc FindReferences(FindReferencesRequest) returns (FindReferencesResponse);
+
+  // RenameSymbol performs a language-aware rename across all files.
+  rpc RenameSymbol(RenameSymbolRequest) returns (RenameSymbolResponse);
+
+  // GetHoverInfo returns type info and documentation at a position.
+  rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse);
+
+  // ─── Code Editing ───────────────────────────────────────────
+
+  // Fix runs language-specific fixers on a file (goimports, gofmt, prettier, etc.).
+  rpc Fix(FixRequest) returns (FixResponse);
+
+  // ApplyEdit performs a smart FIND/REPLACE on a file.
+  rpc ApplyEdit(ApplyEditRequest) returns (ApplyEditResponse);
+
+  // BatchApplyEdits applies multiple edits atomically across files/services.
+  rpc BatchApplyEdits(BatchApplyEditsRequest) returns (BatchApplyEditsResponse);
+
+  // ─── Search ─────────────────────────────────────────────────
+
+  // Search performs text search across a service's source tree.
+  rpc Search(SearchRequest) returns (SearchResponse);
+
+  // ─── Build / Lint / Test ────────────────────────────────────
+
+  // Build compiles the service (and its dependencies if needed).
+  rpc Build(BuildRequest) returns (BuildResponse);
+
+  // Lint runs the configured lint command on the service.
+  rpc Lint(LintRequest) returns (LintResponse);
+
+  // Test runs the configured test command on the service.
+  rpc Test(TestRequest) returns (TestResponse);
+
+  // ─── Execution ──────────────────────────────────────────────
+
+  // RunCommand executes an arbitrary command in the service context.
+  rpc RunCommand(RunCommandRequest) returns (RunCommandResponse);
+
+  // ─── Plugin Commands ──────────────────────────────────────
+
+  // ListAllCommands returns commands from all loaded plugins plus built-in ones.
+  rpc ListAllCommands(ListAllCommandsRequest) returns (ListAllCommandsResponse);
+
+  // ─── Runtime / Checks ───────────────────────────────────────
+
+  // RunChecks executes a set of verification checks against the service.
+  rpc RunChecks(RunChecksRequest) returns (RunChecksResponse);
+
+  // ─── Version Control ────────────────────────────────────────
+
+  // GitStatus returns the current git status of modified/staged/untracked files.
+  rpc GitStatus(GitStatusRequest) returns (GitStatusResponse);
+
+  // GitDiff shows changes (unstaged or staged).
+  rpc GitDiff(GitDiffRequest) returns (GitDiffResponse);
+
+  // GitLog returns recent commit history.
+  rpc GitLog(GitLogRequest) returns (GitLogResponse);
+
+  // GitCommit commits staged changes.
+  rpc GitCommit(GitCommitRequest) returns (GitCommitResponse);
+
+  // ─── Dependency Management ──────────────────────────────────
+
+  // ListDependencies returns all dependencies with versions.
+  rpc ListDependencies(ListDependenciesRequest) returns (ListDependenciesResponse);
+
+  // AddDependency adds a package via the language package manager.
+  rpc AddDependency(AddDependencyRequest) returns (AddDependencyResponse);
+
+  // RemoveDependency removes a package via the language package manager.
+  rpc RemoveDependency(RemoveDependencyRequest) returns (RemoveDependencyResponse);
+
+  // ─── Project Analysis ──────────────────────────────────────
+
+  // GetProjectInfo returns rich project metadata: module, packages, deps, file hashes.
+  rpc GetProjectInfo(GetProjectInfoRequest) returns (GetProjectInfoResponse);
+}
+
+// ─── Topology ────────────────────────────────────────────────
+
+message ListServicesRequest {}
+
+message ServiceInfo {
+  string name = 1;
+  string language = 2;       // "go", "rust", "node", etc.
+  string type = 3;           // "library" | "service"
+  int32 port = 7;
+}
+
+message ListServicesResponse {
+  repeated ServiceInfo services = 1;
+}
+
+// ─── File Operations ─────────────────────────────────────────
+
+message ReadFileRequest {
+  string service = 1;
+  string path = 2;           // relative to service root
+}
+
+message ReadFileResponse {
+  string content = 1;
+  bool exists = 2;
+}
+
+message WriteFileRequest {
+  string service = 1;
+  string path = 2;           // relative to service root
+  string content = 3;
+}
+
+message WriteFileResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message ListFilesRequest {
+  string service = 1;
+  string path = 2;                // optional: subdirectory (empty = root)
+  repeated string extensions = 3; // optional: filter by extension (e.g. ".go", ".py")
+  bool recursive = 4;
+}
+
+message FileInfo {
+  string path = 1;       // relative path within the service
+  int64 size_bytes = 2;
+  bool is_directory = 3;
+}
+
+message ListFilesResponse {
+  repeated FileInfo files = 1;
+}
+
+message DeleteFileRequest {
+  string service = 1;
+  string path = 2;           // relative to service root
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message MoveFileRequest {
+  string service = 1;
+  string old_path = 2;
+  string new_path = 3;
+  bool update_imports = 4;
+}
+
+message MoveFileResponse {
+  bool success = 1;
+  string error = 2;
+  repeated string updated_files = 3;
+}
+
+message CreateFileRequest {
+  string service = 1;
+  string path = 2;
+  string content = 3;
+  bool overwrite = 4;
+}
+
+message CreateFileResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// ─── Code Intelligence (LSP) ─────────────────────────────────
+
+message ListSymbolsRequest {
+  string service = 1;        // optional: omit for cross-service query
+  string file = 2;           // optional: restrict to one file
+  string filter = 3;         // optional: symbol name pattern
+}
+
+message Symbol {
+  string name = 1;
+  string kind = 2;           // "function", "method", "struct", "interface", "constant", "variable"
+  string signature = 3;      // declaration line
+  string service = 4;        // which service this symbol lives in
+  string file = 5;           // relative path
+  int32 line = 6;
+  string documentation = 7;  // doc comment if present
+  string parent = 8;         // containing symbol (e.g. struct name for a method)
+}
+
+message ListSymbolsResponse {
+  repeated Symbol symbols = 1;
+  string error = 2;          // non-fatal error (e.g. LSP not ready yet)
+}
+
+// Diagnostic represents a compiler error, warning, or hint.
+message Diagnostic {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+  int32 end_line = 4;
+  int32 end_column = 5;
+  string message = 6;
+  string severity = 7;      // "error", "warning", "information", "hint"
+  string source = 8;        // e.g. "gopls", "pylsp"
+  string code = 9;          // diagnostic code
+}
+
+message GetDiagnosticsRequest {
+  string service = 1;
+  string file = 2;           // optional: restrict to a single file
+}
+
+message GetDiagnosticsResponse {
+  repeated Diagnostic diagnostics = 1;
+  string error = 2;
+}
+
+// Location identifies a position in a file.
+message Location {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+  int32 end_line = 4;
+  int32 end_column = 5;
+}
+
+message GoToDefinitionRequest {
+  string service = 1;
+  string file = 2;
+  int32 line = 3;
+  int32 column = 4;
+}
+
+message GoToDefinitionResponse {
+  repeated Location locations = 1;
+  string error = 2;
+}
+
+message FindReferencesRequest {
+  string service = 1;
+  string file = 2;
+  int32 line = 3;
+  int32 column = 4;
+}
+
+message FindReferencesResponse {
+  repeated Location locations = 1;
+  string error = 2;
+}
+
+// TextEdit represents a single text replacement in a file.
+message TextEdit {
+  string file = 1;
+  int32 start_line = 2;
+  int32 start_column = 3;
+  int32 end_line = 4;
+  int32 end_column = 5;
+  string new_text = 6;
+}
+
+message RenameSymbolRequest {
+  string service = 1;
+  string file = 2;
+  int32 line = 3;
+  int32 column = 4;
+  string new_name = 5;
+}
+
+message RenameSymbolResponse {
+  bool success = 1;
+  string error = 2;
+  repeated TextEdit edits = 3;
+  repeated string files = 4;
+}
+
+message GetHoverInfoRequest {
+  string service = 1;
+  string file = 2;
+  int32 line = 3;
+  int32 column = 4;
+}
+
+message GetHoverInfoResponse {
+  string content = 1;
+  string language = 2;
+  string error = 3;
+}
+
+// ─── Code Fix ─────────────────────────────────────────────────
+
+message FixRequest {
+  string service = 1;
+  string path = 2;            // relative to service root
+}
+
+message FixResponse {
+  bool success = 1;
+  string content = 2;         // the fixed file content (empty if unchanged)
+  string error = 3;           // non-fatal: fixer not available, etc.
+  repeated string actions = 4; // what was done: "goimports", "gofmt", etc.
+}
+
+// ─── Code Edit ────────────────────────────────────────────────
+
+message ApplyEditRequest {
+  string service = 1;
+  string file = 2;          // relative to service root
+  string find = 3;          // text to find (smart matching at plugin level)
+  string replace = 4;       // replacement text
+  bool auto_fix = 5;        // if true, plugin runs fixers after edit
+}
+
+message ApplyEditResponse {
+  bool success = 1;
+  string content = 2;              // file content after edit + fix
+  string error = 3;                // why the edit failed
+  string strategy = 4;             // which matching strategy
+  repeated string fix_actions = 5; // fixers that ran
+}
+
+// BatchApplyEditsRequest applies multiple edits in one call.
+message BatchApplyEditsRequest {
+  repeated ApplyEditRequest edits = 1;
+}
+
+message EditResult {
+  string service = 1;
+  string file = 2;
+  bool success = 3;
+  string error = 4;
+  string strategy = 5;
+}
+
+message BatchApplyEditsResponse {
+  repeated EditResult results = 1;
+  int32 succeeded = 2;
+  int32 failed = 3;
+}
+
+// ─── Search ───────────────────────────────────────────────────
+
+message SearchRequest {
+  string service = 1;
+  string pattern = 2;              // regex or literal pattern
+  bool literal = 3;                // if true, treat pattern as literal string
+  bool case_insensitive = 4;
+  string path = 5;                 // optional: restrict to subdirectory
+  repeated string extensions = 6;  // optional: filter by extension (e.g. ".go", ".py")
+  repeated string exclude = 7;     // optional: glob patterns to exclude
+  int32 max_results = 8;           // 0 = default (100)
+  int32 context_lines = 9;         // lines of context around each match
+}
+
+message SearchMatch {
+  string file = 1;                 // relative path
+  int32 line = 2;                  // 1-based line number
+  string text = 3;                 // the matching line
+  repeated string context_before = 4;
+  repeated string context_after = 5;
+}
+
+message SearchResponse {
+  repeated SearchMatch matches = 1;
+  bool truncated = 2;
+  int32 total_matches = 3;
+}
+
+// ─── Build ───────────────────────────────────────────────────
+
+message BuildRequest {
+  string service = 1;
+}
+
+message BuildError {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+  string message = 4;
+  string severity = 5;       // "error" | "warning"
+}
+
+message BuildResponse {
+  bool success = 1;
+  repeated BuildError errors = 2;
+  string output = 3;         // raw build output
+}
+
+// ─── Lint ─────────────────────────────────────────────────────
+
+message LintRequest {
+  string service = 1;
+}
+
+message LintResponse {
+  bool success = 1;
+  repeated BuildError errors = 2; // reuse BuildError for lint diagnostics
+  string output = 3;              // raw lint output
+}
+
+// ─── Test ─────────────────────────────────────────────────────
+
+message TestRequest {
+  string service = 1;
+}
+
+message TestResponse {
+  bool success = 1;
+  string output = 2;              // raw test output
+  int32 tests_run = 3;
+  int32 tests_passed = 4;
+  int32 tests_failed = 5;
+}
+
+// ─── Execution ───────────────────────────────────────────────
+
+message RunCommandRequest {
+  string service = 1;
+  string command = 2;              // command to execute
+  repeated string args = 3;        // arguments
+  int32 timeout_seconds = 4;       // 0 = default (30s)
+  string working_dir = 5;          // optional: relative subdirectory
+}
+
+message RunCommandResponse {
+  int32 exit_code = 1;
+  string stdout = 2;
+  string stderr = 3;
+}
+
+// ─── Runtime / Checks ────────────────────────────────────────
+
+message RunChecksRequest {
+  string service = 1;
+  repeated Check checks = 2;
+}
+
+message Check {
+  string name = 1;
+  oneof check_type {
+    CommandCheck command = 2;
+    HttpCheck http = 3;
+    PluginCheck plugin_build = 4;
+    PluginCheck plugin_test = 5;
+    PluginCheck plugin_lint = 6;
+  }
+}
+
+// PluginCheck delegates to the plugin's Build/Test/Lint RPC (no parameters needed).
+message PluginCheck {
+}
+
+message CommandCheck {
+  string run = 1;
+  int32 expected_exit_code = 2;
+  string output_contains = 3;
+}
+
+message HttpCheck {
+  string method = 1;
+  string path = 2;
+  string body = 3;
+  int32 expected_status = 4;
+  string body_contains = 5;
+}
+
+message CheckResult {
+  string name = 1;
+  bool passed = 2;
+  string output = 3;
+  string error = 4;
+}
+
+message RunChecksResponse {
+  repeated CheckResult results = 1;
+}
+
+// ─── Version Control ─────────────────────────────────────────
+
+message GitStatusRequest {
+  string service = 1;         // optional: filter to service directory
+}
+
+message GitFileStatus {
+  string path = 1;
+  string status = 2;          // "modified", "added", "deleted", "untracked", "renamed", "copied"
+  bool staged = 3;
+}
+
+message GitStatusResponse {
+  repeated GitFileStatus files = 1;
+  string branch = 2;
+  string error = 3;
+}
+
+message GitDiffRequest {
+  string service = 1;
+  string path = 2;            // optional: restrict to a file
+  bool staged = 3;            // if true, show staged changes
+}
+
+message GitDiffResponse {
+  string diff = 1;
+  string error = 2;
+}
+
+message GitLogRequest {
+  string service = 1;
+  int32 count = 2;            // number of commits (default 10)
+}
+
+message GitCommitInfo {
+  string hash = 1;
+  string short_hash = 2;
+  string author = 3;
+  string message = 4;
+  string date = 5;
+}
+
+message GitLogResponse {
+  repeated GitCommitInfo commits = 1;
+  string error = 2;
+}
+
+message GitCommitRequest {
+  string message = 1;
+  repeated string paths = 2;  // optional: specific files to commit
+}
+
+message GitCommitResponse {
+  bool success = 1;
+  string hash = 2;
+  string error = 3;
+}
+
+// ─── Dependency Management ───────────────────────────────────
+
+message Dependency {
+  string name = 1;
+  string version = 2;
+  bool direct = 3;
+}
+
+message ListDependenciesRequest {
+  string service = 1;
+}
+
+message ListDependenciesResponse {
+  repeated Dependency dependencies = 1;
+  string error = 2;
+}
+
+message AddDependencyRequest {
+  string service = 1;
+  string package_name = 2;
+  string version = 3;
+}
+
+message AddDependencyResponse {
+  bool success = 1;
+  string error = 2;
+  string installed_version = 3;
+}
+
+message RemoveDependencyRequest {
+  string service = 1;
+  string package_name = 2;
+}
+
+message RemoveDependencyResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// ─── Project Analysis ────────────────────────────────────────
+
+// PackageInfo describes a single package/module within the project.
+message PackageInfo {
+  string name = 1;           // e.g. "github.com/codefly-dev/mind/pkg/run"
+  string relative_path = 2;  // e.g. "pkg/run"
+  repeated string files = 3; // files in the package
+  repeated string imports = 4; // direct imports
+  string doc = 5;            // package doc comment
+}
+
+message GetProjectInfoRequest {
+  string service = 1;
+}
+
+message GetProjectInfoResponse {
+  string module = 1;                    // e.g. "github.com/codefly-dev/mind"
+  string language = 2;                  // e.g. "go"
+  string language_version = 3;          // e.g. "1.25"
+  repeated PackageInfo packages = 4;    // package structure
+  repeated Dependency dependencies = 5; // reuse existing Dependency message
+  map<string, string> file_hashes = 6;  // path -> SHA-256 for change detection
+  string error = 7;
+}
+
+// ─── Plugin Commands ────────────────────────────────────────
+
+message AvailableCommand {
+  string name = 1;             // e.g. "reset_db"
+  string description = 2;     // "Reset the database to a clean state"
+  string usage = 3;           // "! reset_db [--seed]"
+  repeated string aliases = 4;
+  repeated string tags = 5;
+  string plugin = 6;          // which plugin provides this, empty for built-in
+  bool destructive = 7;       // if true, requires user confirmation
+}
+
+message ListAllCommandsRequest {}
+
+message ListAllCommandsResponse {
+  repeated AvailableCommand commands = 1;
+}

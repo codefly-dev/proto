@@ -8,8 +8,6 @@ message FileInfo {
   bool is_directory = 3;
 }
 
-message DirectoryRequest {
+message Directory {
   repeated FileInfo files = 1;
 }
-
-message DirectoryResponse {}

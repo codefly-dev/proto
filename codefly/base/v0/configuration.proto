@@ -9,9 +9,16 @@ message ConfigurationValue {
   bool secret = 3;
 }
 
+message ConfigurationData {
+  string kind = 1;
+  bytes content = 2;
+  bool secret = 3;
+}
+
 message ConfigurationInformation {
   string name = 1;
-  repeated ConfigurationValue configuration_values = 4;
+  repeated ConfigurationValue configuration_values = 2;
+  ConfigurationData data = 3;
 }
 
 // Configuration can come from
