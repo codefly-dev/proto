@@ -47,6 +47,13 @@ message Symbol {
   string     documentation = 5; // Doc comment, if present
   string     parent = 6;        // Containing symbol name, e.g. "Server" for a method
   repeated Symbol children = 7; // Nested symbols (struct fields, interface methods, etc.)
+
+  // Versioned graph: content-addressed dedup (HyperAST-style).
+  // Agents compute these from the parsed AST. Mind uses them for
+  // symbol-level dedup across versions.
+  string qualified_name = 8;    // "<package>.<name>" or "<package>.<Type>.<name>"
+  string body_hash = 9;         // sha256 of normalized function body
+  string signature_hash = 10;   // sha256 of function signature
 }
 
 message ListSymbolsRequest {
@@ -540,19 +547,60 @@ message GetCallGraphResponse {
   string error = 5;
 }
 
+// --- Shell execution ---
+//
+// ShellExec runs an arbitrary shell command inside the agent's sandbox,
+// rooted at the service's source directory. This is the ONE sanctioned
+// path for Mind (and agents acting on Mind's behalf) to run shell
+// commands — Mind itself must never call os/exec. The agent is allowed
+// to execute because it IS the plugin boundary; commands run inside
+// the agent's process, with access scoped to the workspace.
+//
+// Typical uses: running tests (`pytest`, `go test`), invoking build
+// tools (`go build`, `npm run`), or handing an LLM-authored shell
+// snippet off to the workspace for execution.
+
+message ShellExecRequest {
+  // The full command line, parsed by the shell. Example: "go test ./..."
+  string command = 1;
+
+  // Optional list of arg overrides. If args is set AND command is
+  // empty, args[0] is the program and args[1:] are its arguments,
+  // executed WITHOUT a shell. Use this for commands whose arguments
+  // contain shell metacharacters that must not be re-interpreted.
+  repeated string args = 2;
+
+  // Optional working directory override, relative to the service's
+  // source directory. If empty, the command runs in the source root.
+  string work_dir = 3;
+
+  // Optional additional environment variables. "KEY=VALUE" form.
+  // Merged on top of the agent's existing environment.
+  repeated string env = 4;
+
+  // Timeout in seconds. 0 means the agent's default (30s).
+  int32 timeout_seconds = 5;
+}
+
+message ShellExecResponse {
+  int32  exit_code = 1;
+  string stdout = 2;
+  string stderr = 3;
+  // True if the command was terminated because it exceeded timeout_seconds.
+  bool   timed_out = 4;
+  // If the agent could not even launch the process, error carries the
+  // reason. exit_code is then left at -1 and stdout/stderr are empty.
+  string error = 5;
+}
+
 // --- Unified Request/Response ---
 
 // CodeRequest wraps all code operations into a single dispatch envelope.
 // Plugins implement one Execute RPC; core provides default handlers for
-// filesystem, search, and project-info operations.
+// ApplyEdit, Fix, GetProjectInfo. All file/git operations are handled
+// directly by Mind — they are NOT dispatched through the Code service.
 message CodeRequest {
   oneof operation {
-    ReadFileRequest read_file = 1;
-    WriteFileRequest write_file = 2;
-    ListFilesRequest list_files = 3;
-    DeleteFileRequest delete_file = 4;
-    MoveFileRequest move_file = 5;
-    CreateFileRequest create_file = 6;
     ListSymbolsRequest list_symbols = 7;
     GetDiagnosticsRequest get_diagnostics = 8;
     GoToDefinitionRequest go_to_definition = 9;
@@ -561,29 +609,38 @@ message CodeRequest {
     GetHoverInfoRequest get_hover_info = 12;
     FixRequest fix = 13;
     ApplyEditRequest apply_edit = 14;
-    SearchRequest search = 15;
     ListDependenciesRequest list_dependencies = 16;
     AddDependencyRequest add_dependency = 17;
     RemoveDependencyRequest remove_dependency = 18;
     GetProjectInfoRequest get_project_info = 19;
     GetCompletionsRequest get_completions = 20;
-    GitLogRequest git_log = 21;
-    GitDiffRequest git_diff = 22;
-    GitShowRequest git_show = 23;
-    GitBlameRequest git_blame = 24;
     GetCallGraphRequest get_call_graph = 25;
+
+    // File and git operations — handled by the Code agent's default server
+    // (pkg/code/DefaultCodeServer in codefly core) backed by the workspace's
+    // virtual filesystem and go-git. Mind never touches files directly.
+    ReadFileRequest read_file = 26;
+    WriteFileRequest write_file = 27;
+    CreateFileRequest create_file = 28;
+    DeleteFileRequest delete_file = 29;
+    MoveFileRequest move_file = 30;
+    ListFilesRequest list_files = 31;
+    SearchRequest search = 32;
+    GitLogRequest git_log = 33;
+    GitShowRequest git_show = 34;
+    GitBlameRequest git_blame = 35;
+    GitDiffRequest git_diff = 36;
+
+    // Shell execution — the ONE sanctioned path for running commands
+    // against a workspace. Mind never calls os/exec directly; it goes
+    // through this RPC so the plugin boundary owns all process spawning.
+    ShellExecRequest shell_exec = 37;
   }
 }
 
 // CodeResponse wraps all code operation results.
 message CodeResponse {
   oneof result {
-    ReadFileResponse read_file = 1;
-    WriteFileResponse write_file = 2;
-    ListFilesResponse list_files = 3;
-    DeleteFileResponse delete_file = 4;
-    MoveFileResponse move_file = 5;
-    CreateFileResponse create_file = 6;
     ListSymbolsResponse list_symbols = 7;
     GetDiagnosticsResponse get_diagnostics = 8;
     GoToDefinitionResponse go_to_definition = 9;
@@ -592,17 +649,27 @@ message CodeResponse {
     GetHoverInfoResponse get_hover_info = 12;
     FixResponse fix = 13;
     ApplyEditResponse apply_edit = 14;
-    SearchResponse search = 15;
     ListDependenciesResponse list_dependencies = 16;
     AddDependencyResponse add_dependency = 17;
     RemoveDependencyResponse remove_dependency = 18;
     GetProjectInfoResponse get_project_info = 19;
     GetCompletionsResponse get_completions = 20;
-    GitLogResponse git_log = 21;
-    GitDiffResponse git_diff = 22;
-    GitShowResponse git_show = 23;
-    GitBlameResponse git_blame = 24;
     GetCallGraphResponse get_call_graph = 25;
+
+    // File and git operation responses.
+    ReadFileResponse read_file = 26;
+    WriteFileResponse write_file = 27;
+    CreateFileResponse create_file = 28;
+    DeleteFileResponse delete_file = 29;
+    MoveFileResponse move_file = 30;
+    ListFilesResponse list_files = 31;
+    SearchResponse search = 32;
+    GitLogResponse git_log = 33;
+    GitShowResponse git_show = 34;
+    GitBlameResponse git_blame = 35;
+    GitDiffResponse git_diff = 36;
+
+    ShellExecResponse shell_exec = 37;
   }
 }
 
@@ -610,19 +677,12 @@ message CodeResponse {
 
 service Code {
   // Execute dispatches any code operation via a single RPC.
-  // The DefaultCodeServer in core handles filesystem, search, and project-info
-  // operations automatically; plugins override only language-specific handlers
-  // (LSP, Fix, dependency management).
+  // Plugins override language-specific handlers (LSP, Fix, dependency management).
+  // File I/O and git operations are handled directly by Mind — not via this service.
   rpc Execute(CodeRequest) returns (CodeResponse) {}
 
-  // --- Deprecated individual RPCs (kept for migration) ---
+  // --- Individual RPCs for language-specific operations ---
 
-  rpc ReadFile(ReadFileRequest) returns (ReadFileResponse) {}
-  rpc WriteFile(WriteFileRequest) returns (WriteFileResponse) {}
-  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
-  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse) {}
-  rpc MoveFile(MoveFileRequest) returns (MoveFileResponse) {}
-  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse) {}
   rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse) {}
   rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse) {}
   rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse) {}
@@ -631,10 +691,14 @@ service Code {
   rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse) {}
   rpc Fix(FixRequest) returns (FixResponse) {}
   rpc ApplyEdit(ApplyEditRequest) returns (ApplyEditResponse) {}
-  rpc Search(SearchRequest) returns (SearchResponse) {}
   rpc ListDependencies(ListDependenciesRequest) returns (ListDependenciesResponse) {}
   rpc AddDependency(AddDependencyRequest) returns (AddDependencyResponse) {}
   rpc RemoveDependency(RemoveDependencyRequest) returns (RemoveDependencyResponse) {}
   rpc GetProjectInfo(GetProjectInfoRequest) returns (GetProjectInfoResponse) {}
   rpc GetCallGraph(GetCallGraphRequest) returns (GetCallGraphResponse) {}
+
+  // ShellExec is the one sanctioned path for running shell commands
+  // against a workspace. Clients call this instead of os/exec so all
+  // process spawning crosses the plugin boundary (the agent).
+  rpc ShellExec(ShellExecRequest) returns (ShellExecResponse) {}
 }

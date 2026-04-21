@@ -1,0 +1,386 @@
+syntax = "proto3";
+package codefly.services.tooling.v0;
+
+/*
+Tooling service: language-specific code operations backed by a codefly agent.
+
+Separation of concerns:
+  - Mind owns: file ops (read, edit, glob, grep), git ops, shell, web — via VFS
+  - Agent owns: LSP, diagnostics, callgraph, fix, dependencies — via this service
+
+Mind NEVER does language-specific analysis. The agent NEVER touches the filesystem directly.
+
+Each language agent (go-grpc, python-fastapi, nextjs) implements this service.
+The agent runs the language server (gopls, pylsp, typescript-language-server) internally.
+
+File/git operations are NOT in this service — they are in Mind's native tool system.
+This is intentional: the Tooling agent does not need filesystem access for most operations.
+For operations that need the workspace (build, test), the agent reads via VFS or the
+workspace is committed to disk first.
+*/
+
+// ── Types ──────────────────────────────────────────────
+
+enum SymbolKind {
+  SYMBOL_KIND_UNKNOWN = 0;
+  SYMBOL_KIND_FUNCTION = 1;
+  SYMBOL_KIND_METHOD = 2;
+  SYMBOL_KIND_STRUCT = 3;
+  SYMBOL_KIND_INTERFACE = 4;
+  SYMBOL_KIND_CONSTANT = 5;
+  SYMBOL_KIND_VARIABLE = 6;
+  SYMBOL_KIND_TYPE_ALIAS = 7;
+  SYMBOL_KIND_PACKAGE = 8;
+  SYMBOL_KIND_FIELD = 9;
+  SYMBOL_KIND_ENUM = 10;
+  SYMBOL_KIND_CLASS = 11;
+}
+
+message Location {
+  string file = 1;
+  int32  line = 2;
+  int32  column = 3;
+  int32  end_line = 4;
+  int32  end_column = 5;
+}
+
+message Symbol {
+  string     name = 1;
+  SymbolKind kind = 2;
+  Location   location = 3;
+  string     signature = 4;
+  string     documentation = 5;
+  string     parent = 6;
+  repeated Symbol children = 7;
+
+  // Versioned graph properties — enable content-addressed dedup (HyperAST-style).
+  // When two versions share a symbol with identical body_hash, the graph stores
+  // ONE node reachable via CONTAINS edges from both CodeVersions.
+
+  // qualified_name disambiguates across packages and receivers.
+  // For functions: "<package>.<name>", for methods: "<package>.<Type>.<name>"
+  string qualified_name = 8;
+
+  // body_hash is sha256 of the normalized function body text.
+  // Whitespace-insensitive (trailing WS stripped, blank lines dropped).
+  // Changes when implementation changes; stable across reformatting.
+  string body_hash = 9;
+
+  // signature_hash is sha256 of the function signature (excluding body).
+  // Changes when the API contract changes (new parameter, return type).
+  string signature_hash = 10;
+}
+
+enum DiagnosticSeverity {
+  DIAGNOSTIC_SEVERITY_UNKNOWN = 0;
+  DIAGNOSTIC_SEVERITY_ERROR = 1;
+  DIAGNOSTIC_SEVERITY_WARNING = 2;
+  DIAGNOSTIC_SEVERITY_INFORMATION = 3;
+  DIAGNOSTIC_SEVERITY_HINT = 4;
+}
+
+message Diagnostic {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+  int32 end_line = 4;
+  int32 end_column = 5;
+  string message = 6;
+  DiagnosticSeverity severity = 7;
+  string source = 8;
+  string code = 9;
+}
+
+message TextEdit {
+  string file = 1;
+  int32 start_line = 2;
+  int32 start_column = 3;
+  int32 end_line = 4;
+  int32 end_column = 5;
+  string new_text = 6;
+}
+
+message Dependency {
+  string name = 1;
+  string version = 2;
+  bool direct = 3;
+}
+
+enum CompletionKind {
+  COMPLETION_KIND_UNKNOWN = 0;
+  COMPLETION_KIND_TEXT = 1;
+  COMPLETION_KIND_METHOD = 2;
+  COMPLETION_KIND_FUNCTION = 3;
+  COMPLETION_KIND_CONSTRUCTOR = 4;
+  COMPLETION_KIND_FIELD = 5;
+  COMPLETION_KIND_VARIABLE = 6;
+  COMPLETION_KIND_CLASS = 7;
+  COMPLETION_KIND_INTERFACE = 8;
+  COMPLETION_KIND_MODULE = 9;
+  COMPLETION_KIND_PROPERTY = 10;
+  COMPLETION_KIND_ENUM = 13;
+  COMPLETION_KIND_KEYWORD = 14;
+  COMPLETION_KIND_SNIPPET = 15;
+  COMPLETION_KIND_CONSTANT = 21;
+  COMPLETION_KIND_STRUCT = 22;
+  COMPLETION_KIND_TYPE_PARAMETER = 25;
+}
+
+message CompletionItem {
+  string label = 1;
+  CompletionKind kind = 2;
+  string detail = 3;
+  string documentation = 4;
+  string insert_text = 5;
+  string sort_text = 6;
+}
+
+message PackageInfo {
+  string name = 1;
+  string relative_path = 2;
+  repeated string files = 3;
+  repeated string imports = 4;
+  string doc = 5;
+}
+
+message CallEdge {
+  string caller_id = 1;
+  string callee_id = 2;
+  string call_type = 3;
+  Location call_site = 4;
+}
+
+message ImplementsEdge {
+  string type_id = 1;
+  string interface_id = 2;
+}
+
+// ── LSP Operations (require language server) ───────────
+
+message ListSymbolsRequest {
+  string file = 1;
+}
+
+message ListSymbolsResponse {
+  repeated Symbol symbols = 1;
+}
+
+message GetDiagnosticsRequest {
+  string file = 1;
+}
+
+message GetDiagnosticsResponse {
+  repeated Diagnostic diagnostics = 1;
+}
+
+message GoToDefinitionRequest {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+}
+
+message GoToDefinitionResponse {
+  repeated Location locations = 1;
+}
+
+message FindReferencesRequest {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+}
+
+message FindReferencesResponse {
+  repeated Location locations = 1;
+}
+
+message RenameSymbolRequest {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+  string new_name = 4;
+}
+
+message RenameSymbolResponse {
+  bool success = 1;
+  string error = 2;
+  repeated TextEdit edits = 3;
+  repeated string files = 4;
+}
+
+message GetHoverInfoRequest {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+}
+
+message GetHoverInfoResponse {
+  string content = 1;
+  string language = 2;
+  Location range = 3;
+}
+
+message GetCompletionsRequest {
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+}
+
+message GetCompletionsResponse {
+  repeated CompletionItem items = 1;
+  bool is_incomplete = 2;
+}
+
+// ── Code Modification (require language-aware formatter) ─
+
+message FixRequest {
+  string file = 1;
+}
+
+message FixResponse {
+  bool success = 1;
+  string content = 2;
+  string error = 3;
+  repeated string actions = 4;
+}
+
+message ApplyEditRequest {
+  string file = 1;
+  string find = 2;
+  string replace = 3;
+  bool auto_fix = 4;
+}
+
+message ApplyEditResponse {
+  bool success = 1;
+  string content = 2;
+  string error = 3;
+  string strategy = 4;
+  repeated string fix_actions = 5;
+}
+
+// ── Dependency Management (require package manager) ─────
+
+message ListDependenciesRequest {}
+
+message ListDependenciesResponse {
+  repeated Dependency dependencies = 1;
+  string error = 2;
+}
+
+message AddDependencyRequest {
+  string package_name = 1;
+  string version = 2;
+}
+
+message AddDependencyResponse {
+  bool success = 1;
+  string error = 2;
+  string installed_version = 3;
+}
+
+message RemoveDependencyRequest {
+  string package_name = 1;
+}
+
+message RemoveDependencyResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// ── Analysis (require compiler / VTA) ───────────────────
+
+message GetProjectInfoRequest {}
+
+message GetProjectInfoResponse {
+  string module = 1;
+  string language = 2;
+  string language_version = 3;
+  repeated PackageInfo packages = 4;
+  repeated Dependency dependencies = 5;
+  map<string, string> file_hashes = 6;
+  string error = 7;
+}
+
+message GetCallGraphRequest {
+  string algorithm = 1;
+}
+
+message GetCallGraphResponse {
+  repeated CallEdge calls = 1;
+  repeated ImplementsEdge implements = 2;
+  int32 functions_analyzed = 3;
+  string algorithm_used = 4;
+  string error = 5;
+}
+
+// ── Dev Validation (require toolchain) ──────────────────
+
+message BuildRequest {}
+
+message BuildResponse {
+  bool success = 1;
+  string output = 2;
+  repeated Diagnostic diagnostics = 3;
+}
+
+message TestRequest {
+  string path = 1;       // optional: restrict to package/file
+  bool verbose = 2;
+}
+
+message TestResponse {
+  bool success = 1;
+  string output = 2;
+  int32 tests_run = 3;
+  int32 tests_passed = 4;
+  int32 tests_failed = 5;
+  int32 tests_skipped = 6;
+  float coverage_pct = 7;
+  repeated string failures = 8;
+}
+
+message LintRequest {
+  string file = 1;       // optional: restrict to file
+}
+
+message LintResponse {
+  bool success = 1;
+  string output = 2;
+  repeated Diagnostic diagnostics = 3;
+}
+
+// ── Service Definition ─────────────────────────────────
+
+// Tooling provides language-specific code operations.
+// Every language agent (go-grpc, python-fastapi, etc.) implements this service.
+//
+// NOTE: File operations (read, write, list, search) and git operations are
+// NOT part of this service. Mind handles those directly via its VFS.
+service Tooling {
+  // LSP operations
+  rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse);
+  rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse);
+  rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse);
+  rpc FindReferences(FindReferencesRequest) returns (FindReferencesResponse);
+  rpc RenameSymbol(RenameSymbolRequest) returns (RenameSymbolResponse);
+  rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse);
+  rpc GetCompletions(GetCompletionsRequest) returns (GetCompletionsResponse);
+
+  // Code modification
+  rpc Fix(FixRequest) returns (FixResponse);
+  rpc ApplyEdit(ApplyEditRequest) returns (ApplyEditResponse);
+
+  // Dependency management
+  rpc ListDependencies(ListDependenciesRequest) returns (ListDependenciesResponse);
+  rpc AddDependency(AddDependencyRequest) returns (AddDependencyResponse);
+  rpc RemoveDependency(RemoveDependencyRequest) returns (RemoveDependencyResponse);
+
+  // Analysis
+  rpc GetProjectInfo(GetProjectInfoRequest) returns (GetProjectInfoResponse);
+  rpc GetCallGraph(GetCallGraphRequest) returns (GetCallGraphResponse);
+
+  // Dev validation
+  rpc Build(BuildRequest) returns (BuildResponse);
+  rpc Test(TestRequest) returns (TestResponse);
+  rpc Lint(LintRequest) returns (LintResponse);
+}

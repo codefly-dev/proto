@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package codefly.cli.v0;
+
+option go_package = "github.com/codefly-dev/core/generated/go/codefly/cli/v0";
+
+// TerminalService provides interactive terminal sessions scoped to workspace/module/service.
+// Sessions persist across client disconnections (daemon model).
+// Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
+service TerminalService {
+  // Open a new terminal session
+  rpc Open(OpenTerminalRequest) returns (OpenTerminalResponse);
+
+  // Bidirectional stream: client sends input, server sends output
+  rpc Attach(stream TerminalInput) returns (stream TerminalOutput);
+
+  // Resize the terminal window
+  rpc Resize(ResizeTerminalRequest) returns (ResizeTerminalResponse);
+
+  // Close a terminal session
+  rpc Close(CloseTerminalRequest) returns (CloseTerminalResponse);
+
+  // List active terminal sessions
+  rpc List(ListTerminalsRequest) returns (ListTerminalsResponse);
+}
+
+// Open
+
+message OpenTerminalRequest {
+  string module = 1;   // optional: scope to module
+  string service = 2;  // optional: scope to service (cwd = service dir)
+  string shell = 3;    // optional: override shell (default: $SHELL)
+  uint32 rows = 4;     // initial terminal size
+  uint32 cols = 5;
+}
+
+message OpenTerminalResponse {
+  string session_id = 1;
+  string shell = 2;
+  string working_dir = 3;
+}
+
+// Attach (bidirectional streaming)
+
+message TerminalInput {
+  string session_id = 1;
+  bytes data = 2;  // raw stdin bytes from client
+}
+
+message TerminalOutput {
+  string session_id = 1;
+  bytes data = 2;      // raw stdout/stderr bytes from PTY
+  bool done = 3;       // true when shell process exits
+  int32 exit_code = 4; // set when done=true
+}
+
+// Resize
+
+message ResizeTerminalRequest {
+  string session_id = 1;
+  uint32 rows = 2;
+  uint32 cols = 3;
+}
+
+message ResizeTerminalResponse {}
+
+// Close
+
+message CloseTerminalRequest {
+  string session_id = 1;
+}
+
+message CloseTerminalResponse {}
+
+// List
+
+message ListTerminalsRequest {}
+
+message ListTerminalsResponse {
+  repeated TerminalInfo terminals = 1;
+}
+
+message TerminalInfo {
+  string session_id = 1;
+  string shell = 2;
+  string working_dir = 3;
+  string module = 4;
+  string service = 5;
+}

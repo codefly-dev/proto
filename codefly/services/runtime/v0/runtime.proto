@@ -163,6 +163,8 @@ message BuildStatus {
 }
 
 message BuildRequest {
+  // Optional target scope: package path (e.g. "./handlers"), file, or empty for all.
+  string target = 1;
 }
 
 message BuildResponse {
@@ -185,6 +187,23 @@ message TestStatus {
 }
 
 message TestRequest {
+  // Optional target: package path (e.g. "./handlers"), test function name
+  // (e.g. "TestHealthEndpoint"), or pattern (e.g. "TestHealth.*").
+  // Empty runs all tests.
+  string target = 1;
+
+  // Optional: run with verbose output.
+  bool verbose = 2;
+
+  // Optional: run with race detector.
+  bool race = 3;
+
+  // Optional: timeout per test (e.g. "30s"). Empty uses agent default.
+  string timeout = 4;
+
+  // Optional: run with coverage instrumentation. Off by default —
+  // -cover roughly doubles compile time for test binaries.
+  bool coverage = 5;
 }
 
 message TestResponse {
@@ -213,6 +232,11 @@ message LintStatus {
 }
 
 message LintRequest {
+  // Optional target scope: package path, file, or empty for all.
+  string target = 1;
+
+  // Optional: auto-fix linting issues where possible.
+  bool fix = 2;
 }
 
 message LintResponse {

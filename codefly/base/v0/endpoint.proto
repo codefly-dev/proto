@@ -25,7 +25,7 @@ message Endpoint {
   string description = 4;
   // Visibility of the endpoint
   string visibility = 5 [(buf.validate.field).string.in = "external", (buf.validate.field).string.in = "public", (buf.validate.field).string.in = "module",(buf.validate.field).string.in = "private"];
-  string api = 6 [(buf.validate.field).string.in = "http", (buf.validate.field).string.in = "grpc", (buf.validate.field).string.in = "tcp", (buf.validate.field).string.in = "rest"];
+  string api = 6 [(buf.validate.field).string.in = "http", (buf.validate.field).string.in = "grpc", (buf.validate.field).string.in = "tcp", (buf.validate.field).string.in = "rest", (buf.validate.field).string.in = "connect"];
   API api_details = 7;
 }
 
