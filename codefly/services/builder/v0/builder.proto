@@ -230,10 +230,119 @@ message DeploymentResponse {
 }
 
 
+/*
+
+Audit — security + outdated-dep scan. Per-language under the hood
+(govulncheck/go list -u for Go, npm audit/outdated for Node,
+pip-audit for Python, trivy for Docker images). Pure read-only.
+
+*/
+
+message AuditRequest {
+  // include_outdated reports patch+minor "available" upgrades alongside
+  // CVEs. Default true. Set false for a vuln-only scan.
+  bool include_outdated = 1;
+  // fail_on_vuln makes the agent return state=ERROR if any finding has
+  // severity HIGH or above. Default false (report-only).
+  bool fail_on_vuln = 2;
+}
+
+message AuditFinding {
+  enum Severity {
+    UNKNOWN = 0;
+    LOW = 1;
+    MEDIUM = 2;
+    HIGH = 3;
+    CRITICAL = 4;
+  }
+  Severity severity = 1;
+  string id = 2;              // CVE-2025-xxxx, GHSA-xxxx-xxxx, OSV id
+  string package = 3;
+  string current_version = 4;
+  string fixed_version = 5;
+  string summary = 6;
+  string url = 7;
+}
+
+message OutdatedDep {
+  string package = 1;
+  string current = 2;
+  string latest_safe = 3;     // newest patch+minor without crossing major
+  string latest_major = 4;    // newest including major bump
+}
+
+message AuditStatus {
+  enum Status {
+    UNKNOWN = 0;
+    CLEAN = 1;     // no findings
+    FINDINGS = 2;  // findings present (still a successful scan)
+    ERROR = 3;     // tool failed or fail_on_vuln tripped
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message AuditResponse {
+  AuditStatus state = 1;
+  repeated AuditFinding findings = 2;
+  repeated OutdatedDep outdated = 3;
+  // tool identifies what produced the report, e.g. "govulncheck+go-list-u",
+  // "npm-audit+outdated", "pip-audit", "trivy", or "missing" when the
+  // required tool is not installed (still returns a successful empty scan).
+  string tool = 4;
+  // language is the source language the agent audited (matches
+  // core/languages constants: GO, PYTHON, TYPESCRIPT, RUST, DOCKER).
+  string language = 5;
+}
+
+/*
+
+Upgrade — apply dependency bumps. Defaults to patch+minor (semver-safe).
+include_major opts in to breaking bumps. dry_run reports the changes
+without writing the lockfile.
+
+*/
+
+message UpgradeRequest {
+  // include_major also bumps across major-version boundaries. Default false.
+  bool include_major = 1;
+  // dry_run reports the changes that would be made without modifying
+  // any files. The response still has fully-populated `changes`.
+  bool dry_run = 2;
+  // only restricts upgrades to the named packages. Empty = all eligible.
+  repeated string only = 3;
+}
+
+message UpgradeChange {
+  string package = 1;
+  string from = 2;
+  string to = 3;
+}
+
+message UpgradeStatus {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;  // changes applied (or would be, in dry_run)
+    NOOP = 2;     // nothing to upgrade
+    ERROR = 3;
+  }
+  Status state = 1;
+  string message = 2;
+}
+
+message UpgradeResponse {
+  UpgradeStatus state = 1;
+  repeated UpgradeChange changes = 2;
+  // lockfile_diff is a free-form summary (e.g. truncated `git diff`)
+  // for the human-facing CLI output. Optional.
+  string lockfile_diff = 3;
+}
+
 // Builder is responsible for:
 // - creation
 // - Docker build
 // - Deployment manifests
+// - Dependency audit / upgrade
 service Builder {
 
   // Load the service
@@ -252,6 +361,10 @@ service Builder {
   // Deployment/Build only on init data
   rpc Build (BuildRequest) returns (BuildResponse) {}
   rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
+
+  // Dependency hygiene
+  rpc Audit (AuditRequest) returns (AuditResponse) {}
+  rpc Upgrade (UpgradeRequest) returns (UpgradeResponse) {}
 
   // Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).
   // Plugin streams Questions, CLI streams Answers.
