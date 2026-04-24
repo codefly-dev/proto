@@ -4499,8 +4499,11 @@ func (x *ShellExecResponse) GetError() string {
 
 // CodeRequest wraps all code operations into a single dispatch envelope.
 // Plugins implement one Execute RPC; core provides default handlers for
-// ApplyEdit, Fix, GetProjectInfo. All file/git operations are handled
-// directly by Mind — they are NOT dispatched through the Code service.
+// file I/O, git, fix, apply-edit, dependency mgmt, project info. Mind
+// never handles any of these directly — it ALWAYS forwards to the
+// appropriate codefly plugin via Execute (or via one of the remaining
+// direct RPCs: ListSymbols / FindReferences / GoToDefinition /
+// GetDiagnostics / GetHoverInfo / ApplyEdit / ShellExec / GetCallGraph).
 type CodeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Operation:
@@ -5873,21 +5876,15 @@ const file_codefly_services_code_v0_code_proto_rawDesc = "" +
 	"\x16COMPLETION_KIND_STRUCT\x10\x16\x12\x19\n" +
 	"\x15COMPLETION_KIND_EVENT\x10\x17\x12\x1c\n" +
 	"\x18COMPLETION_KIND_OPERATOR\x10\x18\x12\"\n" +
-	"\x1eCOMPLETION_KIND_TYPE_PARAMETER\x10\x192\x93\r\n" +
+	"\x1eCOMPLETION_KIND_TYPE_PARAMETER\x10\x192\xe7\a\n" +
 	"\x04Code\x12Z\n" +
 	"\aExecute\x12%.codefly.services.code.v0.CodeRequest\x1a&.codefly.services.code.v0.CodeResponse\"\x00\x12l\n" +
 	"\vListSymbols\x12,.codefly.services.code.v0.ListSymbolsRequest\x1a-.codefly.services.code.v0.ListSymbolsResponse\"\x00\x12u\n" +
 	"\x0eGetDiagnostics\x12/.codefly.services.code.v0.GetDiagnosticsRequest\x1a0.codefly.services.code.v0.GetDiagnosticsResponse\"\x00\x12u\n" +
 	"\x0eGoToDefinition\x12/.codefly.services.code.v0.GoToDefinitionRequest\x1a0.codefly.services.code.v0.GoToDefinitionResponse\"\x00\x12u\n" +
 	"\x0eFindReferences\x12/.codefly.services.code.v0.FindReferencesRequest\x1a0.codefly.services.code.v0.FindReferencesResponse\"\x00\x12o\n" +
-	"\fRenameSymbol\x12-.codefly.services.code.v0.RenameSymbolRequest\x1a..codefly.services.code.v0.RenameSymbolResponse\"\x00\x12o\n" +
-	"\fGetHoverInfo\x12-.codefly.services.code.v0.GetHoverInfoRequest\x1a..codefly.services.code.v0.GetHoverInfoResponse\"\x00\x12T\n" +
-	"\x03Fix\x12$.codefly.services.code.v0.FixRequest\x1a%.codefly.services.code.v0.FixResponse\"\x00\x12f\n" +
-	"\tApplyEdit\x12*.codefly.services.code.v0.ApplyEditRequest\x1a+.codefly.services.code.v0.ApplyEditResponse\"\x00\x12{\n" +
-	"\x10ListDependencies\x121.codefly.services.code.v0.ListDependenciesRequest\x1a2.codefly.services.code.v0.ListDependenciesResponse\"\x00\x12r\n" +
-	"\rAddDependency\x12..codefly.services.code.v0.AddDependencyRequest\x1a/.codefly.services.code.v0.AddDependencyResponse\"\x00\x12{\n" +
-	"\x10RemoveDependency\x121.codefly.services.code.v0.RemoveDependencyRequest\x1a2.codefly.services.code.v0.RemoveDependencyResponse\"\x00\x12u\n" +
-	"\x0eGetProjectInfo\x12/.codefly.services.code.v0.GetProjectInfoRequest\x1a0.codefly.services.code.v0.GetProjectInfoResponse\"\x00\x12o\n" +
+	"\fGetHoverInfo\x12-.codefly.services.code.v0.GetHoverInfoRequest\x1a..codefly.services.code.v0.GetHoverInfoResponse\"\x00\x12f\n" +
+	"\tApplyEdit\x12*.codefly.services.code.v0.ApplyEditRequest\x1a+.codefly.services.code.v0.ApplyEditResponse\"\x00\x12o\n" +
 	"\fGetCallGraph\x12-.codefly.services.code.v0.GetCallGraphRequest\x1a..codefly.services.code.v0.GetCallGraphResponse\"\x00\x12f\n" +
 	"\tShellExec\x12*.codefly.services.code.v0.ShellExecRequest\x1a+.codefly.services.code.v0.ShellExecResponse\"\x00B\xf0\x01\n" +
 	"\x1ccom.codefly.services.code.v0B\tCodeProtoP\x01ZAgithub.com/codefly-dev/core/generated/go/codefly/services/code/v0\xa2\x02\x04CSCV\xaa\x02\x18Codefly.Services.Code.V0\xca\x02\x18Codefly\\Services\\Code\\V0\xe2\x02$Codefly\\Services\\Code\\V0\\GPBMetadata\xea\x02\x1bCodefly::Services::Code::V0b\x06proto3"
@@ -6066,33 +6063,21 @@ var file_codefly_services_code_v0_code_proto_depIdxs = []int32{
 	30, // 80: codefly.services.code.v0.Code.GetDiagnostics:input_type -> codefly.services.code.v0.GetDiagnosticsRequest
 	32, // 81: codefly.services.code.v0.Code.GoToDefinition:input_type -> codefly.services.code.v0.GoToDefinitionRequest
 	34, // 82: codefly.services.code.v0.Code.FindReferences:input_type -> codefly.services.code.v0.FindReferencesRequest
-	37, // 83: codefly.services.code.v0.Code.RenameSymbol:input_type -> codefly.services.code.v0.RenameSymbolRequest
-	39, // 84: codefly.services.code.v0.Code.GetHoverInfo:input_type -> codefly.services.code.v0.GetHoverInfoRequest
-	16, // 85: codefly.services.code.v0.Code.Fix:input_type -> codefly.services.code.v0.FixRequest
-	18, // 86: codefly.services.code.v0.Code.ApplyEdit:input_type -> codefly.services.code.v0.ApplyEditRequest
-	45, // 87: codefly.services.code.v0.Code.ListDependencies:input_type -> codefly.services.code.v0.ListDependenciesRequest
-	47, // 88: codefly.services.code.v0.Code.AddDependency:input_type -> codefly.services.code.v0.AddDependencyRequest
-	49, // 89: codefly.services.code.v0.Code.RemoveDependency:input_type -> codefly.services.code.v0.RemoveDependencyRequest
-	52, // 90: codefly.services.code.v0.Code.GetProjectInfo:input_type -> codefly.services.code.v0.GetProjectInfoRequest
-	67, // 91: codefly.services.code.v0.Code.GetCallGraph:input_type -> codefly.services.code.v0.GetCallGraphRequest
-	69, // 92: codefly.services.code.v0.Code.ShellExec:input_type -> codefly.services.code.v0.ShellExecRequest
-	72, // 93: codefly.services.code.v0.Code.Execute:output_type -> codefly.services.code.v0.CodeResponse
-	8,  // 94: codefly.services.code.v0.Code.ListSymbols:output_type -> codefly.services.code.v0.ListSymbolsResponse
-	31, // 95: codefly.services.code.v0.Code.GetDiagnostics:output_type -> codefly.services.code.v0.GetDiagnosticsResponse
-	33, // 96: codefly.services.code.v0.Code.GoToDefinition:output_type -> codefly.services.code.v0.GoToDefinitionResponse
-	35, // 97: codefly.services.code.v0.Code.FindReferences:output_type -> codefly.services.code.v0.FindReferencesResponse
-	38, // 98: codefly.services.code.v0.Code.RenameSymbol:output_type -> codefly.services.code.v0.RenameSymbolResponse
-	40, // 99: codefly.services.code.v0.Code.GetHoverInfo:output_type -> codefly.services.code.v0.GetHoverInfoResponse
-	17, // 100: codefly.services.code.v0.Code.Fix:output_type -> codefly.services.code.v0.FixResponse
-	19, // 101: codefly.services.code.v0.Code.ApplyEdit:output_type -> codefly.services.code.v0.ApplyEditResponse
-	46, // 102: codefly.services.code.v0.Code.ListDependencies:output_type -> codefly.services.code.v0.ListDependenciesResponse
-	48, // 103: codefly.services.code.v0.Code.AddDependency:output_type -> codefly.services.code.v0.AddDependencyResponse
-	50, // 104: codefly.services.code.v0.Code.RemoveDependency:output_type -> codefly.services.code.v0.RemoveDependencyResponse
-	53, // 105: codefly.services.code.v0.Code.GetProjectInfo:output_type -> codefly.services.code.v0.GetProjectInfoResponse
-	68, // 106: codefly.services.code.v0.Code.GetCallGraph:output_type -> codefly.services.code.v0.GetCallGraphResponse
-	70, // 107: codefly.services.code.v0.Code.ShellExec:output_type -> codefly.services.code.v0.ShellExecResponse
-	93, // [93:108] is the sub-list for method output_type
-	78, // [78:93] is the sub-list for method input_type
+	39, // 83: codefly.services.code.v0.Code.GetHoverInfo:input_type -> codefly.services.code.v0.GetHoverInfoRequest
+	18, // 84: codefly.services.code.v0.Code.ApplyEdit:input_type -> codefly.services.code.v0.ApplyEditRequest
+	67, // 85: codefly.services.code.v0.Code.GetCallGraph:input_type -> codefly.services.code.v0.GetCallGraphRequest
+	69, // 86: codefly.services.code.v0.Code.ShellExec:input_type -> codefly.services.code.v0.ShellExecRequest
+	72, // 87: codefly.services.code.v0.Code.Execute:output_type -> codefly.services.code.v0.CodeResponse
+	8,  // 88: codefly.services.code.v0.Code.ListSymbols:output_type -> codefly.services.code.v0.ListSymbolsResponse
+	31, // 89: codefly.services.code.v0.Code.GetDiagnostics:output_type -> codefly.services.code.v0.GetDiagnosticsResponse
+	33, // 90: codefly.services.code.v0.Code.GoToDefinition:output_type -> codefly.services.code.v0.GoToDefinitionResponse
+	35, // 91: codefly.services.code.v0.Code.FindReferences:output_type -> codefly.services.code.v0.FindReferencesResponse
+	40, // 92: codefly.services.code.v0.Code.GetHoverInfo:output_type -> codefly.services.code.v0.GetHoverInfoResponse
+	19, // 93: codefly.services.code.v0.Code.ApplyEdit:output_type -> codefly.services.code.v0.ApplyEditResponse
+	68, // 94: codefly.services.code.v0.Code.GetCallGraph:output_type -> codefly.services.code.v0.GetCallGraphResponse
+	70, // 95: codefly.services.code.v0.Code.ShellExec:output_type -> codefly.services.code.v0.ShellExecResponse
+	87, // [87:96] is the sub-list for method output_type
+	78, // [78:87] is the sub-list for method input_type
 	78, // [78:78] is the sub-list for extension type_name
 	78, // [78:78] is the sub-list for extension extendee
 	0,  // [0:78] is the sub-list for field type_name

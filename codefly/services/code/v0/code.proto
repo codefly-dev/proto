@@ -597,8 +597,11 @@ message ShellExecResponse {
 
 // CodeRequest wraps all code operations into a single dispatch envelope.
 // Plugins implement one Execute RPC; core provides default handlers for
-// ApplyEdit, Fix, GetProjectInfo. All file/git operations are handled
-// directly by Mind — they are NOT dispatched through the Code service.
+// file I/O, git, fix, apply-edit, dependency mgmt, project info. Mind
+// never handles any of these directly — it ALWAYS forwards to the
+// appropriate codefly plugin via Execute (or via one of the remaining
+// direct RPCs: ListSymbols / FindReferences / GoToDefinition /
+// GetDiagnostics / GetHoverInfo / ApplyEdit / ShellExec / GetCallGraph).
 message CodeRequest {
   oneof operation {
     ListSymbolsRequest list_symbols = 7;
@@ -676,25 +679,24 @@ message CodeResponse {
 // --- Service definition ---
 
 service Code {
-  // Execute dispatches any code operation via a single RPC.
-  // Plugins override language-specific handlers (LSP, Fix, dependency management).
-  // File I/O and git operations are handled directly by Mind — not via this service.
+  // Execute is the unified dispatch entry point for every code operation.
+  // Clients wrap the specific request type in a CodeRequest oneof; the
+  // plugin's Execute handler unwraps + dispatches. This is the path Mind
+  // uses for everything except the few direct RPCs below that predate
+  // the unification and still have live callers in codefly-cli.
   rpc Execute(CodeRequest) returns (CodeResponse) {}
 
-  // --- Individual RPCs for language-specific operations ---
+  // --- Direct RPCs kept because cli/pkg/mcp + cli/pkg/gateway call them ---
+  // Migrating these to Execute is a follow-up; when those callers move,
+  // delete each RPC here the same way we deleted the file/git/dep
+  // operations in this cleanup.
 
   rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse) {}
   rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse) {}
   rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse) {}
   rpc FindReferences(FindReferencesRequest) returns (FindReferencesResponse) {}
-  rpc RenameSymbol(RenameSymbolRequest) returns (RenameSymbolResponse) {}
   rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse) {}
-  rpc Fix(FixRequest) returns (FixResponse) {}
   rpc ApplyEdit(ApplyEditRequest) returns (ApplyEditResponse) {}
-  rpc ListDependencies(ListDependenciesRequest) returns (ListDependenciesResponse) {}
-  rpc AddDependency(AddDependencyRequest) returns (AddDependencyResponse) {}
-  rpc RemoveDependency(RemoveDependencyRequest) returns (RemoveDependencyResponse) {}
-  rpc GetProjectInfo(GetProjectInfoRequest) returns (GetProjectInfoResponse) {}
   rpc GetCallGraph(GetCallGraphRequest) returns (GetCallGraphResponse) {}
 
   // ShellExec is the one sanctioned path for running shell commands

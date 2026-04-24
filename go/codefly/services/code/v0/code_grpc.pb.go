@@ -19,43 +19,33 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Code_Execute_FullMethodName          = "/codefly.services.code.v0.Code/Execute"
-	Code_ListSymbols_FullMethodName      = "/codefly.services.code.v0.Code/ListSymbols"
-	Code_GetDiagnostics_FullMethodName   = "/codefly.services.code.v0.Code/GetDiagnostics"
-	Code_GoToDefinition_FullMethodName   = "/codefly.services.code.v0.Code/GoToDefinition"
-	Code_FindReferences_FullMethodName   = "/codefly.services.code.v0.Code/FindReferences"
-	Code_RenameSymbol_FullMethodName     = "/codefly.services.code.v0.Code/RenameSymbol"
-	Code_GetHoverInfo_FullMethodName     = "/codefly.services.code.v0.Code/GetHoverInfo"
-	Code_Fix_FullMethodName              = "/codefly.services.code.v0.Code/Fix"
-	Code_ApplyEdit_FullMethodName        = "/codefly.services.code.v0.Code/ApplyEdit"
-	Code_ListDependencies_FullMethodName = "/codefly.services.code.v0.Code/ListDependencies"
-	Code_AddDependency_FullMethodName    = "/codefly.services.code.v0.Code/AddDependency"
-	Code_RemoveDependency_FullMethodName = "/codefly.services.code.v0.Code/RemoveDependency"
-	Code_GetProjectInfo_FullMethodName   = "/codefly.services.code.v0.Code/GetProjectInfo"
-	Code_GetCallGraph_FullMethodName     = "/codefly.services.code.v0.Code/GetCallGraph"
-	Code_ShellExec_FullMethodName        = "/codefly.services.code.v0.Code/ShellExec"
+	Code_Execute_FullMethodName        = "/codefly.services.code.v0.Code/Execute"
+	Code_ListSymbols_FullMethodName    = "/codefly.services.code.v0.Code/ListSymbols"
+	Code_GetDiagnostics_FullMethodName = "/codefly.services.code.v0.Code/GetDiagnostics"
+	Code_GoToDefinition_FullMethodName = "/codefly.services.code.v0.Code/GoToDefinition"
+	Code_FindReferences_FullMethodName = "/codefly.services.code.v0.Code/FindReferences"
+	Code_GetHoverInfo_FullMethodName   = "/codefly.services.code.v0.Code/GetHoverInfo"
+	Code_ApplyEdit_FullMethodName      = "/codefly.services.code.v0.Code/ApplyEdit"
+	Code_GetCallGraph_FullMethodName   = "/codefly.services.code.v0.Code/GetCallGraph"
+	Code_ShellExec_FullMethodName      = "/codefly.services.code.v0.Code/ShellExec"
 )
 
 // CodeClient is the client API for Code service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CodeClient interface {
-	// Execute dispatches any code operation via a single RPC.
-	// Plugins override language-specific handlers (LSP, Fix, dependency management).
-	// File I/O and git operations are handled directly by Mind — not via this service.
+	// Execute is the unified dispatch entry point for every code operation.
+	// Clients wrap the specific request type in a CodeRequest oneof; the
+	// plugin's Execute handler unwraps + dispatches. This is the path Mind
+	// uses for everything except the few direct RPCs below that predate
+	// the unification and still have live callers in codefly-cli.
 	Execute(ctx context.Context, in *CodeRequest, opts ...grpc.CallOption) (*CodeResponse, error)
 	ListSymbols(ctx context.Context, in *ListSymbolsRequest, opts ...grpc.CallOption) (*ListSymbolsResponse, error)
 	GetDiagnostics(ctx context.Context, in *GetDiagnosticsRequest, opts ...grpc.CallOption) (*GetDiagnosticsResponse, error)
 	GoToDefinition(ctx context.Context, in *GoToDefinitionRequest, opts ...grpc.CallOption) (*GoToDefinitionResponse, error)
 	FindReferences(ctx context.Context, in *FindReferencesRequest, opts ...grpc.CallOption) (*FindReferencesResponse, error)
-	RenameSymbol(ctx context.Context, in *RenameSymbolRequest, opts ...grpc.CallOption) (*RenameSymbolResponse, error)
 	GetHoverInfo(ctx context.Context, in *GetHoverInfoRequest, opts ...grpc.CallOption) (*GetHoverInfoResponse, error)
-	Fix(ctx context.Context, in *FixRequest, opts ...grpc.CallOption) (*FixResponse, error)
 	ApplyEdit(ctx context.Context, in *ApplyEditRequest, opts ...grpc.CallOption) (*ApplyEditResponse, error)
-	ListDependencies(ctx context.Context, in *ListDependenciesRequest, opts ...grpc.CallOption) (*ListDependenciesResponse, error)
-	AddDependency(ctx context.Context, in *AddDependencyRequest, opts ...grpc.CallOption) (*AddDependencyResponse, error)
-	RemoveDependency(ctx context.Context, in *RemoveDependencyRequest, opts ...grpc.CallOption) (*RemoveDependencyResponse, error)
-	GetProjectInfo(ctx context.Context, in *GetProjectInfoRequest, opts ...grpc.CallOption) (*GetProjectInfoResponse, error)
 	GetCallGraph(ctx context.Context, in *GetCallGraphRequest, opts ...grpc.CallOption) (*GetCallGraphResponse, error)
 	// ShellExec is the one sanctioned path for running shell commands
 	// against a workspace. Clients call this instead of os/exec so all
@@ -121,16 +111,6 @@ func (c *codeClient) FindReferences(ctx context.Context, in *FindReferencesReque
 	return out, nil
 }
 
-func (c *codeClient) RenameSymbol(ctx context.Context, in *RenameSymbolRequest, opts ...grpc.CallOption) (*RenameSymbolResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RenameSymbolResponse)
-	err := c.cc.Invoke(ctx, Code_RenameSymbol_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *codeClient) GetHoverInfo(ctx context.Context, in *GetHoverInfoRequest, opts ...grpc.CallOption) (*GetHoverInfoResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetHoverInfoResponse)
@@ -141,60 +121,10 @@ func (c *codeClient) GetHoverInfo(ctx context.Context, in *GetHoverInfoRequest, 
 	return out, nil
 }
 
-func (c *codeClient) Fix(ctx context.Context, in *FixRequest, opts ...grpc.CallOption) (*FixResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FixResponse)
-	err := c.cc.Invoke(ctx, Code_Fix_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *codeClient) ApplyEdit(ctx context.Context, in *ApplyEditRequest, opts ...grpc.CallOption) (*ApplyEditResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApplyEditResponse)
 	err := c.cc.Invoke(ctx, Code_ApplyEdit_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *codeClient) ListDependencies(ctx context.Context, in *ListDependenciesRequest, opts ...grpc.CallOption) (*ListDependenciesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListDependenciesResponse)
-	err := c.cc.Invoke(ctx, Code_ListDependencies_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *codeClient) AddDependency(ctx context.Context, in *AddDependencyRequest, opts ...grpc.CallOption) (*AddDependencyResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AddDependencyResponse)
-	err := c.cc.Invoke(ctx, Code_AddDependency_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *codeClient) RemoveDependency(ctx context.Context, in *RemoveDependencyRequest, opts ...grpc.CallOption) (*RemoveDependencyResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RemoveDependencyResponse)
-	err := c.cc.Invoke(ctx, Code_RemoveDependency_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *codeClient) GetProjectInfo(ctx context.Context, in *GetProjectInfoRequest, opts ...grpc.CallOption) (*GetProjectInfoResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetProjectInfoResponse)
-	err := c.cc.Invoke(ctx, Code_GetProjectInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -225,22 +155,18 @@ func (c *codeClient) ShellExec(ctx context.Context, in *ShellExecRequest, opts .
 // All implementations must embed UnimplementedCodeServer
 // for forward compatibility.
 type CodeServer interface {
-	// Execute dispatches any code operation via a single RPC.
-	// Plugins override language-specific handlers (LSP, Fix, dependency management).
-	// File I/O and git operations are handled directly by Mind — not via this service.
+	// Execute is the unified dispatch entry point for every code operation.
+	// Clients wrap the specific request type in a CodeRequest oneof; the
+	// plugin's Execute handler unwraps + dispatches. This is the path Mind
+	// uses for everything except the few direct RPCs below that predate
+	// the unification and still have live callers in codefly-cli.
 	Execute(context.Context, *CodeRequest) (*CodeResponse, error)
 	ListSymbols(context.Context, *ListSymbolsRequest) (*ListSymbolsResponse, error)
 	GetDiagnostics(context.Context, *GetDiagnosticsRequest) (*GetDiagnosticsResponse, error)
 	GoToDefinition(context.Context, *GoToDefinitionRequest) (*GoToDefinitionResponse, error)
 	FindReferences(context.Context, *FindReferencesRequest) (*FindReferencesResponse, error)
-	RenameSymbol(context.Context, *RenameSymbolRequest) (*RenameSymbolResponse, error)
 	GetHoverInfo(context.Context, *GetHoverInfoRequest) (*GetHoverInfoResponse, error)
-	Fix(context.Context, *FixRequest) (*FixResponse, error)
 	ApplyEdit(context.Context, *ApplyEditRequest) (*ApplyEditResponse, error)
-	ListDependencies(context.Context, *ListDependenciesRequest) (*ListDependenciesResponse, error)
-	AddDependency(context.Context, *AddDependencyRequest) (*AddDependencyResponse, error)
-	RemoveDependency(context.Context, *RemoveDependencyRequest) (*RemoveDependencyResponse, error)
-	GetProjectInfo(context.Context, *GetProjectInfoRequest) (*GetProjectInfoResponse, error)
 	GetCallGraph(context.Context, *GetCallGraphRequest) (*GetCallGraphResponse, error)
 	// ShellExec is the one sanctioned path for running shell commands
 	// against a workspace. Clients call this instead of os/exec so all
@@ -271,29 +197,11 @@ func (UnimplementedCodeServer) GoToDefinition(context.Context, *GoToDefinitionRe
 func (UnimplementedCodeServer) FindReferences(context.Context, *FindReferencesRequest) (*FindReferencesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FindReferences not implemented")
 }
-func (UnimplementedCodeServer) RenameSymbol(context.Context, *RenameSymbolRequest) (*RenameSymbolResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method RenameSymbol not implemented")
-}
 func (UnimplementedCodeServer) GetHoverInfo(context.Context, *GetHoverInfoRequest) (*GetHoverInfoResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetHoverInfo not implemented")
 }
-func (UnimplementedCodeServer) Fix(context.Context, *FixRequest) (*FixResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Fix not implemented")
-}
 func (UnimplementedCodeServer) ApplyEdit(context.Context, *ApplyEditRequest) (*ApplyEditResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ApplyEdit not implemented")
-}
-func (UnimplementedCodeServer) ListDependencies(context.Context, *ListDependenciesRequest) (*ListDependenciesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListDependencies not implemented")
-}
-func (UnimplementedCodeServer) AddDependency(context.Context, *AddDependencyRequest) (*AddDependencyResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method AddDependency not implemented")
-}
-func (UnimplementedCodeServer) RemoveDependency(context.Context, *RemoveDependencyRequest) (*RemoveDependencyResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method RemoveDependency not implemented")
-}
-func (UnimplementedCodeServer) GetProjectInfo(context.Context, *GetProjectInfoRequest) (*GetProjectInfoResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetProjectInfo not implemented")
 }
 func (UnimplementedCodeServer) GetCallGraph(context.Context, *GetCallGraphRequest) (*GetCallGraphResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetCallGraph not implemented")
@@ -412,24 +320,6 @@ func _Code_FindReferences_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Code_RenameSymbol_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RenameSymbolRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodeServer).RenameSymbol(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Code_RenameSymbol_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodeServer).RenameSymbol(ctx, req.(*RenameSymbolRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Code_GetHoverInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetHoverInfoRequest)
 	if err := dec(in); err != nil {
@@ -448,24 +338,6 @@ func _Code_GetHoverInfo_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Code_Fix_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FixRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodeServer).Fix(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Code_Fix_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodeServer).Fix(ctx, req.(*FixRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Code_ApplyEdit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ApplyEditRequest)
 	if err := dec(in); err != nil {
@@ -480,78 +352,6 @@ func _Code_ApplyEdit_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CodeServer).ApplyEdit(ctx, req.(*ApplyEditRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Code_ListDependencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListDependenciesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodeServer).ListDependencies(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Code_ListDependencies_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodeServer).ListDependencies(ctx, req.(*ListDependenciesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Code_AddDependency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddDependencyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodeServer).AddDependency(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Code_AddDependency_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodeServer).AddDependency(ctx, req.(*AddDependencyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Code_RemoveDependency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveDependencyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodeServer).RemoveDependency(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Code_RemoveDependency_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodeServer).RemoveDependency(ctx, req.(*RemoveDependencyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Code_GetProjectInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetProjectInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CodeServer).GetProjectInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Code_GetProjectInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CodeServer).GetProjectInfo(ctx, req.(*GetProjectInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -620,36 +420,12 @@ var Code_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Code_FindReferences_Handler,
 		},
 		{
-			MethodName: "RenameSymbol",
-			Handler:    _Code_RenameSymbol_Handler,
-		},
-		{
 			MethodName: "GetHoverInfo",
 			Handler:    _Code_GetHoverInfo_Handler,
 		},
 		{
-			MethodName: "Fix",
-			Handler:    _Code_Fix_Handler,
-		},
-		{
 			MethodName: "ApplyEdit",
 			Handler:    _Code_ApplyEdit_Handler,
-		},
-		{
-			MethodName: "ListDependencies",
-			Handler:    _Code_ListDependencies_Handler,
-		},
-		{
-			MethodName: "AddDependency",
-			Handler:    _Code_AddDependency_Handler,
-		},
-		{
-			MethodName: "RemoveDependency",
-			Handler:    _Code_RemoveDependency_Handler,
-		},
-		{
-			MethodName: "GetProjectInfo",
-			Handler:    _Code_GetProjectInfo_Handler,
 		},
 		{
 			MethodName: "GetCallGraph",
