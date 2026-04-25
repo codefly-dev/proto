@@ -1229,9 +1229,9 @@ func (x *TestStatus) GetMessage() string {
 
 type TestRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional target: package path (e.g. "./handlers"), test function name
-	// (e.g. "TestHealthEndpoint"), or pattern (e.g. "TestHealth.*").
-	// Empty runs all tests.
+	// Optional target: package or directory scope (e.g. "./handlers" for Go,
+	// "tests/unit" for Python). For name-pattern filtering, prefer `filters`.
+	// Empty runs the agent's default scope.
 	Target string `protobuf:"bytes,1,opt,name=target,proto3" json:"target,omitempty"`
 	// Optional: run with verbose output.
 	Verbose bool `protobuf:"varint,2,opt,name=verbose,proto3" json:"verbose,omitempty"`
@@ -1241,7 +1241,31 @@ type TestRequest struct {
 	Timeout string `protobuf:"bytes,4,opt,name=timeout,proto3" json:"timeout,omitempty"`
 	// Optional: run with coverage instrumentation. Off by default —
 	// -cover roughly doubles compile time for test binaries.
-	Coverage      bool `protobuf:"varint,5,opt,name=coverage,proto3" json:"coverage,omitempty"`
+	Coverage bool `protobuf:"varint,5,opt,name=coverage,proto3" json:"coverage,omitempty"`
+	// Optional: name-pattern filters (regex). Multiple values are combined
+	// with OR. Each agent maps these to its native filter mechanism:
+	//
+	//	Go (go test):       -run "(p1|p2|...)"
+	//	JS (vitest/jest):   --testNamePattern "(p1|p2|...)"
+	//	JS (playwright):    --grep "(p1|p2|...)"
+	//	Python (pytest):    -k "p1 or p2 or ..."
+	//
+	// Empty list matches everything.
+	Filters []string `protobuf:"bytes,6,rep,name=filters,proto3" json:"filters,omitempty"`
+	// Optional: named test suite. Agents decide what each name means.
+	// Conventional values:
+	//
+	//	"unit"        — fast, no infra (default if empty)
+	//	"integration" — needs dependencies via withDependencies
+	//	"e2e"         — full stack via Playwright/Cypress/etc.
+	//	"smoke"       — minimal post-deploy checks
+	//
+	// Agents that only run one kind of test ignore this.
+	Suite string `protobuf:"bytes,7,opt,name=suite,proto3" json:"suite,omitempty"`
+	// Optional: extra args appended verbatim to the underlying test runner
+	// command. Power-user escape hatch for flags codefly does not model.
+	// Agents must NOT interpret these — pass through unchanged.
+	ExtraArgs     []string `protobuf:"bytes,8,rep,name=extra_args,json=extraArgs,proto3" json:"extra_args,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1309,6 +1333,27 @@ func (x *TestRequest) GetCoverage() bool {
 		return x.Coverage
 	}
 	return false
+}
+
+func (x *TestRequest) GetFilters() []string {
+	if x != nil {
+		return x.Filters
+	}
+	return nil
+}
+
+func (x *TestRequest) GetSuite() string {
+	if x != nil {
+		return x.Suite
+	}
+	return ""
+}
+
+func (x *TestRequest) GetExtraArgs() []string {
+	if x != nil {
+		return x.ExtraArgs
+	}
+	return nil
 }
 
 type TestResponse struct {
@@ -2096,13 +2141,17 @@ const file_codefly_services_runtime_v0_runtime_proto_rawDesc = "" +
 	"\x06Status\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aSUCCESS\x10\x01\x12\t\n" +
-	"\x05ERROR\x10\x02\"\x89\x01\n" +
+	"\x05ERROR\x10\x02\"\xd8\x01\n" +
 	"\vTestRequest\x12\x16\n" +
 	"\x06target\x18\x01 \x01(\tR\x06target\x12\x18\n" +
 	"\averbose\x18\x02 \x01(\bR\averbose\x12\x12\n" +
 	"\x04race\x18\x03 \x01(\bR\x04race\x12\x18\n" +
 	"\atimeout\x18\x04 \x01(\tR\atimeout\x12\x1a\n" +
-	"\bcoverage\x18\x05 \x01(\bR\bcoverage\"\xae\x02\n" +
+	"\bcoverage\x18\x05 \x01(\bR\bcoverage\x12\x18\n" +
+	"\afilters\x18\x06 \x03(\tR\afilters\x12\x14\n" +
+	"\x05suite\x18\a \x01(\tR\x05suite\x12\x1d\n" +
+	"\n" +
+	"extra_args\x18\b \x03(\tR\textraArgs\"\xae\x02\n" +
 	"\fTestResponse\x12?\n" +
 	"\x06status\x18\x01 \x01(\v2'.codefly.services.runtime.v0.TestStatusR\x06status\x12\x16\n" +
 	"\x06output\x18\x02 \x01(\tR\x06output\x12\x1b\n" +

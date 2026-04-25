@@ -187,9 +187,9 @@ message TestStatus {
 }
 
 message TestRequest {
-  // Optional target: package path (e.g. "./handlers"), test function name
-  // (e.g. "TestHealthEndpoint"), or pattern (e.g. "TestHealth.*").
-  // Empty runs all tests.
+  // Optional target: package or directory scope (e.g. "./handlers" for Go,
+  // "tests/unit" for Python). For name-pattern filtering, prefer `filters`.
+  // Empty runs the agent's default scope.
   string target = 1;
 
   // Optional: run with verbose output.
@@ -204,6 +204,29 @@ message TestRequest {
   // Optional: run with coverage instrumentation. Off by default —
   // -cover roughly doubles compile time for test binaries.
   bool coverage = 5;
+
+  // Optional: name-pattern filters (regex). Multiple values are combined
+  // with OR. Each agent maps these to its native filter mechanism:
+  //   Go (go test):       -run "(p1|p2|...)"
+  //   JS (vitest/jest):   --testNamePattern "(p1|p2|...)"
+  //   JS (playwright):    --grep "(p1|p2|...)"
+  //   Python (pytest):    -k "p1 or p2 or ..."
+  // Empty list matches everything.
+  repeated string filters = 6;
+
+  // Optional: named test suite. Agents decide what each name means.
+  // Conventional values:
+  //   "unit"        — fast, no infra (default if empty)
+  //   "integration" — needs dependencies via withDependencies
+  //   "e2e"         — full stack via Playwright/Cypress/etc.
+  //   "smoke"       — minimal post-deploy checks
+  // Agents that only run one kind of test ignore this.
+  string suite = 7;
+
+  // Optional: extra args appended verbatim to the underlying test runner
+  // command. Power-user escape hatch for flags codefly does not model.
+  // Agents must NOT interpret these — pass through unchanged.
+  repeated string extra_args = 8;
 }
 
 message TestResponse {

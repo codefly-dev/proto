@@ -11,6 +11,7 @@ class BuilderStub(object):
     - creation
     - Docker build
     - Deployment manifests
+    - Dependency audit / upgrade
     """
 
     def __init__(self, channel):
@@ -54,6 +55,16 @@ class BuilderStub(object):
                 request_serializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.DeploymentRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.DeploymentResponse.FromString,
                 _registered_method=True)
+        self.Audit = channel.unary_unary(
+                '/codefly.services.builder.v0.Builder/Audit',
+                request_serializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.AuditRequest.SerializeToString,
+                response_deserializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.AuditResponse.FromString,
+                _registered_method=True)
+        self.Upgrade = channel.unary_unary(
+                '/codefly.services.builder.v0.Builder/Upgrade',
+                request_serializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.UpgradeRequest.SerializeToString,
+                response_deserializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.UpgradeResponse.FromString,
+                _registered_method=True)
         self.Communicate = channel.stream_stream(
                 '/codefly.services.builder.v0.Builder/Communicate',
                 request_serializer=codefly_dot_services_dot_agent_dot_v0_dot_communicate__pb2.Answer.SerializeToString,
@@ -66,6 +77,7 @@ class BuilderServicer(object):
     - creation
     - Docker build
     - Deployment manifests
+    - Dependency audit / upgrade
     """
 
     def Load(self, request, context):
@@ -110,6 +122,19 @@ class BuilderServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def Deploy(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Audit(self, request, context):
+        """Dependency hygiene
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Upgrade(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -161,6 +186,16 @@ def add_BuilderServicer_to_server(servicer, server):
                     request_deserializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.DeploymentRequest.FromString,
                     response_serializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.DeploymentResponse.SerializeToString,
             ),
+            'Audit': grpc.unary_unary_rpc_method_handler(
+                    servicer.Audit,
+                    request_deserializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.AuditRequest.FromString,
+                    response_serializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.AuditResponse.SerializeToString,
+            ),
+            'Upgrade': grpc.unary_unary_rpc_method_handler(
+                    servicer.Upgrade,
+                    request_deserializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.UpgradeRequest.FromString,
+                    response_serializer=codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.UpgradeResponse.SerializeToString,
+            ),
             'Communicate': grpc.stream_stream_rpc_method_handler(
                     servicer.Communicate,
                     request_deserializer=codefly_dot_services_dot_agent_dot_v0_dot_communicate__pb2.Answer.FromString,
@@ -179,6 +214,7 @@ class Builder(object):
     - creation
     - Docker build
     - Deployment manifests
+    - Dependency audit / upgrade
     """
 
     @staticmethod
@@ -360,6 +396,60 @@ class Builder(object):
             '/codefly.services.builder.v0.Builder/Deploy',
             codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.DeploymentRequest.SerializeToString,
             codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.DeploymentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Audit(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/codefly.services.builder.v0.Builder/Audit',
+            codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.AuditRequest.SerializeToString,
+            codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.AuditResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Upgrade(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/codefly.services.builder.v0.Builder/Upgrade',
+            codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.UpgradeRequest.SerializeToString,
+            codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2.UpgradeResponse.FromString,
             options,
             channel_credentials,
             insecure,

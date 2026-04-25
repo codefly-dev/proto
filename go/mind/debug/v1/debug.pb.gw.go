@@ -10,6 +10,7 @@ package debugv1
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 
@@ -24,298 +25,340 @@ import (
 )
 
 // Suppress "imported and not used" errors
-var _ codes.Code
-var _ io.Reader
-var _ status.Status
-var _ = runtime.String
-var _ = utilities.NewDoubleArray
-var _ = metadata.Join
+var (
+	_ codes.Code
+	_ io.Reader
+	_ status.Status
+	_ = errors.New
+	_ = runtime.String
+	_ = utilities.NewDoubleArray
+	_ = metadata.Join
+)
 
 func request_DebugService_GetDashboard_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetDashboardRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetDashboardRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetDashboard(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetDashboard_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetDashboardRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetDashboardRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetDashboard(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetContext_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetContextRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetContextRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetContext(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetContext_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetContextRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetContextRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetContext(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetMemory_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetMemoryRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetMemoryRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetMemory(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetMemory_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetMemoryRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetMemoryRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetMemory(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetSession_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetSessionRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetSessionRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetSession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetSession_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetSessionRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetSessionRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetSession(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetObjectiveGraph_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetObjectiveGraphRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetObjectiveGraphRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetObjectiveGraph(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetObjectiveGraph_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetObjectiveGraphRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetObjectiveGraphRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetObjectiveGraph(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetTrace_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTraceRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetTraceRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetTrace(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetTrace_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTraceRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetTraceRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetTrace(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetMetrics_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetMetricsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetMetricsRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetMetrics(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetMetrics_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetMetricsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetMetricsRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetMetrics(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetCostBreakdown_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetCostBreakdownRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetCostBreakdownRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetCostBreakdown(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetCostBreakdown_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetCostBreakdownRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetCostBreakdownRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetCostBreakdown(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetSymbolMap_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetSymbolMapRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetSymbolMapRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetSymbolMap(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetSymbolMap_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetSymbolMapRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetSymbolMapRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetSymbolMap(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetFileChanges_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFileChangesRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetFileChangesRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetFileChanges(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetFileChanges_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFileChangesRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetFileChangesRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetFileChanges(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetLastSummary_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetLastSummaryRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetLastSummaryRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetLastSummary(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetLastSummary_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetLastSummaryRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetLastSummaryRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetLastSummary(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetRules_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetRulesRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetRulesRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetRules(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetRules_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetRulesRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetRulesRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetRules(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
-var (
-	filter_DebugService_GetLLMCalls_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
+var filter_DebugService_GetLLMCalls_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 
 func request_DebugService_GetLLMCalls_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetLLMCallsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetLLMCallsRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DebugService_GetLLMCalls_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
 	msg, err := client.GetLLMCalls(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetLLMCalls_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetLLMCallsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetLLMCallsRequest
+		metadata runtime.ServerMetadata
+	)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DebugService_GetLLMCalls_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
 	msg, err := server.GetLLMCalls(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 func request_DebugService_GetMiddlewareState_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetMiddlewareStateRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetMiddlewareStateRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetMiddlewareState(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_DebugService_GetMiddlewareState_0(ctx context.Context, marshaler runtime.Marshaler, server DebugServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetMiddlewareStateRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq GetMiddlewareStateRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.GetMiddlewareState(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
-var (
-	filter_DebugService_StreamEvents_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
+var filter_DebugService_StreamEvents_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 
 func request_DebugService_StreamEvents_0(ctx context.Context, marshaler runtime.Marshaler, client DebugServiceClient, req *http.Request, pathParams map[string]string) (DebugService_StreamEventsClient, runtime.ServerMetadata, error) {
-	var protoReq StreamEventsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq StreamEventsRequest
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DebugService_StreamEvents_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
 	stream, err := client.StreamEvents(ctx, &protoReq)
 	if err != nil {
 		return nil, metadata, err
@@ -326,24 +369,21 @@ func request_DebugService_StreamEvents_0(ctx context.Context, marshaler runtime.
 	}
 	metadata.HeaderMD = header
 	return stream, metadata, nil
-
 }
 
 // RegisterDebugServiceHandlerServer registers the http handlers for service DebugService to "mux".
 // UnaryRPC     :call DebugServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterDebugServiceHandlerFromEndpoint instead.
+// GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server DebugServiceServer) error {
-
-	mux.Handle("GET", pattern_DebugService_GetDashboard_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetDashboard_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetDashboard", runtime.WithHTTPPathPattern("/v1/debug/dashboard"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetDashboard", runtime.WithHTTPPathPattern("/v1/debug/dashboard"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -355,20 +395,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetDashboard_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetContext_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetContext_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetContext", runtime.WithHTTPPathPattern("/v1/debug/context"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetContext", runtime.WithHTTPPathPattern("/v1/debug/context"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -380,20 +415,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetContext_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetMemory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetMemory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMemory", runtime.WithHTTPPathPattern("/v1/debug/memory"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMemory", runtime.WithHTTPPathPattern("/v1/debug/memory"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -405,20 +435,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetMemory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSession", runtime.WithHTTPPathPattern("/v1/debug/session"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSession", runtime.WithHTTPPathPattern("/v1/debug/session"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -430,20 +455,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetSession_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetObjectiveGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetObjectiveGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetObjectiveGraph", runtime.WithHTTPPathPattern("/v1/debug/objectives"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetObjectiveGraph", runtime.WithHTTPPathPattern("/v1/debug/objectives"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -455,20 +475,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetObjectiveGraph_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetTrace_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetTrace_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetTrace", runtime.WithHTTPPathPattern("/v1/debug/trace"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetTrace", runtime.WithHTTPPathPattern("/v1/debug/trace"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -480,20 +495,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetTrace_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetMetrics_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetMetrics_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMetrics", runtime.WithHTTPPathPattern("/v1/debug/metrics"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMetrics", runtime.WithHTTPPathPattern("/v1/debug/metrics"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -505,20 +515,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetMetrics_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetCostBreakdown_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetCostBreakdown_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetCostBreakdown", runtime.WithHTTPPathPattern("/v1/debug/cost"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetCostBreakdown", runtime.WithHTTPPathPattern("/v1/debug/cost"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -530,20 +535,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetCostBreakdown_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetSymbolMap_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetSymbolMap_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSymbolMap", runtime.WithHTTPPathPattern("/v1/debug/symbols"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSymbolMap", runtime.WithHTTPPathPattern("/v1/debug/symbols"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -555,20 +555,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetSymbolMap_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetFileChanges_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetFileChanges_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetFileChanges", runtime.WithHTTPPathPattern("/v1/debug/files"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetFileChanges", runtime.WithHTTPPathPattern("/v1/debug/files"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -580,20 +575,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetFileChanges_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetLastSummary_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetLastSummary_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLastSummary", runtime.WithHTTPPathPattern("/v1/debug/summary"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLastSummary", runtime.WithHTTPPathPattern("/v1/debug/summary"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -605,20 +595,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetLastSummary_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetRules_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetRules_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetRules", runtime.WithHTTPPathPattern("/v1/debug/rules"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetRules", runtime.WithHTTPPathPattern("/v1/debug/rules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -630,20 +615,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetRules_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetLLMCalls_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetLLMCalls_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLLMCalls", runtime.WithHTTPPathPattern("/v1/debug/llm-calls"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLLMCalls", runtime.WithHTTPPathPattern("/v1/debug/llm-calls"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -655,20 +635,15 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetLLMCalls_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetMiddlewareState_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetMiddlewareState_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMiddlewareState", runtime.WithHTTPPathPattern("/v1/debug/middleware"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMiddlewareState", runtime.WithHTTPPathPattern("/v1/debug/middleware"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -680,12 +655,10 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetMiddlewareState_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
 
-	mux.Handle("GET", pattern_DebugService_StreamEvents_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_StreamEvents_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -698,25 +671,24 @@ func RegisterDebugServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 // RegisterDebugServiceHandlerFromEndpoint is same as RegisterDebugServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterDebugServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
-	conn, err := grpc.DialContext(ctx, endpoint, opts...)
+	conn, err := grpc.NewClient(endpoint, opts...)
 	if err != nil {
 		return err
 	}
 	defer func() {
 		if err != nil {
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Errorf("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 			return
 		}
 		go func() {
 			<-ctx.Done()
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Errorf("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 		}()
 	}()
-
 	return RegisterDebugServiceHandler(ctx, mux, conn)
 }
 
@@ -730,16 +702,13 @@ func RegisterDebugServiceHandler(ctx context.Context, mux *runtime.ServeMux, con
 // to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "DebugServiceClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "DebugServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "DebugServiceClient" to call the correct interceptors.
+// "DebugServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client DebugServiceClient) error {
-
-	mux.Handle("GET", pattern_DebugService_GetDashboard_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetDashboard_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetDashboard", runtime.WithHTTPPathPattern("/v1/debug/dashboard"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetDashboard", runtime.WithHTTPPathPattern("/v1/debug/dashboard"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -750,18 +719,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetDashboard_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetContext_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetContext_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetContext", runtime.WithHTTPPathPattern("/v1/debug/context"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetContext", runtime.WithHTTPPathPattern("/v1/debug/context"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -772,18 +736,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetContext_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetMemory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetMemory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMemory", runtime.WithHTTPPathPattern("/v1/debug/memory"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMemory", runtime.WithHTTPPathPattern("/v1/debug/memory"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -794,18 +753,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetMemory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSession", runtime.WithHTTPPathPattern("/v1/debug/session"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSession", runtime.WithHTTPPathPattern("/v1/debug/session"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -816,18 +770,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetSession_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetObjectiveGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetObjectiveGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetObjectiveGraph", runtime.WithHTTPPathPattern("/v1/debug/objectives"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetObjectiveGraph", runtime.WithHTTPPathPattern("/v1/debug/objectives"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -838,18 +787,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetObjectiveGraph_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetTrace_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetTrace_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetTrace", runtime.WithHTTPPathPattern("/v1/debug/trace"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetTrace", runtime.WithHTTPPathPattern("/v1/debug/trace"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -860,18 +804,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetTrace_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetMetrics_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetMetrics_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMetrics", runtime.WithHTTPPathPattern("/v1/debug/metrics"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMetrics", runtime.WithHTTPPathPattern("/v1/debug/metrics"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -882,18 +821,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetMetrics_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetCostBreakdown_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetCostBreakdown_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetCostBreakdown", runtime.WithHTTPPathPattern("/v1/debug/cost"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetCostBreakdown", runtime.WithHTTPPathPattern("/v1/debug/cost"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -904,18 +838,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetCostBreakdown_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetSymbolMap_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetSymbolMap_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSymbolMap", runtime.WithHTTPPathPattern("/v1/debug/symbols"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetSymbolMap", runtime.WithHTTPPathPattern("/v1/debug/symbols"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -926,18 +855,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetSymbolMap_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetFileChanges_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetFileChanges_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetFileChanges", runtime.WithHTTPPathPattern("/v1/debug/files"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetFileChanges", runtime.WithHTTPPathPattern("/v1/debug/files"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -948,18 +872,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetFileChanges_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetLastSummary_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetLastSummary_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLastSummary", runtime.WithHTTPPathPattern("/v1/debug/summary"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLastSummary", runtime.WithHTTPPathPattern("/v1/debug/summary"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -970,18 +889,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetLastSummary_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetRules_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetRules_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetRules", runtime.WithHTTPPathPattern("/v1/debug/rules"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetRules", runtime.WithHTTPPathPattern("/v1/debug/rules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -992,18 +906,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetRules_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetLLMCalls_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetLLMCalls_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLLMCalls", runtime.WithHTTPPathPattern("/v1/debug/llm-calls"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetLLMCalls", runtime.WithHTTPPathPattern("/v1/debug/llm-calls"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1014,18 +923,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetLLMCalls_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_GetMiddlewareState_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_GetMiddlewareState_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMiddlewareState", runtime.WithHTTPPathPattern("/v1/debug/middleware"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/GetMiddlewareState", runtime.WithHTTPPathPattern("/v1/debug/middleware"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1036,18 +940,13 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_GetMiddlewareState_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
-	mux.Handle("GET", pattern_DebugService_StreamEvents_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_DebugService_StreamEvents_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/StreamEvents", runtime.WithHTTPPathPattern("/v1/debug/events"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/mind.debug.v1.DebugService/StreamEvents", runtime.WithHTTPPathPattern("/v1/debug/events"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1058,74 +957,43 @@ func RegisterDebugServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_DebugService_StreamEvents_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
-
 	})
-
 	return nil
 }
 
 var (
-	pattern_DebugService_GetDashboard_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "dashboard"}, ""))
-
-	pattern_DebugService_GetContext_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "context"}, ""))
-
-	pattern_DebugService_GetMemory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "memory"}, ""))
-
-	pattern_DebugService_GetSession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "session"}, ""))
-
-	pattern_DebugService_GetObjectiveGraph_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "objectives"}, ""))
-
-	pattern_DebugService_GetTrace_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "trace"}, ""))
-
-	pattern_DebugService_GetMetrics_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "metrics"}, ""))
-
-	pattern_DebugService_GetCostBreakdown_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "cost"}, ""))
-
-	pattern_DebugService_GetSymbolMap_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "symbols"}, ""))
-
-	pattern_DebugService_GetFileChanges_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "files"}, ""))
-
-	pattern_DebugService_GetLastSummary_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "summary"}, ""))
-
-	pattern_DebugService_GetRules_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "rules"}, ""))
-
-	pattern_DebugService_GetLLMCalls_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "llm-calls"}, ""))
-
+	pattern_DebugService_GetDashboard_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "dashboard"}, ""))
+	pattern_DebugService_GetContext_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "context"}, ""))
+	pattern_DebugService_GetMemory_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "memory"}, ""))
+	pattern_DebugService_GetSession_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "session"}, ""))
+	pattern_DebugService_GetObjectiveGraph_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "objectives"}, ""))
+	pattern_DebugService_GetTrace_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "trace"}, ""))
+	pattern_DebugService_GetMetrics_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "metrics"}, ""))
+	pattern_DebugService_GetCostBreakdown_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "cost"}, ""))
+	pattern_DebugService_GetSymbolMap_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "symbols"}, ""))
+	pattern_DebugService_GetFileChanges_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "files"}, ""))
+	pattern_DebugService_GetLastSummary_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "summary"}, ""))
+	pattern_DebugService_GetRules_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "rules"}, ""))
+	pattern_DebugService_GetLLMCalls_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "llm-calls"}, ""))
 	pattern_DebugService_GetMiddlewareState_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "middleware"}, ""))
-
-	pattern_DebugService_StreamEvents_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "events"}, ""))
+	pattern_DebugService_StreamEvents_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "debug", "events"}, ""))
 )
 
 var (
-	forward_DebugService_GetDashboard_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetContext_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetMemory_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetSession_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetObjectiveGraph_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetTrace_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetMetrics_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetCostBreakdown_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetSymbolMap_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetFileChanges_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetLastSummary_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetRules_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_GetLLMCalls_0 = runtime.ForwardResponseMessage
-
+	forward_DebugService_GetDashboard_0       = runtime.ForwardResponseMessage
+	forward_DebugService_GetContext_0         = runtime.ForwardResponseMessage
+	forward_DebugService_GetMemory_0          = runtime.ForwardResponseMessage
+	forward_DebugService_GetSession_0         = runtime.ForwardResponseMessage
+	forward_DebugService_GetObjectiveGraph_0  = runtime.ForwardResponseMessage
+	forward_DebugService_GetTrace_0           = runtime.ForwardResponseMessage
+	forward_DebugService_GetMetrics_0         = runtime.ForwardResponseMessage
+	forward_DebugService_GetCostBreakdown_0   = runtime.ForwardResponseMessage
+	forward_DebugService_GetSymbolMap_0       = runtime.ForwardResponseMessage
+	forward_DebugService_GetFileChanges_0     = runtime.ForwardResponseMessage
+	forward_DebugService_GetLastSummary_0     = runtime.ForwardResponseMessage
+	forward_DebugService_GetRules_0           = runtime.ForwardResponseMessage
+	forward_DebugService_GetLLMCalls_0        = runtime.ForwardResponseMessage
 	forward_DebugService_GetMiddlewareState_0 = runtime.ForwardResponseMessage
-
-	forward_DebugService_StreamEvents_0 = runtime.ForwardResponseStream
+	forward_DebugService_StreamEvents_0       = runtime.ForwardResponseStream
 )

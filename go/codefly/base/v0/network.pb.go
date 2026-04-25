@@ -22,9 +22,7 @@ const (
 )
 
 // An endpoint to be accessed needs Network Mapping.
-//
-// # Network Mappings come with different scopes
-//
+// Network Mappings come with different scopes
 // - FromContainer: This is the mapping we want to use inside Container
 // - FromHost: This is the mapping we want to use from the Host
 // - Public: This is the mapping we want to use if something is publicly accessible: match to a DNS record

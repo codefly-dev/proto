@@ -27,6 +27,8 @@ const (
 	Builder_Sync_FullMethodName        = "/codefly.services.builder.v0.Builder/Sync"
 	Builder_Build_FullMethodName       = "/codefly.services.builder.v0.Builder/Build"
 	Builder_Deploy_FullMethodName      = "/codefly.services.builder.v0.Builder/Deploy"
+	Builder_Audit_FullMethodName       = "/codefly.services.builder.v0.Builder/Audit"
+	Builder_Upgrade_FullMethodName     = "/codefly.services.builder.v0.Builder/Upgrade"
 	Builder_Communicate_FullMethodName = "/codefly.services.builder.v0.Builder/Communicate"
 )
 
@@ -38,6 +40,7 @@ const (
 // - creation
 // - Docker build
 // - Deployment manifests
+// - Dependency audit / upgrade
 type BuilderClient interface {
 	// Load the service
 	Load(ctx context.Context, in *LoadRequest, opts ...grpc.CallOption) (*LoadResponse, error)
@@ -51,6 +54,9 @@ type BuilderClient interface {
 	// Deployment/Build only on init data
 	Build(ctx context.Context, in *BuildRequest, opts ...grpc.CallOption) (*BuildResponse, error)
 	Deploy(ctx context.Context, in *DeploymentRequest, opts ...grpc.CallOption) (*DeploymentResponse, error)
+	// Dependency hygiene
+	Audit(ctx context.Context, in *AuditRequest, opts ...grpc.CallOption) (*AuditResponse, error)
+	Upgrade(ctx context.Context, in *UpgradeRequest, opts ...grpc.CallOption) (*UpgradeResponse, error)
 	// Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).
 	// Plugin streams Questions, CLI streams Answers.
 	Communicate(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[v0.Answer, v0.Question], error)
@@ -134,6 +140,26 @@ func (c *builderClient) Deploy(ctx context.Context, in *DeploymentRequest, opts 
 	return out, nil
 }
 
+func (c *builderClient) Audit(ctx context.Context, in *AuditRequest, opts ...grpc.CallOption) (*AuditResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuditResponse)
+	err := c.cc.Invoke(ctx, Builder_Audit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *builderClient) Upgrade(ctx context.Context, in *UpgradeRequest, opts ...grpc.CallOption) (*UpgradeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpgradeResponse)
+	err := c.cc.Invoke(ctx, Builder_Upgrade_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *builderClient) Communicate(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[v0.Answer, v0.Question], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &Builder_ServiceDesc.Streams[0], Builder_Communicate_FullMethodName, cOpts...)
@@ -155,6 +181,7 @@ type Builder_CommunicateClient = grpc.BidiStreamingClient[v0.Answer, v0.Question
 // - creation
 // - Docker build
 // - Deployment manifests
+// - Dependency audit / upgrade
 type BuilderServer interface {
 	// Load the service
 	Load(context.Context, *LoadRequest) (*LoadResponse, error)
@@ -168,6 +195,9 @@ type BuilderServer interface {
 	// Deployment/Build only on init data
 	Build(context.Context, *BuildRequest) (*BuildResponse, error)
 	Deploy(context.Context, *DeploymentRequest) (*DeploymentResponse, error)
+	// Dependency hygiene
+	Audit(context.Context, *AuditRequest) (*AuditResponse, error)
+	Upgrade(context.Context, *UpgradeRequest) (*UpgradeResponse, error)
 	// Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).
 	// Plugin streams Questions, CLI streams Answers.
 	Communicate(grpc.BidiStreamingServer[v0.Answer, v0.Question]) error
@@ -201,6 +231,12 @@ func (UnimplementedBuilderServer) Build(context.Context, *BuildRequest) (*BuildR
 }
 func (UnimplementedBuilderServer) Deploy(context.Context, *DeploymentRequest) (*DeploymentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Deploy not implemented")
+}
+func (UnimplementedBuilderServer) Audit(context.Context, *AuditRequest) (*AuditResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Audit not implemented")
+}
+func (UnimplementedBuilderServer) Upgrade(context.Context, *UpgradeRequest) (*UpgradeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Upgrade not implemented")
 }
 func (UnimplementedBuilderServer) Communicate(grpc.BidiStreamingServer[v0.Answer, v0.Question]) error {
 	return status.Error(codes.Unimplemented, "method Communicate not implemented")
@@ -352,6 +388,42 @@ func _Builder_Deploy_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Builder_Audit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuditRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BuilderServer).Audit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Builder_Audit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BuilderServer).Audit(ctx, req.(*AuditRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Builder_Upgrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpgradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BuilderServer).Upgrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Builder_Upgrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BuilderServer).Upgrade(ctx, req.(*UpgradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Builder_Communicate_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(BuilderServer).Communicate(&grpc.GenericServerStream[v0.Answer, v0.Question]{ServerStream: stream})
 }
@@ -393,6 +465,14 @@ var Builder_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Deploy",
 			Handler:    _Builder_Deploy_Handler,
+		},
+		{
+			MethodName: "Audit",
+			Handler:    _Builder_Audit_Handler,
+		},
+		{
+			MethodName: "Upgrade",
+			Handler:    _Builder_Upgrade_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

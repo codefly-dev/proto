@@ -11,7 +11,6 @@ class RuntimeStub(object):
     Public API
 
 
-
     Runtime service
 
     """
@@ -77,7 +76,6 @@ class RuntimeStub(object):
 class RuntimeServicer(object):
     """
     Public API
-
 
 
     Runtime service
@@ -222,7 +220,6 @@ def add_RuntimeServicer_to_server(servicer, server):
 class Runtime(object):
     """
     Public API
-
 
 
     Runtime service

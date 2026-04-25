@@ -41,45 +41,15 @@ class CodeStub(object):
                 request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesResponse.FromString,
                 _registered_method=True)
-        self.RenameSymbol = channel.unary_unary(
-                '/codefly.services.code.v0.Code/RenameSymbol',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RenameSymbolRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RenameSymbolResponse.FromString,
-                _registered_method=True)
         self.GetHoverInfo = channel.unary_unary(
                 '/codefly.services.code.v0.Code/GetHoverInfo',
                 request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoResponse.FromString,
                 _registered_method=True)
-        self.Fix = channel.unary_unary(
-                '/codefly.services.code.v0.Code/Fix',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FixRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FixResponse.FromString,
-                _registered_method=True)
         self.ApplyEdit = channel.unary_unary(
                 '/codefly.services.code.v0.Code/ApplyEdit',
                 request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditResponse.FromString,
-                _registered_method=True)
-        self.ListDependencies = channel.unary_unary(
-                '/codefly.services.code.v0.Code/ListDependencies',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListDependenciesRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListDependenciesResponse.FromString,
-                _registered_method=True)
-        self.AddDependency = channel.unary_unary(
-                '/codefly.services.code.v0.Code/AddDependency',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.AddDependencyRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.AddDependencyResponse.FromString,
-                _registered_method=True)
-        self.RemoveDependency = channel.unary_unary(
-                '/codefly.services.code.v0.Code/RemoveDependency',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RemoveDependencyRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RemoveDependencyResponse.FromString,
-                _registered_method=True)
-        self.GetProjectInfo = channel.unary_unary(
-                '/codefly.services.code.v0.Code/GetProjectInfo',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetProjectInfoRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetProjectInfoResponse.FromString,
                 _registered_method=True)
         self.GetCallGraph = channel.unary_unary(
                 '/codefly.services.code.v0.Code/GetCallGraph',
@@ -99,16 +69,21 @@ class CodeServicer(object):
     """
 
     def Execute(self, request, context):
-        """Execute dispatches any code operation via a single RPC.
-        Plugins override language-specific handlers (LSP, Fix, dependency management).
-        File I/O and git operations are handled directly by Mind — not via this service.
+        """Execute is the unified dispatch entry point for every code operation.
+        Clients wrap the specific request type in a CodeRequest oneof; the
+        plugin's Execute handler unwraps + dispatches. This is the path Mind
+        uses for everything except the few direct RPCs below that predate
+        the unification and still have live callers in codefly-cli.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ListSymbols(self, request, context):
-        """--- Individual RPCs for language-specific operations ---
+        """--- Direct RPCs kept because cli/pkg/mcp + cli/pkg/gateway call them ---
+        Migrating these to Execute is a follow-up; when those callers move,
+        delete each RPC here the same way we deleted the file/git/dep
+        operations in this cleanup.
 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -133,49 +108,13 @@ class CodeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def RenameSymbol(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
     def GetHoverInfo(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Fix(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
     def ApplyEdit(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ListDependencies(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def AddDependency(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def RemoveDependency(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetProjectInfo(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -224,45 +163,15 @@ def add_CodeServicer_to_server(servicer, server):
                     request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesRequest.FromString,
                     response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesResponse.SerializeToString,
             ),
-            'RenameSymbol': grpc.unary_unary_rpc_method_handler(
-                    servicer.RenameSymbol,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RenameSymbolRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RenameSymbolResponse.SerializeToString,
-            ),
             'GetHoverInfo': grpc.unary_unary_rpc_method_handler(
                     servicer.GetHoverInfo,
                     request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoRequest.FromString,
                     response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoResponse.SerializeToString,
             ),
-            'Fix': grpc.unary_unary_rpc_method_handler(
-                    servicer.Fix,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FixRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FixResponse.SerializeToString,
-            ),
             'ApplyEdit': grpc.unary_unary_rpc_method_handler(
                     servicer.ApplyEdit,
                     request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditRequest.FromString,
                     response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditResponse.SerializeToString,
-            ),
-            'ListDependencies': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDependencies,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListDependenciesRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListDependenciesResponse.SerializeToString,
-            ),
-            'AddDependency': grpc.unary_unary_rpc_method_handler(
-                    servicer.AddDependency,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.AddDependencyRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.AddDependencyResponse.SerializeToString,
-            ),
-            'RemoveDependency': grpc.unary_unary_rpc_method_handler(
-                    servicer.RemoveDependency,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RemoveDependencyRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RemoveDependencyResponse.SerializeToString,
-            ),
-            'GetProjectInfo': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetProjectInfo,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetProjectInfoRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetProjectInfoResponse.SerializeToString,
             ),
             'GetCallGraph': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCallGraph,
@@ -423,33 +332,6 @@ class Code(object):
             _registered_method=True)
 
     @staticmethod
-    def RenameSymbol(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/RenameSymbol',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RenameSymbolRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RenameSymbolResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
     def GetHoverInfo(request,
             target,
             options=(),
@@ -477,33 +359,6 @@ class Code(object):
             _registered_method=True)
 
     @staticmethod
-    def Fix(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/Fix',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FixRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FixResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
     def ApplyEdit(request,
             target,
             options=(),
@@ -520,114 +375,6 @@ class Code(object):
             '/codefly.services.code.v0.Code/ApplyEdit',
             codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditRequest.SerializeToString,
             codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def ListDependencies(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/ListDependencies',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListDependenciesRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListDependenciesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def AddDependency(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/AddDependency',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.AddDependencyRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.AddDependencyResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def RemoveDependency(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/RemoveDependency',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RemoveDependencyRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.RemoveDependencyResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetProjectInfo(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/GetProjectInfo',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetProjectInfoRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetProjectInfoResponse.FromString,
             options,
             channel_credentials,
             insecure,
