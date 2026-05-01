@@ -13,6 +13,8 @@ import "codefly/base/v0/configuration.proto";
 import "codefly/services/agent/v0/agent.proto";
 import "codefly/services/agent/v0/communicate.proto";
 
+import "google/protobuf/duration.proto";
+
 /*
 Running a service follow several steps where relevant information about the runtime environment is shared
 */
@@ -230,14 +232,303 @@ message TestRequest {
 }
 
 message TestResponse {
-  TestStatus status = 1;
-  string output = 2;
-  int32 tests_run = 3;
-  int32 tests_passed = 4;
-  int32 tests_failed = 5;
-  int32 tests_skipped = 6;
-  float coverage_pct = 7;
-  repeated string failures = 8;
+  // --- Legacy flat fields ---
+  // Kept populated for backward compatibility while consumers migrate
+  // to the structured tree below. New code SHOULD prefer `result`,
+  // `counts`, and `suites`. The flat fields are computed from the
+  // structured tree — single source of truth.
+  TestStatus status = 1 [deprecated = true];
+  // Legacy: full runner output dump. Wastes bandwidth + Mind context
+  // on large suites. New consumers read per-case `captured_output`
+  // from `suites[].cases[]` (populated only for FAILED/ERRORED cases
+  // unless TestRequest.verbose is true).
+  string output = 2 [deprecated = true];
+  int32 tests_run = 3 [deprecated = true];
+  int32 tests_passed = 4 [deprecated = true];
+  int32 tests_failed = 5 [deprecated = true];
+  int32 tests_skipped = 6 [deprecated = true];
+  float coverage_pct = 7 [deprecated = true];
+  repeated string failures = 8 [deprecated = true];
+
+  // --- Structured fields ---
+
+  // Run-level metadata (which runner ran, how long, etc).
+  TestRun run = 9;
+
+  // Overall outcome of the entire run. Independent from per-case
+  // states because a run can ERROR (build failure, infra setup
+  // failure) without any individual case running.
+  TestRunResult result = 10;
+
+  // Aggregate counts. Computed from `suites`; surfaced top-level for
+  // fast access (callers wanting "did the run pass?" don't have to
+  // walk the tree).
+  TestCounts counts = 11;
+
+  // Hierarchical results: a run contains suites; suites contain
+  // sub-suites and/or cases. A "suite" is whatever the runner's
+  // grouping primitive is — a Go package, a pytest test file, a
+  // Jest describe block. Nesting allowed (Jest describe-in-describe,
+  // pytest classes inside files).
+  repeated TestSuite suites = 12;
+
+  // Optional coverage breakdown. Only set when TestRequest.coverage
+  // was true.
+  TestCoverage coverage = 13;
+
+  // Truncation metadata — surfaces when the runner emitted more
+  // output than the agent's caps allow. Mind/CLI display the cap
+  // and offer to fetch the full output for specific cases on demand.
+  TestTruncation truncation = 14;
+}
+
+// TestRun carries metadata about the run itself — independent of
+// what passed or failed.
+message TestRun {
+  // Runner identity. Conventional values:
+  //   "go-test"   — `go test -json`
+  //   "pytest"    — pytest with junit-xml or pytest-json-report
+  //   "vitest"    — vitest with --reporter=json
+  //   "jest"      — jest with --json
+  //   "playwright" — playwright with --reporter=json
+  string runner = 1;
+
+  // The TestRequest.suite the agent honored ("unit" | "integration"
+  // | "e2e" | "smoke" | ""). Echoed so consumers that buffer
+  // multiple runs can group by suite.
+  string suite_name = 2;
+
+  // Wall-clock duration of the entire run.
+  google.protobuf.Duration duration = 3;
+}
+
+// TestRunResult is the run-level outcome. Distinct from per-case
+// state because a run can be aborted before/during cases:
+// BUILD_ERROR (compile-fail), SETUP_ERROR (fixture failed), TIMEOUT
+// (whole-run timeout fired).
+message TestRunResult {
+  enum State {
+    UNKNOWN = 0;
+    // All cases passed (or skipped); zero failures + zero errors.
+    PASSED = 1;
+    // At least one case failed an assertion.
+    FAILED = 2;
+    // Run-level error: build failure, setup/teardown crash, infra
+    // unreachable. Distinct from FAILED — the agent may not even
+    // know how many cases would have run.
+    ERRORED = 3;
+    // Whole-run timeout fired before completion.
+    TIMED_OUT = 4;
+  }
+  State state = 1;
+  // Human-readable summary suitable for a status line.
+  string message = 2;
+}
+
+// TestCounts is the aggregate ledger. Errored is distinct from
+// failed — a case that PANICED or had setup-fail is `errored`; a
+// case that ran but failed an assertion is `failed`. Flaky counts
+// cases that passed on retry (retry_attempts > 1).
+message TestCounts {
+  int32 total = 1;
+  int32 passed = 2;
+  int32 failed = 3;
+  int32 skipped = 4;
+  int32 errored = 5;
+  int32 flaky = 6;
+}
+
+// TestSuite is a grouping primitive — a Go package, a Python test
+// file, a Jest describe block, a Playwright project. Suites can
+// nest (`suites`) AND contain cases (`cases`); both populated is
+// fine for runners that allow case-AND-subgroup mixing.
+message TestSuite {
+  // Logical name. Conventionally:
+  //   Go:         "github.com/codefly-dev/core/policy"
+  //   Python:     "tests/test_users.py"
+  //   Jest:       "describe block path"
+  //   Playwright: "project: tests/login.spec.ts"
+  string name = 1;
+
+  // Filesystem path to the suite source (absolute or repo-relative).
+  // Used for IDE jump.
+  string file = 2;
+
+  // Wall-clock duration of the suite (sum of cases + setup/teardown).
+  google.protobuf.Duration duration = 3;
+
+  // Suite-level counts (sum of contained cases + sub-suites).
+  TestCounts counts = 4;
+
+  // Sub-suites (Jest describe-in-describe, pytest class-in-file).
+  repeated TestSuite suites = 5;
+
+  // Test cases directly in this suite.
+  repeated TestCase cases = 6;
+}
+
+// TestCase is a single test invocation. The unit Mind reasons about
+// when it asks "what failed?".
+message TestCase {
+  // Local case name as the runner reports it.
+  //   Go:     "TestPolicy_Apply_DefaultsToDeny"
+  //   Python: "test_user_creation"
+  //   Jest:   "should reject expired tokens"
+  string name = 1;
+
+  // Fully-qualified name across the workspace; useful for
+  // de-duplication when the same `name` appears in multiple suites.
+  //   "github.com/codefly-dev/core/policy.TestPolicy_Apply_DefaultsToDeny"
+  string full_name = 2;
+
+  // Per-case outcome.
+  TestCaseState state = 3;
+
+  // Wall-clock duration of THIS case (excludes parent suite setup).
+  google.protobuf.Duration duration = 4;
+
+  // Source location — file + line + (when known) function. Drives
+  // IDE jump and makes Mind's "the failure is at X" actionable.
+  TestLocation location = 5;
+
+  // Failure detail. Empty when state == PASSED. Required when state
+  // is FAILED or ERRORED.
+  TestFailure failure = 6;
+
+  // Stdout/stderr captured during the case execution. Populated for
+  // FAILED/ERRORED. EMPTY for PASSED unless TestRequest.verbose was
+  // set. The output retention policy is the load-bearing fix that
+  // keeps response sizes manageable on large suites.
+  string captured_output = 7;
+
+  // Tags / categories declared on the test (Go build tags, pytest
+  // marks, Jest test.skip annotations). Useful for filtering in
+  // reporting layers without re-running.
+  repeated string tags = 8;
+
+  // Retry attempts. Only set when the runner re-ran the case
+  // (Jest's `retries`, Playwright's `retries`). Each entry is a
+  // distinct attempt; the `state` of the final attempt matches
+  // the case's top-level `state`.
+  repeated TestRetry retries = 9;
+}
+
+// TestCaseState is the per-case outcome. Distinct from
+// TestRunResult — a run can be FAILED while individual cases were
+// PASSED (others failed); a run can be PASSED while a case was
+// SKIPPED.
+enum TestCaseState {
+  TEST_CASE_STATE_UNSPECIFIED = 0;
+  TEST_CASE_STATE_PASSED = 1;
+  TEST_CASE_STATE_FAILED = 2;
+  TEST_CASE_STATE_SKIPPED = 3;
+  // ERRORED is for non-assertion failures: panics, setup/teardown
+  // crashes, build failures attributed to this case. Surfaced
+  // separately because the diagnosis flow differs (a panic is a
+  // bug in the test or production code; an assertion fail is a bug
+  // in production code).
+  TEST_CASE_STATE_ERRORED = 4;
+}
+
+// TestFailure carries the diagnostic detail for failed/errored cases.
+message TestFailure {
+  // One-line summary: "expected 3, got 5" or "panic: nil pointer dereference".
+  string message = 1;
+
+  // Multi-line detail: stack trace, full diff, expected vs actual.
+  // Bounded by the agent's per-case output cap.
+  string detail = 2;
+
+  // Failure category. Drives Mind's diagnosis flow.
+  TestFailureKind kind = 3;
+
+  // Location where the assertion fired or the panic occurred —
+  // typically deeper than the case's declaration site.
+  TestLocation source_location = 4;
+
+  // Skip reason when the case was SKIPPED (not technically a
+  // failure, but the explanation lives in the same struct so
+  // consumers have one place to look).
+  string skip_reason = 5;
+}
+
+enum TestFailureKind {
+  TEST_FAILURE_KIND_UNSPECIFIED = 0;
+  // Plain assertion failure: require.Equal, expect().toBe(), assert.
+  TEST_FAILURE_KIND_ASSERTION = 1;
+  // Unhandled panic / exception during execution.
+  TEST_FAILURE_KIND_PANIC = 2;
+  // Per-case timeout (NOT whole-run; that's TestRunResult.TIMED_OUT).
+  TEST_FAILURE_KIND_TIMEOUT = 3;
+  // Compile/build failure attributed to this suite (no cases
+  // actually ran, but the runner reports them as "failed").
+  TEST_FAILURE_KIND_BUILD_ERROR = 4;
+  // Setup or teardown crash (BeforeEach, fixture, BeforeAll).
+  TEST_FAILURE_KIND_SETUP = 5;
+}
+
+// TestLocation pins a source location for IDE jump.
+message TestLocation {
+  // File path. Absolute or repo-relative — agent's choice; consumers
+  // resolve via SourceLocation when needed.
+  string file = 1;
+  int32 line = 2;
+  int32 column = 3;
+  // Function name when available (Go: TestFoo; pytest: test_foo).
+  string function = 4;
+}
+
+// TestRetry is one attempt of a case that was retried.
+message TestRetry {
+  int32 attempt = 1;            // 1-indexed
+  TestCaseState state = 2;
+  google.protobuf.Duration duration = 3;
+  // Failure detail if the attempt failed. Empty if it passed.
+  TestFailure failure = 4;
+}
+
+// TestCoverage is the optional coverage breakdown — only populated
+// when TestRequest.coverage was true.
+message TestCoverage {
+  // Overall coverage 0-100.
+  float total_pct = 1;
+
+  // Per-file breakdown. Conventionally sorted by lowest pct first
+  // (most interesting to inspect).
+  repeated TestFileCoverage files = 2;
+
+  // Path to the raw artifact (cover.out for Go, lcov.info for JS).
+  // Optional — agents may or may not surface this. Consumers that
+  // need finer detail (per-line marks, branch coverage) read this.
+  string raw_artifact_path = 3;
+
+  // Format identifier for the raw artifact.
+  // Conventional values: "go-cover" | "lcov" | "cobertura" | "junit".
+  string raw_artifact_format = 4;
+}
+
+message TestFileCoverage {
+  string file = 1;
+  float pct = 2;
+  int32 lines_covered = 3;
+  int32 lines_total = 4;
+}
+
+// TestTruncation surfaces when the agent's output caps fired and
+// dropped data. Mind/CLI shows "N cases had truncated output, use
+// --verbose for full" rather than silently lying about completeness.
+message TestTruncation {
+  // True iff any cap fired during this run.
+  bool happened = 1;
+  // Cap applied per case (bytes). 0 means "no cap".
+  int32 max_per_case_bytes = 2;
+  // Cap applied to the full TestResponse. 0 means "no cap".
+  int32 max_total_bytes = 3;
+  // How many cases had their `captured_output` truncated.
+  int32 truncated_cases = 4;
+  // How many cases were dropped from `suites[].cases[]` entirely
+  // (extreme overflow). 0 in normal operation.
+  int32 dropped_cases = 5;
 }
 
 /*
