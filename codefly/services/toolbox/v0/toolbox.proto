@@ -33,8 +33,33 @@ service Toolbox {
   // Identity returns the toolbox's manifest-derived metadata.
   rpc Identity(IdentityRequest) returns (IdentityResponse);
 
-  // ListTools returns every tool this toolbox exposes.
-  rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+  // ListTools returns every tool this toolbox exposes WITH FULL
+  // SPECS (schemas, descriptions). Heavy. Kept for transitional
+  // consumers and for MCP transcoding; new code should prefer the
+  // two-phase pair below — ListToolSummaries (catalog) +
+  // DescribeTool (per-tool spec on demand) — which keeps the LLM's
+  // routing context small while making per-call descriptions richer.
+  rpc ListTools(ListToolsRequest) returns (ListToolsResponse) {
+    option deprecated = true;
+  }
+
+  // ListToolSummaries returns lightweight catalog entries — enough
+  // for the LLM to pick a tool, but no schemas or examples. The
+  // load-bearing routing surface: with N toolboxes and M tools each,
+  // every LLM turn pays only the catalog cost (~50 bytes/tool); the
+  // heavy spec is fetched per-tool via DescribeTool right before
+  // invoking it, then drops out of context.
+  //
+  // Optional tags_filter pre-selects (e.g. ["read-only"]) so the
+  // LLM doesn't even see destructive tools when the goal is read.
+  rpc ListToolSummaries(ListToolSummariesRequest) returns (ListToolSummariesResponse);
+
+  // DescribeTool returns the full spec for ONE tool — input/output
+  // schemas, multi-paragraph description, examples, error modes.
+  // Called on-demand: the LLM picks a tool from the summary catalog,
+  // the host fetches DescribeTool for that one, injects it into the
+  // next prompt only, then drops it.
+  rpc DescribeTool(DescribeToolRequest) returns (DescribeToolResponse);
 
   // CallTool invokes a tool by name with structured arguments.
   // The result carries either a Content payload, an error, or both
@@ -80,8 +105,9 @@ message IdentityResponse {
 
 // --- Tools -------------------------------------------------------
 
-// Tool is a callable surface — a function the agent can invoke with
-// JSON-Schema-typed arguments and receive structured Content back.
+// Tool is the heavy "everything in one envelope" callable surface.
+// Returned by the legacy ListTools. New code prefers ToolSummary +
+// ToolSpec (two-phase) below.
 message Tool {
   // Dotted name. Convention: <toolbox>.<verb>, e.g. "git.commit",
   // "docker.run", "bash.exec".
@@ -98,6 +124,114 @@ message Tool {
   // Destructive marks the tool as state-mutating (writes, kills,
   // pushes). The host shows extra confirmation UI for these.
   bool destructive = 5;
+}
+
+// ToolSummary is a CATALOG ENTRY — enough for the LLM to decide
+// "should I pick this tool?" without paying the full-schema cost.
+// Returned by ListToolSummaries.
+//
+// The one-line description must answer "when would I call this?"
+// The tags drive pre-filtering ("read-only", "git", "destructive").
+// Schemas + examples live in ToolSpec, fetched per-tool via
+// DescribeTool right before invocation.
+message ToolSummary {
+  // Dotted name. Same convention as Tool.name.
+  string name = 1;
+  // ONE LINE optimized for routing decisions. ~120 chars or less
+  // by convention. Should answer "when would I pick this?"
+  string description = 2;
+  // Categories useful for pre-filtering. Conventional values:
+  //   read-only       — never mutates state
+  //   destructive     — mirrors Tool.destructive; surfaced for symmetry
+  //   network         — issues outbound network calls
+  //   filesystem      — reads or writes the host filesystem
+  //   <toolbox-name>  — every tool tags its toolbox name (git, docker, ...)
+  // Plus domain-specific tags the toolbox author chooses.
+  repeated string tags = 3;
+  // Mirrors Tool.destructive — promoted so callers can decide
+  // without combing tags.
+  bool destructive = 4;
+}
+
+// ToolSpec is the FULL spec for one tool. Heavy: contains JSON
+// Schemas + worked examples. Fetched on-demand via DescribeTool;
+// not part of any catalog list.
+message ToolSpec {
+  // Dotted name.
+  string name = 1;
+  // Multi-paragraph description allowed. Spell out the contract,
+  // edge cases, when to use vs. not use.
+  string description = 2;
+  // JSON Schema for the input. Same shape as Tool.input_schema.
+  google.protobuf.Struct input_schema = 3;
+  // JSON Schema for the result Content envelope. Optional.
+  google.protobuf.Struct output_schema = 4;
+  // Destructive marker; same semantics as Tool.destructive.
+  bool destructive = 5;
+  // Same tag set as ToolSummary.tags (kept here for self-containment
+  // — DescribeTool's response shouldn't require pairing with a
+  // separate summary fetch).
+  repeated string tags = 6;
+  // Worked examples. The single biggest win of the two-phase design:
+  // LLMs structure arguments dramatically better with 1-2 examples
+  // than with a JSON schema alone. Tool authors should always include
+  // at least one canonical example.
+  repeated ToolExample examples = 7;
+  // Idempotency hint for retry / dedup logic.
+  // Conventional values: "idempotent" | "side_effecting" | "unknown".
+  string idempotency = 8;
+  // Free-text on what failure looks like — when the tool fails, what
+  // does the error message contain, and what should the caller do?
+  // Helps the LLM diagnose without re-running the call.
+  string error_modes = 9;
+}
+
+// ToolExample is a worked invocation: arguments + outcome. The LLM
+// uses these to pattern-match its own call. Authors should pick
+// examples that span the parameter space (e.g. with vs without
+// optional flags) rather than just one happy path.
+message ToolExample {
+  // Human-readable summary of what this example demonstrates.
+  // E.g. "List the last 5 commits on the default branch".
+  string description = 1;
+  // Sample arguments matching input_schema.
+  google.protobuf.Struct arguments = 2;
+  // Expected outcome — short prose, not strict assertion.
+  // E.g. "returns 5 commit objects with hash, author, message".
+  string expected_outcome = 3;
+}
+
+// ListToolSummariesRequest can pre-filter by tags. Empty filter
+// returns every tool the toolbox exposes. With filter, only tools
+// whose tags include EVERY entry in tags_filter are returned (AND
+// semantics — a "read-only AND fast" filter is conjunctive).
+message ListToolSummariesRequest {
+  // Pre-filter: only return tools whose tags include every entry
+  // here (conjunctive AND). Empty = no filter. Useful for
+  // "read-only" pre-selection.
+  repeated string tags_filter = 1;
+}
+
+// ListToolSummariesResponse is the lightweight catalog.
+message ListToolSummariesResponse {
+  // Catalog entries — one per tool exposed by this toolbox after
+  // tags_filter is applied.
+  repeated ToolSummary tools = 1;
+}
+
+// DescribeToolRequest asks for the full spec of ONE tool by name.
+message DescribeToolRequest {
+  // Dotted tool name as returned in ToolSummary.name.
+  string name = 1;
+}
+
+// DescribeToolResponse carries the spec OR an error. Error is set
+// when name doesn't match any tool; tool is unset in that case.
+message DescribeToolResponse {
+  // Full spec when the named tool exists. Unset when error is set.
+  ToolSpec tool = 1;
+  // Set when the requested tool name doesn't exist. Empty on success.
+  string error = 2;
 }
 
 // ListToolsRequest asks for the toolbox's callable tool catalog.
