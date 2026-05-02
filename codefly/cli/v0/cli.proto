@@ -2,13 +2,11 @@ syntax = "proto3";
 
 package codefly.cli.v0;
 
-import "codefly/base/v0/endpoint.proto";
 import "codefly/base/v0/network.proto";
 import "codefly/base/v0/workspace.proto";
 import "codefly/base/v0/configuration.proto";
 
 import "codefly/services/agent/v0/agent.proto";
-import "codefly/services/runtime/v0/runtime.proto";
 
 import "codefly/observability/v0/inventory.proto";
 import "codefly/observability/v0/dependencies.proto";
@@ -18,88 +16,122 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
 
-import "google/protobuf/timestamp.proto";
-
-
 /* Overall information */
 
 
+// GetAgentInformationRequest identifies an installed agent to inspect.
 message GetAgentInformationRequest {
+  // agent is the agent name or reference, such as go-grpc or nextjs.
   string agent = 1;
 }
 
+// MultiGraphResponse contains multiple architecture graphs returned by one CLI endpoint.
 message MultiGraphResponse {
+  // graphs are architecture graphs, usually grouped by public module boundary.
   repeated codefly.observability.v0.GraphResponse graphs = 1;
 }
 
 /* Active information
 */
 
+// ActiveResponse reports the workspace/module/service context selected by the CLI.
 message ActiveResponse {
+  // workspace is the Codefly workspace name that scopes modules and services.
   string workspace = 1;
+  // module is the Codefly module name that groups services.
   string module = 2;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 3;
 }
 
+// RunningInformation reports an active service and the agent process handling it.
 message RunningInformation {
+  // module is the Codefly module name that groups services.
   string module = 1;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 2;
+  // agent_pid is the operating-system process id of the agent process.
   int32 agent_pid = 3;
 }
 
+// GetAddressRequest identifies the concrete address for one service endpoint.
 message GetAddressRequest {
+  // module is the Codefly module name that groups services.
   string module = 1;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 2;
+  // endpoint is the logical endpoint name declared by a service.
   string endpoint = 3;
 }
 
+// GetAddressResponse returns the address selected for the caller's runtime context.
 message GetAddressResponse {
+  // address is the concrete host or URL callers should use.
   string address = 1;
 }
 
-// Get Network Mappings
+// GetNetworkMappingsRequest identifies a service whose network mappings should be returned.
 message GetNetworkMappingsRequest {
+  // module is the Codefly module name that groups services.
   string module = 1;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 2;
 }
 
+// GetNetworkMappingsResponse returns concrete network instances for a service's endpoints.
 message GetNetworkMappingsResponse {
+  // network_mappings map logical endpoints to concrete network instances.
   repeated codefly.base.v0.NetworkMapping network_mappings = 1;
 }
 
 
+// GetConfigurationRequest identifies service-scoped configuration in the active workspace.
 message GetConfigurationRequest {
+  // module is the Codefly module name that groups services.
   string module = 1;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 2;
 }
 
+// GetConfigurationResponse returns the configuration declared by a service.
 message GetConfigurationResponse {
+  // configuration is the service or workspace configuration payload.
   codefly.base.v0.Configuration configuration = 1;
 }
 
 
+// GetConfigurationsResponse returns multiple configuration payloads for dependency/runtime flows.
 message GetConfigurationsResponse {
+  // configurations are configuration payloads exposed to a service.
   repeated codefly.base.v0.Configuration configurations = 1;
 }
 
+// FlowStatus reports whether the current orchestration flow is ready.
 message FlowStatus {
+  // ready is true when the flow or service has reached an operable state.
   bool ready = 1;
 }
 
+// StopFlowRequest asks the CLI to stop the active orchestration flow.
 message StopFlowRequest {
 }
 
+// StopFlowResponse acknowledges that the active flow stop request was accepted.
 message StopFlowResponse {
 }
 
+// DestroyFlowRequest asks the CLI to destroy resources owned by the active flow.
 message DestroyFlowRequest {
 }
 
+// DestroyFlowResponse acknowledges that destroy flow cleanup was requested.
 message DestroyFlowResponse {
 }
 
+// CLI exposes the local Codefly command bridge used by companion UIs and integrations.
 service CLI {
 
+  // Ping checks that the CLI bridge is reachable.
   rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/ping"
@@ -109,6 +141,7 @@ service CLI {
   /* Overall information
   */
 
+  // GetAgentInformation returns metadata and documentation for an installed agent.
   rpc GetAgentInformation(GetAgentInformationRequest) returns (codefly.services.agent.v0.AgentInformation) {
     option (google.api.http) = {
       get: "/agent/{agent}/information"
@@ -116,24 +149,28 @@ service CLI {
   }
 
 
+  // GetWorkspaceInventory returns the loaded workspace resource tree.
   rpc GetWorkspaceInventory(google.protobuf.Empty) returns (codefly.base.v0.Workspace) {
     option (google.api.http) = {
       get: "/workspace/inventory"
     };
   }
 
+  // GetWorkspaceServiceDependencyGraph returns the service dependency DAG for the workspace.
   rpc GetWorkspaceServiceDependencyGraph(google.protobuf.Empty) returns (codefly.observability.v0.GraphResponse) {
     option (google.api.http) = {
       get: "/workspace/service-dependency-graph"
     };
   }
 
+  // GetWorkspacePublicModulesDependencyGraph returns graphs of public module-facing endpoints.
   rpc GetWorkspacePublicModulesDependencyGraph(google.protobuf.Empty) returns (MultiGraphResponse) {
     option (google.api.http) = {
       get: "/workspace/public-endpoints-graph"
     };
   }
 
+  // GetActive returns the CLI's current workspace/module/service selection.
   rpc GetActive(google.protobuf.Empty) returns (ActiveResponse) {
     option (google.api.http) = {
       get: "/workspace/information"
@@ -141,54 +178,63 @@ service CLI {
   }
 
 
+  // GetAddresses returns the concrete address for a service endpoint.
   rpc GetAddresses(GetAddressRequest) returns (GetAddressResponse) {
     option (google.api.http) = {
       get: "/workspace/network-mapping/{module}/{service}/{endpoint}"
     };
   }
 
+  // GetConfiguration returns configuration declared by the target service.
   rpc GetConfiguration(GetConfigurationRequest) returns (GetConfigurationResponse) {
     option (google.api.http) = {
       get: "/workspace/configuration/{module}/{service}"
     };
   }
 
+  // GetDependenciesConfigurations returns configuration exposed by upstream services.
   rpc GetDependenciesConfigurations(GetConfigurationRequest) returns (GetConfigurationsResponse) {
     option (google.api.http) = {
       get: "/workspace/dependencies-configurations/{module}/{service}"
     };
   }
 
+  // GetDependenciesNetworkMappings returns network mappings exposed by upstream services.
   rpc GetDependenciesNetworkMappings(GetNetworkMappingsRequest) returns (GetNetworkMappingsResponse) {
     option (google.api.http) = {
       get: "/workspace/dependencies-network-mappings/{module}/{service}"
     };
   }
 
+  // GetRuntimeConfigurations returns configuration produced by a running service.
   rpc GetRuntimeConfigurations(GetConfigurationRequest) returns (GetConfigurationsResponse) {
     option (google.api.http) = {
       get: "/workspace/runtime-configurations/{module}/{service}"
     };
   }
 
+  // Logs streams live workspace log events.
   rpc Logs(google.protobuf.Empty)  returns (stream observability.v0.Log) {
     option (google.api.http) = {
       get: "/workspace/logs"
     };
   }
 
+  // ActiveLogHistory returns persisted log events for the active workspace session.
   rpc ActiveLogHistory(codefly.observability.v0.LogRequest) returns (codefly.observability.v0.LogResponse) {
     option (google.api.http) = {
       get: "/workspace/logs/history"
     };
   }
 
+  // GetFlowStatus reports readiness for the active orchestration flow.
   rpc GetFlowStatus(google.protobuf.Empty) returns (FlowStatus) {
     option (google.api.http) = {
       get: "/workspace/flow/status"
     };
   }
 
+  // StopFlow stops the active orchestration flow.
   rpc StopFlow(StopFlowRequest) returns (StopFlowResponse) {
     option (google.api.http) = {
       post: "/workspace/flow/stop"
@@ -196,6 +242,7 @@ service CLI {
   }
 
 
+  // DestroyFlow tears down resources owned by the active orchestration flow.
   rpc DestroyFlow(DestroyFlowRequest) returns (DestroyFlowResponse) {
     option (google.api.http) = {
       post: "/workspace/flow/destroy"

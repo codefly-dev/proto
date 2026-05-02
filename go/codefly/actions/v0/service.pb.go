@@ -23,14 +23,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AddService declares a service to add to a module.
 type AddService struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// name is the name of the service.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// description provides a brief explanation of the service.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// agent is the agent that the service belongs to.
+	// agent is the Codefly service agent that will own this service lifecycle.
 	Agent         *v0.Agent `protobuf:"bytes,4,opt,name=agent,proto3" json:"agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -94,19 +96,20 @@ func (x *AddService) GetAgent() *v0.Agent {
 	return nil
 }
 
+// AddServiceDependency declares that one service depends on another service.
 type AddServiceDependency struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// kind is the type of the service.
+	// kind is the action discriminator used when actions are serialized.
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// name is the name of the service.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// module is the name of the module that the service belongs to.
 	Module string `protobuf:"bytes,4,opt,name=module,proto3" json:"module,omitempty"`
-	// dependency_name is the name of the dependency.
+	// dependency_name is the service dependency to attach.
 	DependencyName string `protobuf:"bytes,5,opt,name=dependency_name,json=dependencyName,proto3" json:"dependency_name,omitempty"`
-	// dependency_module is the name of the module that the dependency belongs to.
+	// dependency_module is the module containing dependency_name.
 	DependencyModule string `protobuf:"bytes,6,opt,name=dependency_module,json=dependencyModule,proto3" json:"dependency_module,omitempty"`
-	// endpoints are the endpoints that the service can connect to.
+	// endpoints optionally restrict which dependency endpoints the service consumes.
 	Endpoints     []string `protobuf:"bytes,7,rep,name=endpoints,proto3" json:"endpoints,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

@@ -32,10 +32,15 @@ const (
 //
 // MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
 type MCPClient interface {
+	// Initialize performs the MCP protocol handshake.
 	Initialize(ctx context.Context, in *InitializeRequest, opts ...grpc.CallOption) (*InitializeResponse, error)
+	// ListTools returns callable Codefly tools.
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
+	// CallTool invokes a named Codefly tool.
 	CallTool(ctx context.Context, in *CallToolRequest, opts ...grpc.CallOption) (*CallToolResponse, error)
+	// ListResources returns read-only Codefly resources.
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
+	// ReadResource returns content for one Codefly resource URI.
 	ReadResource(ctx context.Context, in *ReadResourceRequest, opts ...grpc.CallOption) (*ReadResourceResponse, error)
 }
 
@@ -103,10 +108,15 @@ func (c *mCPClient) ReadResource(ctx context.Context, in *ReadResourceRequest, o
 //
 // MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
 type MCPServer interface {
+	// Initialize performs the MCP protocol handshake.
 	Initialize(context.Context, *InitializeRequest) (*InitializeResponse, error)
+	// ListTools returns callable Codefly tools.
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
+	// CallTool invokes a named Codefly tool.
 	CallTool(context.Context, *CallToolRequest) (*CallToolResponse, error)
+	// ListResources returns read-only Codefly resources.
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
+	// ReadResource returns content for one Codefly resource URI.
 	ReadResource(context.Context, *ReadResourceRequest) (*ReadResourceResponse, error)
 	mustEmbedUnimplementedMCPServer()
 }

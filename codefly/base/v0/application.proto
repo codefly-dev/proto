@@ -5,8 +5,11 @@ import "buf/validate/validate.proto";
 import "codefly/base/v0/agent.proto";
 import "codefly/base/v0/service.proto";
 
+// ApplicationReference names another application inside a module.
 message ApplicationReference {
+  // name is the application name.
   string name = 1  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
+  // module is the Codefly module name that groups services.
   string module = 2  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
 }
 
@@ -42,8 +45,12 @@ message Artifact {
 
 // ApplicationIdentity is the identity of an application in a workspace
 message ApplicationIdentity {
+  // name is the application name.
   string name = 1  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
+  // module is the Codefly module name that groups services.
   string module = 2  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
+  // workspace is the Codefly workspace name that scopes modules and services.
   string workspace = 3  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  // version is the semantic or service-specific version for this resource.
   string version = 4;
 }

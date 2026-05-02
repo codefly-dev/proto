@@ -27,6 +27,7 @@ DNS is a message that represents a DNS record
 Different DNS will be obtained based of the environment
 */
 
+// DNS describes a resolved address for an endpoint in a target environment.
 message DNS {
   // The name of the DNS record
   string name = 1;
@@ -40,20 +41,22 @@ message DNS {
   string host = 5;
   // The network instance port
   uint32 port = 6;
-  // Secured
+  // secured is true when the endpoint should be reached with TLS.
   bool secured = 7;
 }
 
 
+// NetworkInstance is one reachable address for a logical endpoint in a specific runtime
+// context.
 message NetworkInstance {
-  // The scope of the mapping
+  // access is the runtime context from which this address is valid.
   base.v0.NetworkAccess access = 1;
-  // The host for the instance
+  // host is the raw host or IP for the instance.
   string host = 3;
-  // The hostname for the instance
+  // hostname is the DNS-safe hostname for the instance.
   string hostname = 4;
-  // The port for the instance
+  // port is the TCP port assigned to the endpoint.
   uint32 port = 5;
-  // The address for the instance
+  // address is the complete host:port or URL callers should use.
   string address = 6;
 }

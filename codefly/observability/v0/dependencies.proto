@@ -4,21 +4,33 @@ package codefly.observability.v0;
 // GraphNode represents a node in an architecture graph
 // Type can be "module", "service" or "endpoint"
 message GraphNode {
+  // id is the stable identifier for this record.
   string id = 1;
+  // Type enumerates supported types.
   enum Type {
+    // MODULE nodes represent Codefly modules.
     MODULE = 0;
+    // SERVICE nodes represent Codefly services.
     SERVICE = 1;
+    // ENDPOINT nodes represent service endpoints.
     ENDPOINT = 2;
   }
+  // type identifies whether this graph node is a module, service, or endpoint.
   Type type = 2;
 }
 
+// GraphEdge connects two nodes in a workspace architecture graph.
 message GraphEdge {
+  // from is the source node id.
   string from = 1;
+  // to is the target node id.
   string to = 2;
 }
 
+// GraphResponse contains a workspace or module dependency graph.
 message GraphResponse {
+  // nodes are graph vertices representing modules, services, or endpoints.
   repeated GraphNode nodes = 1;
+  // edges are graph relationships between returned nodes.
   repeated GraphEdge edges = 2;
 }

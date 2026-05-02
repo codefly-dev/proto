@@ -5,85 +5,120 @@ package codefly.cli.v0;
 option go_package = "github.com/codefly-dev/core/generated/go/codefly/cli/v0";
 
 // TerminalService provides interactive terminal sessions scoped to workspace/module/service.
-// Sessions persist across client disconnections (daemon model).
+// Sessions persist across client disconnections in the server-backed terminal model.
 // Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
 service TerminalService {
-  // Open a new terminal session
+  // Open creates a new PTY-backed terminal session scoped to the requested workspace context.
   rpc Open(OpenTerminalRequest) returns (OpenTerminalResponse);
 
-  // Bidirectional stream: client sends input, server sends output
+  // Attach streams raw input bytes to the PTY and raw output bytes back to the client.
   rpc Attach(stream TerminalInput) returns (stream TerminalOutput);
 
-  // Resize the terminal window
+  // Resize changes the PTY dimensions for an active terminal session.
   rpc Resize(ResizeTerminalRequest) returns (ResizeTerminalResponse);
 
-  // Close a terminal session
+  // Close terminates an active terminal session.
   rpc Close(CloseTerminalRequest) returns (CloseTerminalResponse);
 
-  // List active terminal sessions
+  // List returns active terminal sessions known to the CLI server.
   rpc List(ListTerminalsRequest) returns (ListTerminalsResponse);
 }
 
 // Open
 
+// OpenTerminalRequest describes the shell and workspace scope for a new terminal.
 message OpenTerminalRequest {
+  // module optionally scopes the terminal working directory to a module.
   string module = 1;   // optional: scope to module
+  // service optionally scopes the terminal working directory to a service.
   string service = 2;  // optional: scope to service (cwd = service dir)
+  // shell is the command interpreter used for the terminal session.
   string shell = 3;    // optional: override shell (default: $SHELL)
+  // rows is the requested terminal height in character cells.
   uint32 rows = 4;     // initial terminal size
+  // cols is the requested terminal width in character cells.
   uint32 cols = 5;
 }
 
+// OpenTerminalResponse identifies the created terminal and its resolved working directory.
 message OpenTerminalResponse {
+  // session_id identifies the terminal session for future Attach/Resize/Close calls.
   string session_id = 1;
+  // shell is the command interpreter used for the terminal session.
   string shell = 2;
+  // working_dir is the resolved filesystem directory backing the PTY.
   string working_dir = 3;
 }
 
 // Attach (bidirectional streaming)
 
+// TerminalInput carries bytes written by the client to a terminal PTY.
 message TerminalInput {
+  // session_id identifies the terminal session receiving the input.
   string session_id = 1;
+  // data is the raw terminal, binary, or protocol payload.
   bytes data = 2;  // raw stdin bytes from client
 }
 
+// TerminalOutput carries bytes emitted by a terminal PTY.
 message TerminalOutput {
+  // session_id identifies the terminal session that produced this output.
   string session_id = 1;
+  // data is the raw terminal, binary, or protocol payload.
   bytes data = 2;      // raw stdout/stderr bytes from PTY
+  // done is true when the terminal stream has completed.
   bool done = 3;       // true when shell process exits
+  // exit_code is the process exit status returned by the operating system.
   int32 exit_code = 4; // set when done=true
 }
 
 // Resize
 
+// ResizeTerminalRequest changes the dimensions of an active terminal PTY.
 message ResizeTerminalRequest {
+  // session_id identifies the terminal session to resize.
   string session_id = 1;
+  // rows is the requested terminal height in character cells.
   uint32 rows = 2;
+  // cols is the requested terminal width in character cells.
   uint32 cols = 3;
 }
 
+// ResizeTerminalResponse acknowledges a terminal resize request.
 message ResizeTerminalResponse {}
 
 // Close
 
+// CloseTerminalRequest identifies the terminal session to close.
 message CloseTerminalRequest {
+  // session_id identifies the terminal session to close.
   string session_id = 1;
 }
 
+// CloseTerminalResponse acknowledges a terminal close request.
 message CloseTerminalResponse {}
 
 // List
 
+// ListTerminalsRequest carries optional filters for listing terminals.
 message ListTerminalsRequest {}
 
+// ListTerminalsResponse returns the active terminal sessions.
 message ListTerminalsResponse {
+  // terminals are currently active PTY sessions.
   repeated TerminalInfo terminals = 1;
 }
 
+// TerminalInfo describes one active terminal session.
 message TerminalInfo {
+  // session_id identifies the terminal session.
   string session_id = 1;
+  // shell is the command interpreter used for the terminal session.
   string shell = 2;
+  // working_dir is an optional service-relative directory for command execution.
   string working_dir = 3;
+  // module is the Codefly module name that groups services.
   string module = 4;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 5;
 }

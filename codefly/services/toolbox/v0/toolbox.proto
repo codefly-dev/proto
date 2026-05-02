@@ -1,0 +1,261 @@
+syntax = "proto3";
+package codefly.services.toolbox.v0;
+
+import "google/protobuf/struct.proto";
+
+// Toolbox is the codefly toolbox contract.
+//
+// Vocabulary mirrors the Model Context Protocol (MCP) so that an MCP
+// transcoder is a thin wrapper rather than a redesign. The three host-
+// facing primitives are:
+//
+//   Tool      — model-callable function. Input + Output schemas as JSON
+//               Schema. Side-effecting; gated by the toolbox's policy.
+//   Resource  — addressable read-only context (a file, a query result,
+//               a config blob). The agent reads; the toolbox decides what
+//               to expose.
+//   Prompt    — parametric message template. Pre-baked instructions the
+//               agent can fill and run.
+//
+// Identity returns the toolbox's name/version/permissions for
+// diagnostics and policy decisions; it's the "who am I and what do I
+// claim" surface.
+//
+// Roots are the MCP boundary primitive — the host (codefly) tells the
+// toolbox which directories/URIs it may operate over. We surface this
+// as a request field on tool calls rather than a separate RPC; the
+// toolbox enforces (with help from the OS sandbox).
+//
+// Connect-RPC is the transport — same proto, two encodings (gRPC +
+// Connect's HTTP/JSON). Lets us expose toolboxes over HTTP for
+// browser-based agents without a second contract.
+service Toolbox {
+  // Identity returns the toolbox's manifest-derived metadata.
+  rpc Identity(IdentityRequest) returns (IdentityResponse);
+
+  // ListTools returns every tool this toolbox exposes.
+  rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+
+  // CallTool invokes a tool by name with structured arguments.
+  // The result carries either a Content payload, an error, or both
+  // (e.g. partial success + warnings).
+  rpc CallTool(CallToolRequest) returns (CallToolResponse);
+
+  // ListResources returns every addressable resource the toolbox
+  // exposes for read-only context.
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+
+  // ReadResource fetches a resource's content by URI.
+  rpc ReadResource(ReadResourceRequest) returns (ReadResourceResponse);
+
+  // ListPrompts returns every parametric prompt template the toolbox
+  // exposes.
+  rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+
+  // GetPrompt renders a prompt with the supplied arguments.
+  rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
+}
+
+// IdentityRequest asks a toolbox to describe itself.
+message IdentityRequest {}
+
+// IdentityResponse is the manifest-derived metadata the host uses for
+// catalog display, diagnostics, and policy decisions.
+message IdentityResponse {
+  // Name from the toolbox manifest (e.g. "git", "docker", "bash").
+  string name = 1;
+  // Version from the manifest (semver).
+  string version = 2;
+  // Description from the manifest, surface in catalog UIs.
+  string description = 3;
+  // CanonicalFor lists the binaries this toolbox claims as canonical
+  // owner. Mirrors the manifest field; useful for cross-toolbox
+  // diagnostics ("who owns kubectl?").
+  repeated string canonical_for = 4;
+  // SandboxSummary is a string describing the sandbox the toolbox
+  // operates under. Not the policy itself (that's host-side); just a
+  // human-readable summary for "show me what this toolbox can do."
+  string sandbox_summary = 5;
+}
+
+// --- Tools -------------------------------------------------------
+
+// Tool is a callable surface — a function the agent can invoke with
+// JSON-Schema-typed arguments and receive structured Content back.
+message Tool {
+  // Dotted name. Convention: <toolbox>.<verb>, e.g. "git.commit",
+  // "docker.run", "bash.exec".
+  string name = 1;
+  // One-line description for the agent to decide whether to call it.
+  string description = 2;
+  // JSON Schema describing valid arguments. Encoded as a Struct so
+  // protobuf doesn't force us to mirror JSON Schema's open recursion
+  // in proto.
+  google.protobuf.Struct input_schema = 3;
+  // JSON Schema describing the result Content envelope. Optional;
+  // missing means "free-form text + structured side-channel."
+  google.protobuf.Struct output_schema = 4;
+  // Destructive marks the tool as state-mutating (writes, kills,
+  // pushes). The host shows extra confirmation UI for these.
+  bool destructive = 5;
+}
+
+// ListToolsRequest asks for the toolbox's callable tool catalog.
+message ListToolsRequest {}
+
+// ListToolsResponse contains the callable tools exposed by the toolbox.
+message ListToolsResponse {
+  // Tools is the complete callable catalog for this toolbox.
+  repeated Tool tools = 1;
+}
+
+// CallToolRequest invokes one named tool with JSON-shaped arguments.
+message CallToolRequest {
+  // Name is the exact tool name from ListToolsResponse.
+  string name = 1;
+  // Arguments are validated by the tool's input_schema before execution.
+  google.protobuf.Struct arguments = 2;
+  // Roots constrain the operation's scope. The toolbox MUST refuse
+  // operations that touch URIs outside these roots. Empty roots means
+  // "use the toolbox's default scope from its manifest."
+  repeated string roots = 3;
+}
+
+// Content is the result of a tool call. Mirrors MCP's content model:
+// a list of typed parts so a tool can return text + a structured
+// payload + diagnostics in one envelope.
+message Content {
+  // Body is the typed payload carried by this content block.
+  oneof body {
+    // Plain text — the most common path.
+    string text = 1;
+    // Structured payload (JSON-shaped). Use when the agent should
+    // reason about typed fields.
+    google.protobuf.Struct structured = 2;
+    // Binary blob with a media type. For images, archives, etc.
+    Blob blob = 3;
+  }
+}
+
+// Blob carries binary content with media metadata for display
+// or persistence by the host.
+message Blob {
+  // MediaType identifies the bytes, e.g. "image/png" or
+  // "application/octet-stream".
+  string media_type = 1;
+  // Data is the raw binary payload.
+  bytes data = 2;
+}
+
+// CallToolResponse is the tool-level result. Tool errors are represented
+// here instead of as transport errors so partial results can still flow.
+message CallToolResponse {
+  // Content blocks returned by the tool. Empty when the tool
+  // surfaced only an error.
+  repeated Content content = 1;
+  // Error is non-empty when the tool refused or failed. Distinct from
+  // a transport-level error; this is the tool saying "I tried, here's
+  // why it didn't work."
+  string error = 2;
+  // CanonicalRouted is true when the toolbox refused because the
+  // request targeted a binary/operation it doesn't own — set the
+  // suggested toolbox in error and let the agent reroute.
+  bool canonical_routed = 3;
+  // RoutedTo is the toolbox the agent should call instead, when
+  // CanonicalRouted is true. Empty when the binary has no claimed
+  // owner (use the built-in fallback's hint in error).
+  string routed_to = 4;
+}
+
+// --- Resources ---------------------------------------------------
+
+// Resource describes read-only context the toolbox can expose to agents.
+message Resource {
+  // URI uniquely identifying the resource. Convention:
+  // "<scheme>://<path>", e.g. "git://HEAD", "file:///etc/host".
+  string uri = 1;
+  // Human-readable name.
+  string name = 2;
+  // Description for the agent.
+  string description = 3;
+  // MIME type of the resource's content.
+  string mime_type = 4;
+}
+
+// ListResourcesRequest asks for the toolbox's readable resource catalog.
+message ListResourcesRequest {}
+
+// ListResourcesResponse contains every readable resource the toolbox exposes.
+message ListResourcesResponse {
+  // Resources is the complete readable catalog for this toolbox.
+  repeated Resource resources = 1;
+}
+
+// ReadResourceRequest fetches one resource by URI.
+message ReadResourceRequest {
+  // URI is the resource identifier returned by ListResourcesResponse.
+  string uri = 1;
+}
+
+// ReadResourceResponse returns the resource content using the same content
+// envelope as tool calls.
+message ReadResourceResponse {
+  // Content of the resource. Same envelope as CallToolResponse so
+  // resources can return text, structured data, or binary blobs.
+  repeated Content content = 1;
+}
+
+// --- Prompts -----------------------------------------------------
+
+// PromptArgument describes one named parameter accepted by a prompt.
+message PromptArgument {
+  // Name is the parameter key expected by GetPromptRequest.arguments.
+  string name = 1;
+  // Description tells the agent what value to provide.
+  string description = 2;
+  // Required marks parameters that must be present for rendering.
+  bool required = 3;
+}
+
+// Prompt describes a reusable prompt template exposed by the toolbox.
+message Prompt {
+  // Name is the stable prompt identifier.
+  string name = 1;
+  // Description tells the agent when this prompt is useful.
+  string description = 2;
+  // Arguments defines the accepted template parameters.
+  repeated PromptArgument arguments = 3;
+}
+
+// ListPromptsRequest asks for the toolbox's prompt catalog.
+message ListPromptsRequest {}
+
+// ListPromptsResponse contains every prompt template the toolbox exposes.
+message ListPromptsResponse {
+  // Prompts is the complete prompt catalog for this toolbox.
+  repeated Prompt prompts = 1;
+}
+
+// GetPromptRequest renders one prompt using JSON-shaped arguments.
+message GetPromptRequest {
+  // Name is the prompt identifier from ListPromptsResponse.
+  string name = 1;
+  // Arguments supplies values for the prompt's declared parameters.
+  google.protobuf.Struct arguments = 2;
+}
+
+// PromptMessage is one rendered turn of the prompt's conversation.
+message PromptMessage {
+  // Role: "user", "assistant", "system".
+  string role = 1;
+  // Content envelope, same shape as tool/resource content.
+  repeated Content content = 2;
+}
+
+// GetPromptResponse is the rendered prompt conversation.
+message GetPromptResponse {
+  // Description of the rendered prompt for catalog UIs.
+  string description = 1;
+  // Messages making up the rendered prompt.
+  repeated PromptMessage messages = 2;
+}

@@ -23,9 +23,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AddApplication declares an application to add to the current workspace.
 type AddApplication struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// name is the name of the application.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// description provides a brief explanation of the application.
@@ -94,6 +96,7 @@ func (x *AddApplication) GetAgent() *v0.Agent {
 	return nil
 }
 
+// AddApplicationDependency declares that one application depends on another application.
 type AddApplicationDependency struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// kind is the type of the action.
@@ -102,9 +105,9 @@ type AddApplicationDependency struct {
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// module is the name of the module that the application belongs to.
 	Module string `protobuf:"bytes,3,opt,name=module,proto3" json:"module,omitempty"`
-	// dependency_name is the name of the dependency (another application).
+	// dependency_name is the application dependency to attach.
 	DependencyName string `protobuf:"bytes,4,opt,name=dependency_name,json=dependencyName,proto3" json:"dependency_name,omitempty"`
-	// dependency_module is the name of the module that the dependency belongs to.
+	// dependency_module is the module containing dependency_name.
 	DependencyModule string `protobuf:"bytes,5,opt,name=dependency_module,json=dependencyModule,proto3" json:"dependency_module,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache

@@ -34,7 +34,7 @@ type Workspace struct {
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// modules is the list of modules that are part of the workspace.
 	Modules []*Module `protobuf:"bytes,3,rep,name=modules,proto3" json:"modules,omitempty"`
-	// layout is how the workspace is structure
+	// layout selects whether services are stored flat, under modules, or both.
 	Layout        string `protobuf:"bytes,4,opt,name=layout,proto3" json:"layout,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -98,6 +98,7 @@ func (x *Workspace) GetLayout() string {
 	return ""
 }
 
+// ManagedWorkspace is the platform-managed representation of a workspace.
 type ManagedWorkspace struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// organization ID is the unique identifier of the organization that owns the workspace.

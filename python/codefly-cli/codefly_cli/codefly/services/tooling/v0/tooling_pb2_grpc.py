@@ -126,37 +126,43 @@ class ToolingServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetDiagnostics(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetDiagnostics returns compiler, linter, or language-server diagnostics.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GoToDefinition(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GoToDefinition resolves the declaration for a symbol at a source position.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def FindReferences(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """FindReferences resolves usage locations for a symbol at a source position.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def RenameSymbol(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """RenameSymbol applies a language-aware rename across the service.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetHoverInfo(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetHoverInfo returns hover documentation and type information.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetCompletions(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetCompletions returns completion suggestions at a source position.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -169,7 +175,8 @@ class ToolingServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ApplyEdit(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ApplyEdit applies a smart edit and optional language fixers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -182,13 +189,15 @@ class ToolingServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def AddDependency(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """AddDependency installs a package through the native package manager.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def RemoveDependency(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """RemoveDependency removes a package through the native package manager.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -201,7 +210,8 @@ class ToolingServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetCallGraph(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetCallGraph runs whole-program call graph analysis.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -214,13 +224,15 @@ class ToolingServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def Test(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Test runs native tests and returns structured counts.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Lint(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Lint runs native linting and returns structured diagnostics.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

@@ -22,6 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Environment names a deployment target such as local, staging, or production.
 type Environment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the environment
@@ -29,7 +30,7 @@ type Environment struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// A brief description of the environment.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Naming scope -- useful for testing environment to avoid conflicts
+	// naming_scope distinguishes otherwise similar test or ephemeral environments.
 	NamingScope   string `protobuf:"bytes,3,opt,name=naming_scope,json=namingScope,proto3" json:"naming_scope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -86,9 +87,11 @@ func (x *Environment) GetNamingScope() string {
 	return ""
 }
 
+// ManagedEnvironment is the platform-managed representation of an environment.
 type ManagedEnvironment struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

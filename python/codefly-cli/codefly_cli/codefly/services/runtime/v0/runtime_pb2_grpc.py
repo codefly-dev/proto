@@ -11,8 +11,11 @@ class RuntimeStub(object):
     Public API
 
 
+
     Runtime service
 
+    Runtime exposes the agent lifecycle used to load, initialize, start, validate, stop, and
+    destroy a running service.
     """
 
     def __init__(self, channel):
@@ -78,71 +81,73 @@ class RuntimeServicer(object):
     Public API
 
 
+
     Runtime service
 
+    Runtime exposes the agent lifecycle used to load, initialize, start, validate, stop, and
+    destroy a running service.
     """
 
     def Load(self, request, context):
         """Lifecycle
 
-        Load the Service Agent: this should be a NoOp and never fails
+        Load discovers service metadata before any runtime resources are allocated.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Init(self, request, context):
-        """Init the Service Agent: could include steps like compilation, configuration, etc.
-        An important step of Initialization is to get the list of network mappings
+        """Init resolves configuration, dependency endpoints, and concrete network mappings.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Start(self, request, context):
-        """Start the underlying service
+        """Start launches the service process and returns once it is ready or failed.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Stop(self, request, context):
-        """Stop the underlying service
+        """Stop terminates the running service process.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Destroy(self, request, context):
-        """Destroy the underlying service
+        """Destroy releases runtime resources such as containers, sockets, or temp state.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Build(self, request, context):
-        """Dev compile check
+        """Build runs the service's native build or compile check.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Test(self, request, context):
-        """Test the service
+        """Test runs the service's native test command and returns structured results.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Lint(self, request, context):
-        """Lint the service
+        """Lint runs the service's native linter.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Information(self, request, context):
-        """Information about the state of the service
+        """Information returns the latest lifecycle statuses known by the agent.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -222,8 +227,11 @@ class Runtime(object):
     Public API
 
 
+
     Runtime service
 
+    Runtime exposes the agent lifecycle used to load, initialize, start, validate, stop, and
+    destroy a running service.
     """
 
     @staticmethod

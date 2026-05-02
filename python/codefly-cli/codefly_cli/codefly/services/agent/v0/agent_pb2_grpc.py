@@ -6,7 +6,8 @@ from codefly.services.agent.v0 import agent_pb2 as codefly_dot_services_dot_agen
 
 
 class AgentStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """Agent exposes plugin identity, metadata, and plugin-defined commands.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -32,10 +33,12 @@ class AgentStub(object):
 
 
 class AgentServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """Agent exposes plugin identity, metadata, and plugin-defined commands.
+    """
 
     def GetAgentInformation(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetAgentInformation returns the agent manifest, capabilities, and configuration docs.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -81,7 +84,8 @@ def add_AgentServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Agent(object):
-    """Missing associated documentation comment in .proto file."""
+    """Agent exposes plugin identity, metadata, and plugin-defined commands.
+    """
 
     @staticmethod
     def GetAgentInformation(request,

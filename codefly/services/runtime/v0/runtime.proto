@@ -10,110 +10,121 @@ import "codefly/base/v0/endpoint.proto";
 import "codefly/base/v0/network.proto";
 import "codefly/base/v0/configuration.proto";
 
-import "codefly/services/agent/v0/agent.proto";
 import "codefly/services/agent/v0/communicate.proto";
 
 import "google/protobuf/duration.proto";
 
 /*
-Running a service follow several steps where relevant information about the runtime environment is shared
-*/
+Runtime service contract for executing a Codefly service.
 
-
-/*
-Load
-
-Output:
-- Version of the service
-
+The CLI/core drives agents through the lifecycle described in the Codefly
+docs: Load discovers static service metadata, Init resolves runtime context,
+configuration, and network mappings, Start launches the process, Build/Test/Lint
+validate the implementation, and Stop/Destroy clean up runtime resources.
 */
 
 
 
+// LoadStatus reports the state and message for the load lifecycle phase.
 message LoadStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // READY means the phase completed and the agent can continue.
     READY = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
 
+// LoadRequest gives the runtime agent enough identity to inspect the service.
 message LoadRequest {
-  // Developer debug
+  // developer_debug enables agent-specific debug behavior for local development.
   bool developer_debug = 1;
 
-  // Disable catch
+  // disable_catch disables agent panic/error recovery when debugging failures.
   bool disable_catch = 2;
 
-  // Identity of the service
+  // identity is the service instance the runtime agent should load.
   codefly.base.v0.ServiceIdentity identity = 3;
 
-  // Environment
+  // environment is the Codefly environment in which the service will run.
   codefly.base.v0.Environment environment = 4;
 
 }
 
+// LoadResponse returns service metadata discovered during the load phase.
 message LoadResponse {
-  codefly. base.v0.Version version = 1;
+  // version is the service version reported by the runtime agent after Load.
+  codefly.base.v0.Version version = 1;
 
+  // status reports the lifecycle or operation status.
   LoadStatus status = 2;
 
-  // Endpoints exposed by the service
+  // endpoints are logical endpoints exposed by the service implementation.
   repeated codefly.base.v0.Endpoint endpoints = 3;
 
 }
 
 
-/*
-Init
-*/
-
-
-
+// InitStatus reports the state and message for the init lifecycle phase.
 message InitStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // READY means the phase completed and the agent can continue.
     READY = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// InitRequest provides resolved context and dependency information before startup.
 message InitRequest {
-  // RuntimeContext for the service
+  // runtime_context is the proposed execution environment for this service.
   codefly.base.v0.RuntimeContext runtime_context = 1;
 
-  // Configuration of the service
+  // configuration is this service's own runtime configuration.
   codefly.base.v0.Configuration configuration = 2;
 
-  // Proposed Network mappings for the service
+  // proposed_network_mappings are logical-to-physical endpoint mappings suggested by core.
   repeated codefly.base.v0.NetworkMapping proposed_network_mappings = 3;
 
-  // Endpoints for the dependencies
+  // dependencies_endpoints are logical endpoints exposed by services this service consumes.
   repeated codefly.base.v0.Endpoint dependencies_endpoints = 4;
 
-  // Configurations exposed by the dependencies
+  // dependencies_configurations are configuration values exported by dependent services.
   repeated codefly.base.v0.Configuration dependencies_configurations = 5;
 
-  // Workspace configurations
+  // workspace_configurations are environment-level configuration values available to the service.
   repeated codefly.base.v0.Configuration workspace_configurations = 6;
 
 }
 
 
+// InitResponse returns the runtime context and mappings the agent actually accepted.
 message InitResponse {
+  // status reports the lifecycle or operation status.
   InitStatus status = 1;
 
+  // runtime_context describes where the service runs, such as native, nix, container, or free.
   codefly.base.v0.RuntimeContext runtime_context = 2;
 
-  // Actual Network mappings for the service
+  // network_mappings are the concrete mappings the service will use at runtime.
   repeated codefly.base.v0.NetworkMapping network_mappings = 3;
 
-  // A service provides configurations for different runtime contexts to other services
+  // runtime_configurations are values this service exports to dependents.
   repeated codefly.base.v0.Configuration runtime_configurations = 4;
 }
 
@@ -122,72 +133,88 @@ message InitResponse {
 
 
 
-/*
-Start the service instance in a non-blocking way
-
- */
-
+// StartRequest launches the service process without blocking until it exits.
 message StartRequest {
-  // Specs affecting the runner
+  // specs are runtime knobs that affect how the agent starts the service.
   codefly.base.v0.Specs specs = 1;
-  // Network mappings for the dependencies
+  // dependencies_network_mappings are concrete addresses for dependency endpoints.
   repeated codefly.base.v0.NetworkMapping dependencies_network_mappings = 2;
-  // Optional fixture
+  // fixture selects optional fixture data or setup behavior for the start.
   string fixture = 3;
 }
 
+// StartStatus reports the state and message for the start lifecycle phase.
 message StartStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // STARTED means the service process is running and ready.
     STARTED = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// StartResponse reports whether the service process reached the started state.
 message StartResponse {
+  // status reports the lifecycle or operation status.
   StartStatus status = 1;
 }
 
-/*
-Build (dev compile check)
-*/
-
+// BuildStatus reports the state and message for the build lifecycle phase.
 message BuildStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// BuildRequest asks the runtime agent to run the native build or compile check.
 message BuildRequest {
   // Optional target scope: package path (e.g. "./handlers"), file, or empty for all.
   string target = 1;
 }
 
+// BuildResponse returns build status and raw tool output for diagnostics.
 message BuildResponse {
+  // status reports the lifecycle or operation status.
   BuildStatus status = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
 }
 
-/*
-Test
-*/
-
+// TestStatus reports the state and message for the test lifecycle phase.
 message TestStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// TestRequest asks the runtime agent to run native tests for this service.
 message TestRequest {
   // Optional target: package or directory scope (e.g. "./handlers" for Go,
   // "tests/unit" for Python). For name-pattern filtering, prefer `filters`.
@@ -231,6 +258,7 @@ message TestRequest {
   repeated string extra_args = 8;
 }
 
+// TestResponse returns both legacy flat counts and structured test results.
 message TestResponse {
   // --- Legacy flat fields ---
   // Kept populated for backward compatibility while consumers migrate
@@ -243,11 +271,17 @@ message TestResponse {
   // from `suites[].cases[]` (populated only for FAILED/ERRORED cases
   // unless TestRequest.verbose is true).
   string output = 2 [deprecated = true];
+  // tests_run is the total number of tests executed.
   int32 tests_run = 3 [deprecated = true];
+  // tests_passed is the number of tests that passed.
   int32 tests_passed = 4 [deprecated = true];
+  // tests_failed is the number of tests that failed.
   int32 tests_failed = 5 [deprecated = true];
+  // tests_skipped is the number of tests skipped by the runner.
   int32 tests_skipped = 6 [deprecated = true];
+  // coverage_pct is the overall coverage percentage when available.
   float coverage_pct = 7 [deprecated = true];
+  // failures are concise failing test names or messages.
   repeated string failures = 8 [deprecated = true];
 
   // --- Structured fields ---
@@ -307,7 +341,9 @@ message TestRun {
 // BUILD_ERROR (compile-fail), SETUP_ERROR (fixture failed), TIMEOUT
 // (whole-run timeout fired).
 message TestRunResult {
+  // State enumerates run-level outcomes.
   enum State {
+    // UNKNOWN is the default value when state is not specified.
     UNKNOWN = 0;
     // All cases passed (or skipped); zero failures + zero errors.
     PASSED = 1;
@@ -320,6 +356,7 @@ message TestRunResult {
     // Whole-run timeout fired before completion.
     TIMED_OUT = 4;
   }
+  // state is the machine-readable lifecycle state.
   State state = 1;
   // Human-readable summary suitable for a status line.
   string message = 2;
@@ -330,11 +367,17 @@ message TestRunResult {
 // case that ran but failed an assertion is `failed`. Flaky counts
 // cases that passed on retry (retry_attempts > 1).
 message TestCounts {
+  // total is the aggregate number of cases represented.
   int32 total = 1;
+  // passed is the number of cases that passed.
   int32 passed = 2;
+  // failed is the number of cases that failed assertions.
   int32 failed = 3;
+  // skipped is the number of cases the runner skipped.
   int32 skipped = 4;
+  // errored is the number of cases that crashed or failed setup/teardown.
   int32 errored = 5;
+  // flaky is the number of cases that only passed after retry.
   int32 flaky = 6;
 }
 
@@ -418,9 +461,13 @@ message TestCase {
 // PASSED (others failed); a run can be PASSED while a case was
 // SKIPPED.
 enum TestCaseState {
+  // TEST_CASE_STATE_UNSPECIFIED is the default value when test case state is not specified.
   TEST_CASE_STATE_UNSPECIFIED = 0;
+  // TEST_CASE_STATE_PASSED marks a test case as passed.
   TEST_CASE_STATE_PASSED = 1;
+  // TEST_CASE_STATE_FAILED marks a test case as failed.
   TEST_CASE_STATE_FAILED = 2;
+  // TEST_CASE_STATE_SKIPPED marks a test case as skipped.
   TEST_CASE_STATE_SKIPPED = 3;
   // ERRORED is for non-assertion failures: panics, setup/teardown
   // crashes, build failures attributed to this case. Surfaced
@@ -452,7 +499,9 @@ message TestFailure {
   string skip_reason = 5;
 }
 
+// TestFailureKind enumerates supported test failure kinds.
 enum TestFailureKind {
+  // TEST_FAILURE_KIND_UNSPECIFIED is the default value when test failure kind is not specified.
   TEST_FAILURE_KIND_UNSPECIFIED = 0;
   // Plain assertion failure: require.Equal, expect().toBe(), assert.
   TEST_FAILURE_KIND_ASSERTION = 1;
@@ -472,7 +521,9 @@ message TestLocation {
   // File path. Absolute or repo-relative — agent's choice; consumers
   // resolve via SourceLocation when needed.
   string file = 1;
+  // line is the 1-based source line number.
   int32 line = 2;
+  // column is the 1-based source column number when known.
   int32 column = 3;
   // Function name when available (Go: TestFoo; pytest: test_foo).
   string function = 4;
@@ -480,8 +531,11 @@ message TestLocation {
 
 // TestRetry is one attempt of a case that was retried.
 message TestRetry {
+  // attempt is the 1-based retry attempt number.
   int32 attempt = 1;            // 1-indexed
+  // state is the machine-readable lifecycle state.
   TestCaseState state = 2;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 3;
   // Failure detail if the attempt failed. Empty if it passed.
   TestFailure failure = 4;
@@ -507,10 +561,15 @@ message TestCoverage {
   string raw_artifact_format = 4;
 }
 
+// TestFileCoverage records coverage statistics for one source file.
 message TestFileCoverage {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // pct is the file coverage percentage from 0 to 100.
   float pct = 2;
+  // lines_covered is the number of covered source lines.
   int32 lines_covered = 3;
+  // lines_total is the total number of coverable source lines.
   int32 lines_total = 4;
 }
 
@@ -531,20 +590,24 @@ message TestTruncation {
   int32 dropped_cases = 5;
 }
 
-/*
-Lint
-*/
-
+// LintStatus reports the state and message for the lint lifecycle phase.
 message LintStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// LintRequest asks the runtime agent to run the native linter.
 message LintRequest {
   // Optional target scope: package path, file, or empty for all.
   string target = 1;
@@ -553,90 +616,115 @@ message LintRequest {
   bool fix = 2;
 }
 
+// LintResponse returns lint status and raw tool output for diagnostics.
 message LintResponse {
+  // status reports the lifecycle or operation status.
   LintStatus status = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
 }
 
-/*
-Get Information of the service instance
- */
-
-/*
-Stop the service instance
- */
-
-
+// StopRequest asks the runtime agent to stop the service process.
 message StopRequest {
 }
 
 
+// StopStatus reports the state and message for the stop lifecycle phase.
 message StopStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// StopResponse reports whether the service process stopped cleanly.
 message StopResponse {
+  // status reports the lifecycle or operation status.
   StopStatus status = 1;
 }
 
 
-/*
-Destroy the service instance
- */
-
-
+// DestroyRequest asks the runtime agent to release all runtime resources.
 message DestroyRequest {
 }
 
 
+// DestroyStatus reports the state and message for the destroy lifecycle phase.
 message DestroyStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// DestroyResponse reports whether runtime resources were destroyed cleanly.
 message DestroyResponse {
+  // status reports the lifecycle or operation status.
   DestroyStatus status = 1;
 }
 
-
-
+// InformationRequest asks for the runtime agent's current lifecycle state.
 message InformationRequest {
 }
 
 
+// DesiredState tells the orchestrator which lifecycle transition is still needed.
 message DesiredState {
+  // Stage enumerates stage values.
   enum Stage {
+    // UNKNOWN is the default value when stage is not specified.
     UNKNOWN = 0;
+    // NOOP means no lifecycle transition is currently requested.
     NOOP = 1;
+    // LOAD requests a reload of service metadata and endpoints.
     LOAD = 2;
+    // INIT requests reinitialization of configuration and network mappings.
     INIT = 3;
+    // START requests the service process to be started or restarted.
     START = 4;
   }
+  // stage is the next lifecycle stage the runtime should reach.
   Stage stage = 1;
 }
 
-// InformationResponse represents the overall state of the service
+// InformationResponse represents the runtime agent's lifecycle state.
 message InformationResponse {
+  // desired_state is the next lifecycle transition requested by the orchestrator.
   DesiredState desired_state = 1;
 
+  // load_status is the latest Load lifecycle status.
   LoadStatus load_status = 2;
+  // init_status is the latest Init lifecycle status.
   InitStatus init_status = 3;
+  // start_status is the latest Start lifecycle status.
   StartStatus start_status = 4;
+  // stop_status is the latest Stop lifecycle status.
   StopStatus stop_status = 5;
-  DestroyStatus Destroy_status = 6;
+  // destroy_status is the latest Destroy lifecycle status.
+  DestroyStatus destroy_status = 6;
+  // test_status is the latest Test lifecycle status.
   TestStatus test_status = 7;
+  // build_status is the latest Build lifecycle status.
   BuildStatus build_status = 8;
+  // lint_status is the latest Lint lifecycle status.
   LintStatus lint_status = 9;
 
 }
@@ -654,32 +742,33 @@ Public API
 Runtime service
  */
 
+// Runtime exposes the agent lifecycle used to load, initialize, start, validate, stop, and
+// destroy a running service.
 service Runtime {
 
   // Lifecycle
 
-  // Load the Service Agent: this should be a NoOp and never fails
+  // Load discovers service metadata before any runtime resources are allocated.
   rpc Load (LoadRequest) returns (LoadResponse) {}
-  // Init the Service Agent: could include steps like compilation, configuration, etc.
-  // An important step of Initialization is to get the list of network mappings
+  // Init resolves configuration, dependency endpoints, and concrete network mappings.
   rpc Init (InitRequest) returns (InitResponse) {}
-  // Start the underlying service
+  // Start launches the service process and returns once it is ready or failed.
   rpc Start (StartRequest) returns (StartResponse) {}
-  // Stop the underlying service
+  // Stop terminates the running service process.
   rpc Stop (StopRequest) returns (StopResponse) {}
-  // Destroy the underlying service
+  // Destroy releases runtime resources such as containers, sockets, or temp state.
   rpc Destroy (DestroyRequest) returns (DestroyResponse) {}
 
-  // Dev compile check
+  // Build runs the service's native build or compile check.
   rpc Build (BuildRequest) returns (BuildResponse) {}
 
-  // Test the service
+  // Test runs the service's native test command and returns structured results.
   rpc Test (TestRequest) returns (TestResponse) {}
 
-  // Lint the service
+  // Lint runs the service's native linter.
   rpc Lint (LintRequest) returns (LintResponse) {}
 
-  // Information about the state of the service
+  // Information returns the latest lifecycle statuses known by the agent.
   rpc Information (InformationRequest) returns (InformationResponse) {}
 
   // Bidirectional streaming for interactive Q&A.

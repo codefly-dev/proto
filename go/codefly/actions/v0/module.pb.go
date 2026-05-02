@@ -23,15 +23,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// NewModule declares a module to add to the current workspace.
 type NewModule struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Kind is the kind of the message.
+	// kind is the action discriminator used when actions are serialized.
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// name is the name of the module.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// description provides a brief explanation of the module.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// (Optional) agent that provides the module template
+	// agent optionally identifies the module-template agent used to scaffold the module.
 	Agent         *v0.Agent `protobuf:"bytes,4,opt,name=agent,proto3" json:"agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

@@ -33,6 +33,8 @@ const (
 // CodeClient is the client API for Code service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Code exposes language-aware analysis and editing operations backed by a service agent.
 type CodeClient interface {
 	// Execute is the unified dispatch entry point for every code operation.
 	// Clients wrap the specific request type in a CodeRequest oneof; the
@@ -40,12 +42,19 @@ type CodeClient interface {
 	// uses for everything except the few direct RPCs below that predate
 	// the unification and still have live callers in codefly-cli.
 	Execute(ctx context.Context, in *CodeRequest, opts ...grpc.CallOption) (*CodeResponse, error)
+	// ListSymbols directly exposes symbol listing for older CLI callers.
 	ListSymbols(ctx context.Context, in *ListSymbolsRequest, opts ...grpc.CallOption) (*ListSymbolsResponse, error)
+	// GetDiagnostics directly exposes language diagnostics for older CLI callers.
 	GetDiagnostics(ctx context.Context, in *GetDiagnosticsRequest, opts ...grpc.CallOption) (*GetDiagnosticsResponse, error)
+	// GoToDefinition directly exposes definition lookup for older CLI callers.
 	GoToDefinition(ctx context.Context, in *GoToDefinitionRequest, opts ...grpc.CallOption) (*GoToDefinitionResponse, error)
+	// FindReferences directly exposes reference lookup for older CLI callers.
 	FindReferences(ctx context.Context, in *FindReferencesRequest, opts ...grpc.CallOption) (*FindReferencesResponse, error)
+	// GetHoverInfo directly exposes hover information for older CLI callers.
 	GetHoverInfo(ctx context.Context, in *GetHoverInfoRequest, opts ...grpc.CallOption) (*GetHoverInfoResponse, error)
+	// ApplyEdit directly exposes smart edits for older CLI callers.
 	ApplyEdit(ctx context.Context, in *ApplyEditRequest, opts ...grpc.CallOption) (*ApplyEditResponse, error)
+	// GetCallGraph directly exposes call graph analysis for older CLI callers.
 	GetCallGraph(ctx context.Context, in *GetCallGraphRequest, opts ...grpc.CallOption) (*GetCallGraphResponse, error)
 	// ShellExec is the one sanctioned path for running shell commands
 	// against a workspace. Clients call this instead of os/exec so all
@@ -154,6 +163,8 @@ func (c *codeClient) ShellExec(ctx context.Context, in *ShellExecRequest, opts .
 // CodeServer is the server API for Code service.
 // All implementations must embed UnimplementedCodeServer
 // for forward compatibility.
+//
+// Code exposes language-aware analysis and editing operations backed by a service agent.
 type CodeServer interface {
 	// Execute is the unified dispatch entry point for every code operation.
 	// Clients wrap the specific request type in a CodeRequest oneof; the
@@ -161,12 +172,19 @@ type CodeServer interface {
 	// uses for everything except the few direct RPCs below that predate
 	// the unification and still have live callers in codefly-cli.
 	Execute(context.Context, *CodeRequest) (*CodeResponse, error)
+	// ListSymbols directly exposes symbol listing for older CLI callers.
 	ListSymbols(context.Context, *ListSymbolsRequest) (*ListSymbolsResponse, error)
+	// GetDiagnostics directly exposes language diagnostics for older CLI callers.
 	GetDiagnostics(context.Context, *GetDiagnosticsRequest) (*GetDiagnosticsResponse, error)
+	// GoToDefinition directly exposes definition lookup for older CLI callers.
 	GoToDefinition(context.Context, *GoToDefinitionRequest) (*GoToDefinitionResponse, error)
+	// FindReferences directly exposes reference lookup for older CLI callers.
 	FindReferences(context.Context, *FindReferencesRequest) (*FindReferencesResponse, error)
+	// GetHoverInfo directly exposes hover information for older CLI callers.
 	GetHoverInfo(context.Context, *GetHoverInfoRequest) (*GetHoverInfoResponse, error)
+	// ApplyEdit directly exposes smart edits for older CLI callers.
 	ApplyEdit(context.Context, *ApplyEditRequest) (*ApplyEditResponse, error)
+	// GetCallGraph directly exposes call graph analysis for older CLI callers.
 	GetCallGraph(context.Context, *GetCallGraphRequest) (*GetCallGraphResponse, error)
 	// ShellExec is the one sanctioned path for running shell commands
 	// against a workspace. Clients call this instead of os/exec so all

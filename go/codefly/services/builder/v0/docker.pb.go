@@ -21,9 +21,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// DockerBuildContext contains Docker-specific image build inputs.
 type DockerBuildContext struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	DockerRepository string                 `protobuf:"bytes,1,opt,name=docker_repository,json=dockerRepository,proto3" json:"docker_repository,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// docker_repository is the image repository used for Docker builds.
+	DockerRepository string `protobuf:"bytes,1,opt,name=docker_repository,json=dockerRepository,proto3" json:"docker_repository,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -65,9 +67,11 @@ func (x *DockerBuildContext) GetDockerRepository() string {
 	return ""
 }
 
+// DockerBuildResult captures Docker image references produced by a build.
 type DockerBuildResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Images        []string               `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// images are image tags or digests produced by the Docker build.
+	Images        []string `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

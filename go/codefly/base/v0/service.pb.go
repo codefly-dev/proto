@@ -22,10 +22,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ServiceReference points to another service, usually as a dependency.
 type ServiceReference struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the referenced service name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module        string `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -82,7 +85,7 @@ type Service struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of the service
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Short description of the the service
+	// Short description of the service
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Agent that represents the service
 	Agent *Agent `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
@@ -159,9 +162,11 @@ func (x *Service) GetServiceDependencies() []*ServiceReference {
 	return nil
 }
 
+// Version carries the version reported by an agent or resource descriptor.
 type Version struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Version       string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// version is the semantic or service-specific version for this resource.
+	Version       string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -205,13 +210,19 @@ func (x *Version) GetVersion() string {
 
 // ServiceIdentity is the identity of a service in a workspace
 type ServiceIdentity struct {
-	state               protoimpl.MessageState `protogen:"open.v1"`
-	Name                string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Module              string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
-	Workspace           string                 `protobuf:"bytes,3,opt,name=workspace,proto3" json:"workspace,omitempty"`
-	Version             string                 `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
-	WorkspacePath       string                 `protobuf:"bytes,5,opt,name=workspace_path,json=workspacePath,proto3" json:"workspace_path,omitempty"`
-	RelativeToWorkspace string                 `protobuf:"bytes,6,opt,name=relative_to_workspace,json=relativeToWorkspace,proto3" json:"relative_to_workspace,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the service name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	// workspace is the Codefly workspace name that scopes modules and services.
+	Workspace string `protobuf:"bytes,3,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
+	// workspace_path is the absolute or caller-known path to the workspace root.
+	WorkspacePath string `protobuf:"bytes,5,opt,name=workspace_path,json=workspacePath,proto3" json:"workspace_path,omitempty"`
+	// relative_to_workspace is the path to the service relative to the workspace root.
+	RelativeToWorkspace string `protobuf:"bytes,6,opt,name=relative_to_workspace,json=relativeToWorkspace,proto3" json:"relative_to_workspace,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }

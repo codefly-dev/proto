@@ -68,9 +68,11 @@ func (x *Organization) GetName() string {
 	return ""
 }
 
+// ManagedOrganization is the platform-managed representation of an organization.
 type ManagedOrganization struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization is the organization that is managed.
 	Organization  *Organization `protobuf:"bytes,2,opt,name=organization,proto3" json:"organization,omitempty"`
 	unknownFields protoimpl.UnknownFields

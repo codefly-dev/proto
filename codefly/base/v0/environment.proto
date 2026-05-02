@@ -11,16 +11,19 @@ Each environment has a unique name, a description, and a load balancer. The load
 This allows for maximum speed and availability. The load balancer should be specified by its unique identifier.
 */
 
+// Environment names a deployment target such as local, staging, or production.
 message Environment {
     // The name of the environment
     // Must be unique within a workspace
     string name = 1;
     // A brief description of the environment.
     string description = 2;
-    // Naming scope -- useful for testing environment to avoid conflicts
+    // naming_scope distinguishes otherwise similar test or ephemeral environments.
     string naming_scope = 3;
 }
 
+// ManagedEnvironment is the platform-managed representation of an environment.
 message ManagedEnvironment {
+    // id is the stable identifier for this record.
     string id = 1 [(buf.validate.field).string.pattern = "^[a-z]{10}$"];;
 }

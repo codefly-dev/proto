@@ -3,21 +3,34 @@ package codefly.base.v0;
 
 import "codefly/base/v0/scope.proto";
 
+// ConfigurationValue is one key/value pair produced by a service or workspace configuration
+// source.
 message ConfigurationValue {
+  // key is the configuration or schema property name.
   string key = 1;
+  // value is the configuration or schema value.
   string value = 2;
+  // secret marks configuration values that must not be logged or displayed.
   bool secret = 3;
 }
 
+// ConfigurationData carries a structured configuration blob alongside key/value configuration.
 message ConfigurationData {
+  // kind identifies the format or producer-specific type of this configuration blob.
   string kind = 1;
+  // content is the full file, resource, prompt, or response body.
   bytes content = 2;
+  // secret marks configuration values that must not be logged or displayed.
   bool secret = 3;
 }
 
+// ConfigurationInformation groups named configuration values produced by a service or workspace.
 message ConfigurationInformation {
+  // name is the configuration group name.
   string name = 1;
+  // configuration_values are key/value pairs exposed by a configuration entry.
   repeated ConfigurationValue configuration_values = 2;
+  // data is an optional structured configuration payload for values that do not fit key/value pairs.
   ConfigurationData data = 3;
 }
 
@@ -26,7 +39,10 @@ message ConfigurationInformation {
 // - service: origin is the service unique
 // Information is a grouping of configuration values
 message Configuration {
+  // origin identifies the service or workspace that produced the configuration.
   string origin = 1;
+  // runtime_context describes where the service runs, such as native, nix, container, or free.
   RuntimeContext runtime_context = 2;
+  // infos are named configuration groups exposed by a producer.
   repeated ConfigurationInformation infos = 3;
 }

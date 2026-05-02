@@ -4,84 +4,126 @@ package codefly.mcp.v0;
 
 option go_package = "github.com/codefly-dev/core/generated/go/codefly/mcp/v0";
 
-// MCP Tool Definition (aligned with Model Context Protocol spec)
+// Tool describes a callable MCP tool exposed by the Codefly MCP server.
 message Tool {
+    // name is the MCP tool identifier.
     string name = 1;
+    // description tells the model when the tool is useful.
     string description = 2;
+    // input_schema is the JSON Schema describing valid tool arguments.
     InputSchema input_schema = 3;
 }
 
+// InputSchema is the object-shaped JSON Schema accepted by a tool.
 message InputSchema {
+    // type is normally "object" for MCP tool input schemas.
     string type = 1;  // "object"
+    // properties maps argument names to their schema descriptions.
     map<string, PropertySchema> properties = 2;
+    // required marks arguments that callers must provide.
     repeated string required = 3;
 }
 
+// PropertySchema describes one MCP tool argument.
 message PropertySchema {
+    // type is the JSON Schema scalar or object type for this argument.
     string type = 1;
+    // description tells the model what value to provide.
     string description = 2;
+    // enum_values lists allowed string values for an MCP schema property.
     repeated string enum_values = 3;  // For enum types
 }
 
-// MCP Resource Definition
+// Resource describes read-only context exposed through MCP.
 message Resource {
+    // uri is the stable resource identifier.
     string uri = 1;
+    // name is the display name for this resource.
     string name = 2;
+    // mime_type identifies the media type of resource content.
     string mime_type = 3;
+    // description tells the model when the resource is useful.
     string description = 4;
 }
 
-// Content types returned by tools and resources
+// TextContent is a text block returned by an MCP tool or resource.
 message TextContent {
+    // type is the MCP content type, normally "text".
     string type = 1;  // "text"
+    // text is the plain-text payload or human-readable description.
     string text = 2;
 }
 
+// ImageContent is an image block returned by an MCP tool or resource.
 message ImageContent {
+    // type is the MCP content type, normally "image".
     string type = 1;  // "image"
+    // data is the base64-encoded image payload.
     string data = 2;
+    // mime_type identifies the media type of resource content.
     string mime_type = 3;
 }
 
+// ResourceContent embeds a resource reference or payload in a content response.
 message ResourceContent {
+    // type is the MCP content type, normally "resource".
     string type = 1;  // "resource"
+    // resource is the resource metadata associated with this content.
     Resource resource = 2;
+    // text is the plain-text payload or human-readable description.
     string text = 3;
+    // blob is binary content encoded by the protocol.
     string blob = 4;
 }
 
+// Content is the typed MCP response envelope for tools and resources.
 message Content {
+    // content selects exactly one supported content variant.
     oneof content {
+        // text carries a plain-text content block.
         TextContent text = 1;
+        // image carries the ImageContent variant for Content.
         ImageContent image = 2;
+        // resource carries the ResourceContent variant for Content.
         ResourceContent resource = 3;
     }
 }
 
 // Tool execution
 message CallToolRequest {
+    // name is the tool name from the MCP server catalog.
     string name = 1;
+    // arguments are JSON-shaped values supplied to a tool or prompt.
     map<string, string> arguments = 2;
 }
 
+// CallToolResponse returns MCP content blocks and an application-level error flag.
 message CallToolResponse {
+    // content contains the blocks returned by the tool.
     repeated Content content = 1;
+    // is_error is true when the tool result represents an application-level failure.
     bool is_error = 2;
 }
 
 // Resource operations
 message ReadResourceRequest {
+    // uri is the stable resource identifier.
     string uri = 1;
 }
 
+// ReadResourceResponse returns the content blocks for one resource URI.
 message ReadResourceResponse {
+    // contents contains the blocks returned by the resource.
     repeated Content contents = 1;
 }
 
+// ListResourcesRequest carries optional filters for listing resources.
 message ListResourcesRequest {
 }
 
+// ListResourcesResponse returns resources exposed by the MCP server.
 message ListResourcesResponse {
+    // resources are read-only context entries exposed to an AI client or host.
     repeated Resource resources = 1;
 }
 
@@ -89,44 +131,66 @@ message ListResourcesResponse {
 message ListToolsRequest {
 }
 
+// ListToolsResponse returns callable tools exposed by the MCP server.
 message ListToolsResponse {
+    // tools are callable functions exposed to an AI client or host.
     repeated Tool tools = 1;
 }
 
-// Server info
+// ServerInfo identifies the MCP server and its advertised capabilities.
 message ServerInfo {
+    // name is the MCP server name.
     string name = 1;
+    // version is the semantic or service-specific version for this resource.
     string version = 2;
+    // capabilities describes which optional protocol features are supported.
     ServerCapabilities capabilities = 3;
 }
 
+// ServerCapabilities advertises the MCP feature groups supported by the server.
 message ServerCapabilities {
+    // tools are callable functions exposed to an AI client or host.
     bool tools = 1;
+    // resources are read-only context entries exposed to an AI client or host.
     bool resources = 2;
+    // prompts are reusable prompt templates exposed to an AI client or host.
     bool prompts = 3;
 }
 
-// Initialize
+// InitializeRequest is the MCP protocol handshake request.
 message InitializeRequest {
+    // protocol_version is the negotiated MCP or API protocol version.
     string protocol_version = 1;
+    // client_info describes the MCP client performing initialization.
     ClientInfo client_info = 2;
 }
 
+// ClientInfo identifies the MCP client during initialization.
 message ClientInfo {
+    // name is the MCP client name.
     string name = 1;
+    // version is the semantic or service-specific version for this resource.
     string version = 2;
 }
 
+// InitializeResponse confirms the negotiated MCP protocol version and server metadata.
 message InitializeResponse {
+    // protocol_version is the negotiated MCP or API protocol version.
     string protocol_version = 1;
+    // server_info describes the MCP server returned by initialization.
     ServerInfo server_info = 2;
 }
 
 // MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
 service MCP {
+    // Initialize performs the MCP protocol handshake.
     rpc Initialize(InitializeRequest) returns (InitializeResponse);
+    // ListTools returns callable Codefly tools.
     rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+    // CallTool invokes a named Codefly tool.
     rpc CallTool(CallToolRequest) returns (CallToolResponse);
+    // ListResources returns read-only Codefly resources.
     rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+    // ReadResource returns content for one Codefly resource URI.
     rpc ReadResource(ReadResourceRequest) returns (ReadResourceResponse);
 }

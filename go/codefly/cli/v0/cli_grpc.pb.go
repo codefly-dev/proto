@@ -44,22 +44,40 @@ const (
 // CLIClient is the client API for CLI service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// CLI exposes the local Codefly command bridge used by companion UIs and integrations.
 type CLIClient interface {
+	// Ping checks that the CLI bridge is reachable.
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// GetAgentInformation returns metadata and documentation for an installed agent.
 	GetAgentInformation(ctx context.Context, in *GetAgentInformationRequest, opts ...grpc.CallOption) (*v0.AgentInformation, error)
+	// GetWorkspaceInventory returns the loaded workspace resource tree.
 	GetWorkspaceInventory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v01.Workspace, error)
+	// GetWorkspaceServiceDependencyGraph returns the service dependency DAG for the workspace.
 	GetWorkspaceServiceDependencyGraph(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v02.GraphResponse, error)
+	// GetWorkspacePublicModulesDependencyGraph returns graphs of public module-facing endpoints.
 	GetWorkspacePublicModulesDependencyGraph(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MultiGraphResponse, error)
+	// GetActive returns the CLI's current workspace/module/service selection.
 	GetActive(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ActiveResponse, error)
+	// GetAddresses returns the concrete address for a service endpoint.
 	GetAddresses(ctx context.Context, in *GetAddressRequest, opts ...grpc.CallOption) (*GetAddressResponse, error)
+	// GetConfiguration returns configuration declared by the target service.
 	GetConfiguration(ctx context.Context, in *GetConfigurationRequest, opts ...grpc.CallOption) (*GetConfigurationResponse, error)
+	// GetDependenciesConfigurations returns configuration exposed by upstream services.
 	GetDependenciesConfigurations(ctx context.Context, in *GetConfigurationRequest, opts ...grpc.CallOption) (*GetConfigurationsResponse, error)
+	// GetDependenciesNetworkMappings returns network mappings exposed by upstream services.
 	GetDependenciesNetworkMappings(ctx context.Context, in *GetNetworkMappingsRequest, opts ...grpc.CallOption) (*GetNetworkMappingsResponse, error)
+	// GetRuntimeConfigurations returns configuration produced by a running service.
 	GetRuntimeConfigurations(ctx context.Context, in *GetConfigurationRequest, opts ...grpc.CallOption) (*GetConfigurationsResponse, error)
+	// Logs streams live workspace log events.
 	Logs(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[v02.Log], error)
+	// ActiveLogHistory returns persisted log events for the active workspace session.
 	ActiveLogHistory(ctx context.Context, in *v02.LogRequest, opts ...grpc.CallOption) (*v02.LogResponse, error)
+	// GetFlowStatus reports readiness for the active orchestration flow.
 	GetFlowStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FlowStatus, error)
+	// StopFlow stops the active orchestration flow.
 	StopFlow(ctx context.Context, in *StopFlowRequest, opts ...grpc.CallOption) (*StopFlowResponse, error)
+	// DestroyFlow tears down resources owned by the active orchestration flow.
 	DestroyFlow(ctx context.Context, in *DestroyFlowRequest, opts ...grpc.CallOption) (*DestroyFlowResponse, error)
 }
 
@@ -243,22 +261,40 @@ func (c *cLIClient) DestroyFlow(ctx context.Context, in *DestroyFlowRequest, opt
 // CLIServer is the server API for CLI service.
 // All implementations must embed UnimplementedCLIServer
 // for forward compatibility.
+//
+// CLI exposes the local Codefly command bridge used by companion UIs and integrations.
 type CLIServer interface {
+	// Ping checks that the CLI bridge is reachable.
 	Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	// GetAgentInformation returns metadata and documentation for an installed agent.
 	GetAgentInformation(context.Context, *GetAgentInformationRequest) (*v0.AgentInformation, error)
+	// GetWorkspaceInventory returns the loaded workspace resource tree.
 	GetWorkspaceInventory(context.Context, *emptypb.Empty) (*v01.Workspace, error)
+	// GetWorkspaceServiceDependencyGraph returns the service dependency DAG for the workspace.
 	GetWorkspaceServiceDependencyGraph(context.Context, *emptypb.Empty) (*v02.GraphResponse, error)
+	// GetWorkspacePublicModulesDependencyGraph returns graphs of public module-facing endpoints.
 	GetWorkspacePublicModulesDependencyGraph(context.Context, *emptypb.Empty) (*MultiGraphResponse, error)
+	// GetActive returns the CLI's current workspace/module/service selection.
 	GetActive(context.Context, *emptypb.Empty) (*ActiveResponse, error)
+	// GetAddresses returns the concrete address for a service endpoint.
 	GetAddresses(context.Context, *GetAddressRequest) (*GetAddressResponse, error)
+	// GetConfiguration returns configuration declared by the target service.
 	GetConfiguration(context.Context, *GetConfigurationRequest) (*GetConfigurationResponse, error)
+	// GetDependenciesConfigurations returns configuration exposed by upstream services.
 	GetDependenciesConfigurations(context.Context, *GetConfigurationRequest) (*GetConfigurationsResponse, error)
+	// GetDependenciesNetworkMappings returns network mappings exposed by upstream services.
 	GetDependenciesNetworkMappings(context.Context, *GetNetworkMappingsRequest) (*GetNetworkMappingsResponse, error)
+	// GetRuntimeConfigurations returns configuration produced by a running service.
 	GetRuntimeConfigurations(context.Context, *GetConfigurationRequest) (*GetConfigurationsResponse, error)
+	// Logs streams live workspace log events.
 	Logs(*emptypb.Empty, grpc.ServerStreamingServer[v02.Log]) error
+	// ActiveLogHistory returns persisted log events for the active workspace session.
 	ActiveLogHistory(context.Context, *v02.LogRequest) (*v02.LogResponse, error)
+	// GetFlowStatus reports readiness for the active orchestration flow.
 	GetFlowStatus(context.Context, *emptypb.Empty) (*FlowStatus, error)
+	// StopFlow stops the active orchestration flow.
 	StopFlow(context.Context, *StopFlowRequest) (*StopFlowResponse, error)
+	// DestroyFlow tears down resources owned by the active orchestration flow.
 	DestroyFlow(context.Context, *DestroyFlowRequest) (*DestroyFlowResponse, error)
 	mustEmbedUnimplementedCLIServer()
 }

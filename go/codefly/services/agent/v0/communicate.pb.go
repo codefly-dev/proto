@@ -21,11 +21,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Message is the human-readable label and help text attached to an interactive question.
 type Message struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the stable option or field name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// message is the primary text shown to the user.
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// description provides optional help text for the prompt.
+	Description   string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -81,9 +85,11 @@ func (x *Message) GetDescription() string {
 	return ""
 }
 
+// Display is a non-interactive message shown during agent communication.
 type Display struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          map[string]string      `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// data contains structured key/value details to display.
+	Data          map[string]string `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -125,9 +131,11 @@ func (x *Display) GetData() map[string]string {
 	return nil
 }
 
+// Confirm asks the user a yes/no question.
 type Confirm struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Default       bool                   `protobuf:"varint,1,opt,name=default,proto3" json:"default,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// default is the preselected answer shown to the user.
+	Default       bool `protobuf:"varint,1,opt,name=default,proto3" json:"default,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -169,9 +177,11 @@ func (x *Confirm) GetDefault() bool {
 	return false
 }
 
+// ConfirmAnswer returns the user's yes/no choice.
 type ConfirmAnswer struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Confirmed     bool                   `protobuf:"varint,1,opt,name=confirmed,proto3" json:"confirmed,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// confirmed is the boolean answer returned by a confirmation prompt.
+	Confirmed     bool `protobuf:"varint,1,opt,name=confirmed,proto3" json:"confirmed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -213,8 +223,11 @@ func (x *ConfirmAnswer) GetConfirmed() bool {
 	return false
 }
 
+// Input asks the user for a typed scalar value.
 type Input struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// default is the optional prompt prefill.
+	//
 	// Types that are valid to be assigned to Default:
 	//
 	//	*Input_StringDefault
@@ -284,10 +297,12 @@ type isInput_Default interface {
 }
 
 type Input_StringDefault struct {
+	// string_default carries the string variant for Input.
 	StringDefault string `protobuf:"bytes,1,opt,name=string_default,json=stringDefault,proto3,oneof"`
 }
 
 type Input_IntDefault struct {
+	// int_default carries the int32 variant for Input.
 	IntDefault int32 `protobuf:"varint,2,opt,name=int_default,json=intDefault,proto3,oneof"`
 }
 
@@ -295,8 +310,11 @@ func (*Input_StringDefault) isInput_Default() {}
 
 func (*Input_IntDefault) isInput_Default() {}
 
+// InputAnswer returns the typed scalar value supplied by the user.
 type InputAnswer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// answer selects exactly one supported answer variant.
+	//
 	// Types that are valid to be assigned to Answer:
 	//
 	//	*InputAnswer_StringValue
@@ -366,10 +384,12 @@ type isInputAnswer_Answer interface {
 }
 
 type InputAnswer_StringValue struct {
+	// string_value carries the string variant for InputAnswer.
 	StringValue string `protobuf:"bytes,1,opt,name=string_value,json=stringValue,proto3,oneof"`
 }
 
 type InputAnswer_IntValue struct {
+	// int_value carries the int32 variant for InputAnswer.
 	IntValue int32 `protobuf:"varint,2,opt,name=int_value,json=intValue,proto3,oneof"`
 }
 
@@ -377,9 +397,11 @@ func (*InputAnswer_StringValue) isInputAnswer_Answer() {}
 
 func (*InputAnswer_IntValue) isInputAnswer_Answer() {}
 
+// Choice asks the user to select exactly one option.
 type Choice struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Options       []*Message             `protobuf:"bytes,1,rep,name=options,proto3" json:"options,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// options are the choices shown to the user.
+	Options       []*Message `protobuf:"bytes,1,rep,name=options,proto3" json:"options,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -421,9 +443,11 @@ func (x *Choice) GetOptions() []*Message {
 	return nil
 }
 
+// ChoiceAnswer returns the selected option name.
 type ChoiceAnswer struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Option        string                 `protobuf:"bytes,1,opt,name=option,proto3" json:"option,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// option is the selected choice value.
+	Option        string `protobuf:"bytes,1,opt,name=option,proto3" json:"option,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -465,9 +489,11 @@ func (x *ChoiceAnswer) GetOption() string {
 	return ""
 }
 
+// Selection asks the user to select zero or more options.
 type Selection struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Options       []*Message             `protobuf:"bytes,1,rep,name=options,proto3" json:"options,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// options are the choices shown to the user.
+	Options       []*Message `protobuf:"bytes,1,rep,name=options,proto3" json:"options,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -509,9 +535,11 @@ func (x *Selection) GetOptions() []*Message {
 	return nil
 }
 
+// SelectionAnswer returns all selected option names.
 type SelectionAnswer struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Selected      []string               `protobuf:"bytes,1,rep,name=selected,proto3" json:"selected,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// selected contains the option names chosen by the user.
+	Selected      []string `protobuf:"bytes,1,rep,name=selected,proto3" json:"selected,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -555,8 +583,11 @@ func (x *SelectionAnswer) GetSelected() []string {
 
 // Question is sent by the plugin to the CLI during Communicate streaming.
 type Question struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	Message *Message               `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// message is a human-readable status or diagnostic summary.
+	Message *Message `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// value is the concrete question payload the plugin wants answered.
+	//
 	// Types that are valid to be assigned to Value:
 	//
 	//	*Question_Display
@@ -663,22 +694,27 @@ type isQuestion_Value interface {
 }
 
 type Question_Display struct {
+	// display carries the Display variant for Question.
 	Display *Display `protobuf:"bytes,4,opt,name=display,proto3,oneof"`
 }
 
 type Question_Confirm struct {
+	// confirm carries the Confirm variant for Question.
 	Confirm *Confirm `protobuf:"bytes,5,opt,name=confirm,proto3,oneof"`
 }
 
 type Question_Input struct {
+	// input carries a scalar input prompt.
 	Input *Input `protobuf:"bytes,6,opt,name=input,proto3,oneof"`
 }
 
 type Question_Choice struct {
+	// choice carries the Choice variant for Question.
 	Choice *Choice `protobuf:"bytes,7,opt,name=choice,proto3,oneof"`
 }
 
 type Question_Selection struct {
+	// selection carries the Selection variant for Question.
 	Selection *Selection `protobuf:"bytes,8,opt,name=selection,proto3,oneof"`
 }
 
@@ -695,6 +731,8 @@ func (*Question_Selection) isQuestion_Value() {}
 // Answer is sent by the CLI back to the plugin.
 type Answer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// value is the concrete answer payload returned by the CLI.
+	//
 	// Types that are valid to be assigned to Value:
 	//
 	//	*Answer_Confirm
@@ -784,18 +822,22 @@ type isAnswer_Value interface {
 }
 
 type Answer_Confirm struct {
+	// confirm carries the ConfirmAnswer variant for Answer.
 	Confirm *ConfirmAnswer `protobuf:"bytes,5,opt,name=confirm,proto3,oneof"`
 }
 
 type Answer_Input struct {
+	// input carries a scalar input answer.
 	Input *InputAnswer `protobuf:"bytes,6,opt,name=input,proto3,oneof"`
 }
 
 type Answer_Choice struct {
+	// choice carries the ChoiceAnswer variant for Answer.
 	Choice *ChoiceAnswer `protobuf:"bytes,7,opt,name=choice,proto3,oneof"`
 }
 
 type Answer_Selection struct {
+	// selection carries the SelectionAnswer variant for Answer.
 	Selection *SelectionAnswer `protobuf:"bytes,8,opt,name=selection,proto3,oneof"`
 }
 

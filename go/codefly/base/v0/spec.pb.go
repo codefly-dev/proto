@@ -22,9 +22,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// GenericValue carries opaque bytes for legacy or dynamically typed agent settings.
 type GenericValue struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         []byte                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"` // Could also be a string if you prefer JSON
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// value is the configuration or specification value.
+	Value         []byte `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"` // Could also be a string if you prefer JSON
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,9 +68,11 @@ func (x *GenericValue) GetValue() []byte {
 	return nil
 }
 
+// SpecValue wraps an arbitrary typed value from service YAML settings.
 type SpecValue struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         *anypb.Any             `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// value is the configuration or schema value.
+	Value         *anypb.Any `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -110,9 +114,11 @@ func (x *SpecValue) GetValue() *anypb.Any {
 	return nil
 }
 
+// Specs carries agent-specific service settings parsed from Codefly YAML.
 type Specs struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Fields        map[string]*SpecValue  `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// fields are agent-specific structured settings from service YAML.
+	Fields        map[string]*SpecValue `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

@@ -6,8 +6,11 @@ import "codefly/base/v0/endpoint.proto";
 import "codefly/base/v0/agent.proto";
 
 
+// ServiceReference points to another service, usually as a dependency.
 message ServiceReference {
+  // name is the referenced service name.
   string name = 1  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  // module is the Codefly module name that groups services.
   string module = 2  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
 }
 
@@ -18,7 +21,7 @@ message ServiceReference {
 message Service {
   // Name of the service
   string name = 1  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
-  // Short description of the the service
+  // Short description of the service
   string description = 2;
   // Agent that represents the service
   Agent agent = 3;
@@ -29,16 +32,24 @@ message Service {
 }
 
 
+// Version carries the version reported by an agent or resource descriptor.
 message Version {
+  // version is the semantic or service-specific version for this resource.
   string version = 1;
 }
 
 // ServiceIdentity is the identity of a service in a workspace
 message ServiceIdentity {
+  // name is the service name.
   string name = 1  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  // module is the Codefly module name that groups services.
   string module = 2  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  // workspace is the Codefly workspace name that scopes modules and services.
   string workspace = 3  [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
+  // version is the semantic or service-specific version for this resource.
   string version = 4 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 10];
+  // workspace_path is the absolute or caller-known path to the workspace root.
   string workspace_path = 5 [(buf.validate.field).string.min_len = 3];
+  // relative_to_workspace is the path to the service relative to the workspace root.
   string relative_to_workspace = 6 [(buf.validate.field).string.min_len = 3];
 }

@@ -3,30 +3,48 @@ package codefly.observability.v0;
 
 import "google/protobuf/timestamp.proto";
 
+// WorkspaceSnapshot captures workspace identity at the time a session was recorded.
 message WorkspaceSnapshot {
+  // uuid is the durable identifier for the snapshot or session.
   string uuid = 1;
+  // name is the workspace name captured in this snapshot.
   string name = 2;
 }
 
+// ModuleSnapshot captures module identity and its workspace snapshot.
 message ModuleSnapshot {
+  // uuid is the durable identifier for the snapshot or session.
   string uuid = 1;
+  // name is the module name captured in this snapshot.
   string name = 2;
+  // workspace is the Codefly workspace name that scopes modules and services.
   WorkspaceSnapshot workspace = 3;
 }
 
+// PartialSnapshot captures a workspace and the modules known for a recorded session.
 message PartialSnapshot {
+  // uuid is the durable identifier for the snapshot or session.
   string uuid = 1;
+  // name is the snapshot display name.
   string name = 2;
+  // workspace is the Codefly workspace name that scopes modules and services.
   WorkspaceSnapshot workspace = 3;
+  // modules are the module snapshots known at this point in time.
   repeated ModuleSnapshot modules = 4;
 }
 
 
+// Session records a point-in-time workspace/module snapshot.
 message Session {
+  // uuid is the durable identifier for the snapshot or session.
   string uuid = 1;
+  // at is the timestamp for the log or session snapshot.
   google.protobuf.Timestamp at = 2;
+  // session selects the snapshot granularity recorded for this session.
   oneof session {
+    // partial carries the PartialSnapshot variant for Session.
     PartialSnapshot partial = 3;
+    // module carries a module-level snapshot.
     ModuleSnapshot module = 4;
   }
 }

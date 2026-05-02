@@ -55,6 +55,9 @@ const (
 // GatewayClient is the client API for Gateway service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
+// agents, processes, or containers.
 type GatewayClient interface {
 	// ListServices returns all services known to the gateway.
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
@@ -442,6 +445,9 @@ func (c *gatewayClient) GetProjectInfo(ctx context.Context, in *GetProjectInfoRe
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility.
+//
+// Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
+// agents, processes, or containers.
 type GatewayServer interface {
 	// ListServices returns all services known to the gateway.
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)

@@ -8,48 +8,72 @@ import "codefly/base/v0/library.proto";
 
 // AddLibrary creates a new library in the workspace
 message AddLibrary {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // name is the library name to create.
     string name = 2;
+    // description is the human-readable library description.
     string description = 3;
+    // languages identifies which language exports or generators apply.
     repeated string languages = 4;      // Languages to support: ["go", "python"]
+    // git carries optional repository metadata for a library.
     codefly.base.v0.GitConfig git = 5;  // Optional git configuration
 }
 
 // UpdateLibrary updates a library's version
 message UpdateLibrary {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // name is the library name to update.
     string name = 2;
+    // version is the semantic or service-specific version for this resource.
     string version = 3;                 // New version to set
+    // create_tag asks Codefly to create a git tag for the new version.
     bool create_tag = 4;                // Whether to create git tag
 }
 
 // DeleteLibrary removes a library from the workspace
 message DeleteLibrary {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // name is the library name to delete.
     string name = 2;
+    // remove_submodule also removes the git submodule when deleting the library.
     bool remove_submodule = 3;          // If true, also remove git submodule
 }
 
 // AddLibraryDependency adds a library dependency to a service
 message AddLibraryDependency {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // service_name is the stable name of the service.
     string service_name = 2;
+    // service_module is the module containing the service that will use the library.
     string service_module = 3;
+    // library_name is the stable name of the library.
     string library_name = 4;
+    // version_constraint is the semver range accepted by the dependent service.
     string version_constraint = 5;      // Semver constraint
+    // languages identifies which language exports or generators apply.
     repeated string languages = 6;      // Which language exports to use
 }
 
 // RemoveLibraryDependency removes a library dependency from a service
 message RemoveLibraryDependency {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // service_name is the stable name of the service.
     string service_name = 2;
+    // service_module is the module containing the service that currently uses the library.
     string service_module = 3;
+    // library_name is the stable name of the library.
     string library_name = 4;
 }
 
 // SyncLibraries synchronizes all library submodules
 message SyncLibraries {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // update_to_latest asks Codefly to move libraries to the latest allowed version.
     bool update_to_latest = 2;          // If true, update to latest matching version
 }

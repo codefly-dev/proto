@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
-	_ "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -25,42 +24,60 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ExecutionEventKind enumerates supported execution event kinds.
 type ExecutionEventKind int32
 
 const (
+	// EXECUTION_EVENT_KIND_UNSPECIFIED is the default value when execution event kind is not
+	// specified.
 	ExecutionEventKind_EXECUTION_EVENT_KIND_UNSPECIFIED ExecutionEventKind = 0
 	// Planning phases
 	ExecutionEventKind_PLAN_UNDERSTAND_START ExecutionEventKind = 1
-	ExecutionEventKind_PLAN_UNDERSTAND_DONE  ExecutionEventKind = 2
-	ExecutionEventKind_PLAN_PLAN_START       ExecutionEventKind = 3
-	ExecutionEventKind_PLAN_PLAN_DONE        ExecutionEventKind = 4
-	ExecutionEventKind_PLAN_DETAIL_START     ExecutionEventKind = 5
-	ExecutionEventKind_PLAN_DETAIL_DONE      ExecutionEventKind = 6
-	ExecutionEventKind_PLAN_REVIEW           ExecutionEventKind = 7
+	// PLAN_UNDERSTAND_DONE marks completion of the understand phase.
+	ExecutionEventKind_PLAN_UNDERSTAND_DONE ExecutionEventKind = 2
+	// PLAN_PLAN_START marks the start of graph planning.
+	ExecutionEventKind_PLAN_PLAN_START ExecutionEventKind = 3
+	// PLAN_PLAN_DONE marks completion of graph planning.
+	ExecutionEventKind_PLAN_PLAN_DONE ExecutionEventKind = 4
+	// PLAN_DETAIL_START marks the start of detailed objective expansion.
+	ExecutionEventKind_PLAN_DETAIL_START ExecutionEventKind = 5
+	// PLAN_DETAIL_DONE marks completion of detailed objective expansion.
+	ExecutionEventKind_PLAN_DETAIL_DONE ExecutionEventKind = 6
+	// PLAN_REVIEW marks a planning review event.
+	ExecutionEventKind_PLAN_REVIEW ExecutionEventKind = 7
 	// Execution lifecycle
 	ExecutionEventKind_OBJECTIVE_START ExecutionEventKind = 10
-	ExecutionEventKind_OBJECTIVE_DONE  ExecutionEventKind = 11
+	// OBJECTIVE_DONE marks completion of one objective.
+	ExecutionEventKind_OBJECTIVE_DONE ExecutionEventKind = 11
+	// ITERATION_START marks the start of an execution iteration.
 	ExecutionEventKind_ITERATION_START ExecutionEventKind = 12
-	ExecutionEventKind_ITERATION_DONE  ExecutionEventKind = 13
+	// ITERATION_DONE marks completion of an execution iteration.
+	ExecutionEventKind_ITERATION_DONE ExecutionEventKind = 13
 	// Agent lifecycle
 	ExecutionEventKind_AGENT_START ExecutionEventKind = 20
-	ExecutionEventKind_AGENT_DONE  ExecutionEventKind = 21
+	// AGENT_DONE marks completion of an agent step.
+	ExecutionEventKind_AGENT_DONE ExecutionEventKind = 21
 	// LLM
 	ExecutionEventKind_LLM_START ExecutionEventKind = 30
-	ExecutionEventKind_LLM_DONE  ExecutionEventKind = 31
+	// LLM_DONE marks completion of a model call.
+	ExecutionEventKind_LLM_DONE ExecutionEventKind = 31
 	// Tools
-	ExecutionEventKind_TOOL_CALL   ExecutionEventKind = 40
+	ExecutionEventKind_TOOL_CALL ExecutionEventKind = 40
+	// TOOL_RESULT carries a completed tool call.
 	ExecutionEventKind_TOOL_RESULT ExecutionEventKind = 41
 	// File operations
 	ExecutionEventKind_FILE_OP ExecutionEventKind = 50
 	// Checks
-	ExecutionEventKind_CHECK_START  ExecutionEventKind = 60
+	ExecutionEventKind_CHECK_START ExecutionEventKind = 60
+	// CHECK_RESULT carries the result of a verification check.
 	ExecutionEventKind_CHECK_RESULT ExecutionEventKind = 61
 	// Strategy
 	ExecutionEventKind_STRATEGY_DECISION ExecutionEventKind = 70
 	// Terminal
-	ExecutionEventKind_ERROR    ExecutionEventKind = 80
-	ExecutionEventKind_INFO     ExecutionEventKind = 81
+	ExecutionEventKind_ERROR ExecutionEventKind = 80
+	// INFO carries an informational event.
+	ExecutionEventKind_INFO ExecutionEventKind = 81
+	// COMPLETE marks the end of the execution stream.
 	ExecutionEventKind_COMPLETE ExecutionEventKind = 90
 )
 
@@ -149,12 +166,17 @@ func (ExecutionEventKind) EnumDescriptor() ([]byte, []int) {
 	return file_mind_v1_mind_proto_rawDescGZIP(), []int{0}
 }
 
+// CreateSessionRequest describes the session resource to create.
 type CreateSessionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	WorkDir       string                 `protobuf:"bytes,1,opt,name=work_dir,json=workDir,proto3" json:"work_dir,omitempty"`                                                    // absolute path to project root
-	CodeflyBin    string                 `protobuf:"bytes,2,opt,name=codefly_bin,json=codeflyBin,proto3" json:"codefly_bin,omitempty"`                                           // path to codefly binary (optional)
-	ObjectivePath string                 `protobuf:"bytes,3,opt,name=objective_path,json=objectivePath,proto3" json:"objective_path,omitempty"`                                  // default objective.yaml (optional)
-	Env           map[string]string      `protobuf:"bytes,4,rep,name=env,proto3" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // extra env vars (LLM keys, etc.)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// work_dir is the workspace directory that scopes the Mind session.
+	WorkDir string `protobuf:"bytes,1,opt,name=work_dir,json=workDir,proto3" json:"work_dir,omitempty"` // absolute path to project root
+	// codefly_bin optionally overrides the Codefly CLI binary used by the session.
+	CodeflyBin string `protobuf:"bytes,2,opt,name=codefly_bin,json=codeflyBin,proto3" json:"codefly_bin,omitempty"` // path to codefly binary (optional)
+	// objective_path is a workspace- or service-relative path for objective.
+	ObjectivePath string `protobuf:"bytes,3,opt,name=objective_path,json=objectivePath,proto3" json:"objective_path,omitempty"` // default objective.yaml (optional)
+	// env contains environment variables passed to the session process.
+	Env           map[string]string `protobuf:"bytes,4,rep,name=env,proto3" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // extra env vars (LLM keys, etc.)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -217,11 +239,15 @@ func (x *CreateSessionRequest) GetEnv() map[string]string {
 	return nil
 }
 
+// CreateSessionResponse returns the new session id and detected project metadata.
 type CreateSessionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	ProjectName   string                 `protobuf:"bytes,2,opt,name=project_name,json=projectName,proto3" json:"project_name,omitempty"` // auto-detected from mind.yaml
-	Plugin        string                 `protobuf:"bytes,3,opt,name=plugin,proto3" json:"plugin,omitempty"`                              // detected plugin (e.g. "go-generic")
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// project_name is the display name of the loaded workspace or project.
+	ProjectName string `protobuf:"bytes,2,opt,name=project_name,json=projectName,proto3" json:"project_name,omitempty"` // auto-detected from mind.yaml
+	// plugin is the detected primary plugin for the workspace.
+	Plugin        string `protobuf:"bytes,3,opt,name=plugin,proto3" json:"plugin,omitempty"` // detected plugin (e.g. "go-generic")
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -277,9 +303,11 @@ func (x *CreateSessionResponse) GetPlugin() string {
 	return ""
 }
 
+// ListSessionsRequest carries optional filters for listing sessions.
 type ListSessionsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"` // max sessions to return (default 20)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// limit caps the number of sessions returned; zero uses the server default.
+	Limit         int32 `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"` // max sessions to return (default 20)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -321,9 +349,11 @@ func (x *ListSessionsRequest) GetLimit() int32 {
 	return 0
 }
 
+// ListSessionsResponse returns recent Mind sessions.
 type ListSessionsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Sessions      []*SessionSummary      `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// sessions are summaries ordered by most recent activity.
+	Sessions      []*SessionSummary `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -365,16 +395,25 @@ func (x *ListSessionsResponse) GetSessions() []*SessionSummary {
 	return nil
 }
 
+// SessionSummary summarizes a Mind session for listing and lookup.
 type SessionSummary struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Project       string                 `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,4,opt,name=duration,proto3" json:"duration,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	LlmCalls      int32                  `protobuf:"varint,6,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	Achieved      bool                   `protobuf:"varint,7,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	LastObjective string                 `protobuf:"bytes,8,opt,name=last_objective,json=lastObjective,proto3" json:"last_objective,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// project is the workspace or project name associated with the session.
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// created_at is when the session or record was created.
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,4,opt,name=duration,proto3" json:"duration,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,6,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved bool `protobuf:"varint,7,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	// last_objective is the most recent objective summary for the session.
+	LastObjective string `protobuf:"bytes,8,opt,name=last_objective,json=lastObjective,proto3" json:"last_objective,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -465,9 +504,11 @@ func (x *SessionSummary) GetLastObjective() string {
 	return ""
 }
 
+// GetSessionDetailRequest identifies the session detail data to retrieve.
 type GetSessionDetailRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -509,10 +550,13 @@ func (x *GetSessionDetailRequest) GetSessionId() string {
 	return ""
 }
 
+// GetSessionDetailResponse returns session metadata and retained event history.
 type GetSessionDetailResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *SessionSummary        `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	Events        []*EventEntry          `protobuf:"bytes,2,rep,name=events,proto3" json:"events,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session is the session metadata returned by the lookup.
+	Session *SessionSummary `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	// events are chronological history entries for the session.
+	Events        []*EventEntry `protobuf:"bytes,2,rep,name=events,proto3" json:"events,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -561,10 +605,13 @@ func (x *GetSessionDetailResponse) GetEvents() []*EventEntry {
 	return nil
 }
 
+// SendMessageRequest sends one user turn to a Mind session.
 type SendMessageRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Text          string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"` // user input (plain, /slash, !bang, ?ask, ~plan)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// text is the user input, including slash/bang/ask/plan prefixes.
+	Text          string `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"` // user input (plain, /slash, !bang, ?ask, ~plan)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -617,6 +664,8 @@ func (x *SendMessageRequest) GetText() string {
 // Exactly one of the oneof fields is set per event.
 type ChatEvent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// event selects exactly one supported event variant.
+	//
 	// Types that are valid to be assigned to Event:
 	//
 	//	*ChatEvent_Token
@@ -726,26 +775,32 @@ type isChatEvent_Event interface {
 }
 
 type ChatEvent_Token struct {
+	// token carries the ChatTokenChunk variant for ChatEvent.
 	Token *ChatTokenChunk `protobuf:"bytes,1,opt,name=token,proto3,oneof"` // incremental token for live typing
 }
 
 type ChatEvent_ToolCall struct {
+	// tool_call carries the ChatToolCall variant for ChatEvent.
 	ToolCall *ChatToolCall `protobuf:"bytes,2,opt,name=tool_call,json=toolCall,proto3,oneof"` // tool invocation (read_file, search, etc.)
 }
 
 type ChatEvent_ToolResult struct {
+	// tool_result carries the ChatToolResult variant for ChatEvent.
 	ToolResult *ChatToolResult `protobuf:"bytes,3,opt,name=tool_result,json=toolResult,proto3,oneof"` // tool result
 }
 
 type ChatEvent_Command struct {
+	// command carries the ChatCommandOutput variant for ChatEvent.
 	Command *ChatCommandOutput `protobuf:"bytes,4,opt,name=command,proto3,oneof"` // slash/bang command output
 }
 
 type ChatEvent_Complete struct {
+	// complete carries the ChatComplete variant for ChatEvent.
 	Complete *ChatComplete `protobuf:"bytes,5,opt,name=complete,proto3,oneof"` // final response with full text
 }
 
 type ChatEvent_Error struct {
+	// error explains why the operation failed; empty means success at this layer.
 	Error *ChatError `protobuf:"bytes,6,opt,name=error,proto3,oneof"` // error
 }
 
@@ -761,9 +816,11 @@ func (*ChatEvent_Complete) isChatEvent_Event() {}
 
 func (*ChatEvent_Error) isChatEvent_Event() {}
 
+// ChatTokenChunk carries an incremental assistant text fragment.
 type ChatTokenChunk struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Text          string                 `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"` // token text fragment
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// text is the next response fragment for live typing.
+	Text          string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"` // token text fragment
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -805,10 +862,13 @@ func (x *ChatTokenChunk) GetText() string {
 	return ""
 }
 
+// ChatToolCall announces a tool invocation during chat.
 type ChatToolCall struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tool          string                 `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`                                                                           // tool name (read_file, search, etc.)
-	Args          map[string]string      `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // tool arguments
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// tool is the tool name involved in this chat or execution event.
+	Tool string `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"` // tool name (read_file, search, etc.)
+	// args are structured or command-line arguments supplied to the tool or command.
+	Args          map[string]string `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // tool arguments
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -857,11 +917,15 @@ func (x *ChatToolCall) GetArgs() map[string]string {
 	return nil
 }
 
+// ChatToolResult captures the outcome of chat tool.
 type ChatToolResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tool          string                 `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
-	IsError       bool                   `protobuf:"varint,3,opt,name=is_error,json=isError,proto3" json:"is_error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// tool is the tool name involved in this chat or execution event.
+	Tool string `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	// is_error is true when the tool result represents an application-level failure.
+	IsError       bool `protobuf:"varint,3,opt,name=is_error,json=isError,proto3" json:"is_error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -917,10 +981,13 @@ func (x *ChatToolResult) GetIsError() bool {
 	return false
 }
 
+// ChatCommandOutput carries output from a slash or bang command.
 type ChatCommandOutput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Command       string                 `protobuf:"bytes,1,opt,name=command,proto3" json:"command,omitempty"` // command name
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`   // formatted output
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// command is the executable or shell command requested by the caller.
+	Command string `protobuf:"bytes,1,opt,name=command,proto3" json:"command,omitempty"` // command name
+	// output is raw command, build, lint, or test output retained for diagnosis.
+	Output        string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"` // formatted output
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -969,10 +1036,13 @@ func (x *ChatCommandOutput) GetOutput() string {
 	return ""
 }
 
+// ChatComplete terminates a SendMessage stream with final text and metrics.
 type ChatComplete struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Text          string                 `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`       // full response text
-	Metrics       *ContextMetrics        `protobuf:"bytes,2,opt,name=metrics,proto3" json:"metrics,omitempty"` // token usage for this turn
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// text is the complete assistant response.
+	Text string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"` // full response text
+	// metrics is token usage for this chat turn.
+	Metrics       *ContextMetrics `protobuf:"bytes,2,opt,name=metrics,proto3" json:"metrics,omitempty"` // token usage for this turn
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1021,10 +1091,13 @@ func (x *ChatComplete) GetMetrics() *ContextMetrics {
 	return nil
 }
 
+// ChatError terminates or annotates a chat stream with a failure.
 type ChatError struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	Cancelled     bool                   `protobuf:"varint,2,opt,name=cancelled,proto3" json:"cancelled,omitempty"` // true if cancelled by user
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// message explains the chat failure.
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// cancelled is true when the operation was stopped before normal completion.
+	Cancelled     bool `protobuf:"varint,2,opt,name=cancelled,proto3" json:"cancelled,omitempty"` // true if cancelled by user
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1073,9 +1146,11 @@ func (x *ChatError) GetCancelled() bool {
 	return false
 }
 
+// CancelOperationRequest stops the active operation for a session.
 type CancelOperationRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1117,6 +1192,7 @@ func (x *CancelOperationRequest) GetSessionId() string {
 	return ""
 }
 
+// CancelOperationResponse acknowledges the cancellation request.
 type CancelOperationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1153,9 +1229,11 @@ func (*CancelOperationResponse) Descriptor() ([]byte, []int) {
 	return file_mind_v1_mind_proto_rawDescGZIP(), []int{16}
 }
 
+// InitContextRequest starts codebase ingestion and context initialization for a session.
 type InitContextRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1197,12 +1275,17 @@ func (x *InitContextRequest) GetSessionId() string {
 	return ""
 }
 
+// InitEvent is a streamable event emitted during init.
 type InitEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Phase         string                 `protobuf:"bytes,1,opt,name=phase,proto3" json:"phase,omitempty"` // "gateway", "services", "symbols", "conventions", "embeddings", "rules"
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Progress      float64                `protobuf:"fixed64,3,opt,name=progress,proto3" json:"progress,omitempty"` // 0.0 - 1.0
-	Done          bool                   `protobuf:"varint,4,opt,name=done,proto3" json:"done,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// phase names the current initialization, planning, or execution phase.
+	Phase string `protobuf:"bytes,1,opt,name=phase,proto3" json:"phase,omitempty"` // "gateway", "services", "symbols", "conventions", "embeddings", "rules"
+	// message is a human-readable status or diagnostic summary.
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// progress is a fractional progress value from 0 to 1 when known.
+	Progress float64 `protobuf:"fixed64,3,opt,name=progress,proto3" json:"progress,omitempty"` // 0.0 - 1.0
+	// done is true when the stream or phase has completed.
+	Done          bool `protobuf:"varint,4,opt,name=done,proto3" json:"done,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1265,16 +1348,22 @@ func (x *InitEvent) GetDone() bool {
 	return false
 }
 
+// RunObjectiveRequest executes an objective from a file or inline spec.
 type RunObjectiveRequest struct {
-	state     protoimpl.MessageState `protogen:"open.v1"`
-	SessionId string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// source selects exactly one supported source variant.
+	//
 	// Types that are valid to be assigned to Source:
 	//
 	//	*RunObjectiveRequest_ObjectivePath
 	//	*RunObjectiveRequest_Inline
-	Source        isRunObjectiveRequest_Source `protobuf_oneof:"source"`
-	MaxIterations int32                        `protobuf:"varint,4,opt,name=max_iterations,json=maxIterations,proto3" json:"max_iterations,omitempty"` // override default (0 = use default)
-	DryRun        bool                         `protobuf:"varint,5,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"`                      // show changes without applying
+	Source isRunObjectiveRequest_Source `protobuf_oneof:"source"`
+	// max_iterations caps the number of execution loops Mind may run.
+	MaxIterations int32 `protobuf:"varint,4,opt,name=max_iterations,json=maxIterations,proto3" json:"max_iterations,omitempty"` // override default (0 = use default)
+	// dry_run asks Mind to plan without applying changes.
+	DryRun        bool `protobuf:"varint,5,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"` // show changes without applying
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1360,10 +1449,12 @@ type isRunObjectiveRequest_Source interface {
 }
 
 type RunObjectiveRequest_ObjectivePath struct {
+	// objective_path is the workspace-relative objective YAML path.
 	ObjectivePath string `protobuf:"bytes,2,opt,name=objective_path,json=objectivePath,proto3,oneof"` // path to objective.yaml
 }
 
 type RunObjectiveRequest_Inline struct {
+	// inline embeds the objective spec directly in the request.
 	Inline *ObjectiveSpec `protobuf:"bytes,3,opt,name=inline,proto3,oneof"` // inline objective spec
 }
 
@@ -1371,12 +1462,17 @@ func (*RunObjectiveRequest_ObjectivePath) isRunObjectiveRequest_Source() {}
 
 func (*RunObjectiveRequest_Inline) isRunObjectiveRequest_Source() {}
 
+// PlanAndExecuteRequest asks Mind to plan from natural language and execute the plan.
 type PlanAndExecuteRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Request       string                 `protobuf:"bytes,2,opt,name=request,proto3" json:"request,omitempty"` // free-text feature request
-	MaxIterations int32                  `protobuf:"varint,3,opt,name=max_iterations,json=maxIterations,proto3" json:"max_iterations,omitempty"`
-	DryRun        bool                   `protobuf:"varint,4,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// request is the nested objective execution request.
+	Request string `protobuf:"bytes,2,opt,name=request,proto3" json:"request,omitempty"` // free-text feature request
+	// max_iterations caps the number of execution loops Mind may run.
+	MaxIterations int32 `protobuf:"varint,3,opt,name=max_iterations,json=maxIterations,proto3" json:"max_iterations,omitempty"`
+	// dry_run asks Mind to plan without applying changes.
+	DryRun        bool `protobuf:"varint,4,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1441,13 +1537,19 @@ func (x *PlanAndExecuteRequest) GetDryRun() bool {
 
 // ObjectiveSpec is the proto representation of objective.yaml.
 type ObjectiveSpec struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Do            string                 `protobuf:"bytes,2,opt,name=do,proto3" json:"do,omitempty"` // what to accomplish
-	Service       string                 `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
-	Scope         *ObjectiveScope        `protobuf:"bytes,4,opt,name=scope,proto3" json:"scope,omitempty"`
-	Checks        []*CheckSpec           `protobuf:"bytes,5,rep,name=checks,proto3" json:"checks,omitempty"`
-	Policy        *ObjectivePolicy       `protobuf:"bytes,6,opt,name=policy,proto3" json:"policy,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// do is the imperative objective text Mind should satisfy.
+	Do string `protobuf:"bytes,2,opt,name=do,proto3" json:"do,omitempty"` // what to accomplish
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
+	// scope describes where a rule applies.
+	Scope *ObjectiveScope `protobuf:"bytes,4,opt,name=scope,proto3" json:"scope,omitempty"`
+	// checks are verification steps requested by the caller.
+	Checks []*CheckSpec `protobuf:"bytes,5,rep,name=checks,proto3" json:"checks,omitempty"`
+	// policy contains execution limits and approval behavior for the objective.
+	Policy        *ObjectivePolicy `protobuf:"bytes,6,opt,name=policy,proto3" json:"policy,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1524,10 +1626,13 @@ func (x *ObjectiveSpec) GetPolicy() *ObjectivePolicy {
 	return nil
 }
 
+// ObjectiveScope constrains the files Mind should read or may modify.
 type ObjectiveScope struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Write         []string               `protobuf:"bytes,1,rep,name=write,proto3" json:"write,omitempty"` // files the agent may modify
-	Read          []string               `protobuf:"bytes,2,rep,name=read,proto3" json:"read,omitempty"`   // files the agent should read for context
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// write lists file globs or paths Mind may modify.
+	Write []string `protobuf:"bytes,1,rep,name=write,proto3" json:"write,omitempty"` // files the agent may modify
+	// read lists file globs or paths Mind should inspect for context.
+	Read          []string `protobuf:"bytes,2,rep,name=read,proto3" json:"read,omitempty"` // files the agent should read for context
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1576,15 +1681,23 @@ func (x *ObjectiveScope) GetRead() []string {
 	return nil
 }
 
+// CheckSpec describes one verification check from an objective spec.
 type CheckSpec struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "build", "test", "lint", "command", "http"
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Run           string                 `protobuf:"bytes,3,opt,name=run,proto3" json:"run,omitempty"`       // for "command" type
-	Method        string                 `protobuf:"bytes,4,opt,name=method,proto3" json:"method,omitempty"` // for "http" type
-	Path          string                 `protobuf:"bytes,5,opt,name=path,proto3" json:"path,omitempty"`
-	Body          string                 `protobuf:"bytes,6,opt,name=body,proto3" json:"body,omitempty"`
-	Expect        string                 `protobuf:"bytes,7,opt,name=expect,proto3" json:"expect,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type identifies the check mechanism, such as build, test, lint, command, or http.
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "build", "test", "lint", "command", "http"
+	// name is a caller-chosen check name.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// run is the command line for command checks.
+	Run string `protobuf:"bytes,3,opt,name=run,proto3" json:"run,omitempty"` // for "command" type
+	// method is the HTTP verb for HTTP checks.
+	Method string `protobuf:"bytes,4,opt,name=method,proto3" json:"method,omitempty"` // for "http" type
+	// path is the HTTP path or workspace path used by the check.
+	Path string `protobuf:"bytes,5,opt,name=path,proto3" json:"path,omitempty"`
+	// body is the request or response payload.
+	Body string `protobuf:"bytes,6,opt,name=body,proto3" json:"body,omitempty"`
+	// expect describes the expected outcome for a check.
+	Expect        string `protobuf:"bytes,7,opt,name=expect,proto3" json:"expect,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1668,11 +1781,15 @@ func (x *CheckSpec) GetExpect() string {
 	return ""
 }
 
+// ObjectivePolicy controls execution limits and decomposition behavior.
 type ObjectivePolicy struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	MaxIterations  int32                  `protobuf:"varint,1,opt,name=max_iterations,json=maxIterations,proto3" json:"max_iterations,omitempty"`
-	MaxCostUsd     float64                `protobuf:"fixed64,2,opt,name=max_cost_usd,json=maxCostUsd,proto3" json:"max_cost_usd,omitempty"`
-	AllowDecompose bool                   `protobuf:"varint,3,opt,name=allow_decompose,json=allowDecompose,proto3" json:"allow_decompose,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// max_iterations caps the number of execution loops Mind may run.
+	MaxIterations int32 `protobuf:"varint,1,opt,name=max_iterations,json=maxIterations,proto3" json:"max_iterations,omitempty"`
+	// max_cost_usd caps model spend for the objective.
+	MaxCostUsd float64 `protobuf:"fixed64,2,opt,name=max_cost_usd,json=maxCostUsd,proto3" json:"max_cost_usd,omitempty"`
+	// allow_decompose permits Mind to split the objective into sub-objectives.
+	AllowDecompose bool `protobuf:"varint,3,opt,name=allow_decompose,json=allowDecompose,proto3" json:"allow_decompose,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1731,21 +1848,33 @@ func (x *ObjectivePolicy) GetAllowDecompose() bool {
 // ExecutionEvent is the unified stream for objective execution.
 // This maps to agent.ProgressEvent + planning phases.
 type ExecutionEvent struct {
-	state     protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Kind      ExecutionEventKind     `protobuf:"varint,2,opt,name=kind,proto3,enum=mind.v1.ExecutionEventKind" json:"kind,omitempty"`
-	Agent     string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message   string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	Data      map[string]string      `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// kind categorizes the execution event for stream consumers.
+	Kind ExecutionEventKind `protobuf:"varint,2,opt,name=kind,proto3,enum=mind.v1.ExecutionEventKind" json:"kind,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the human-readable event text.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// data is the raw bytes or JSON-shaped payload.
+	Data map[string]string `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Phase-specific payloads (at most one set per event).
-	Plan          *PlanPhaseEvent   `protobuf:"bytes,10,opt,name=plan,proto3" json:"plan,omitempty"`
-	Iteration     *IterationEvent   `protobuf:"bytes,11,opt,name=iteration,proto3" json:"iteration,omitempty"`
-	Check         *CheckResultEvent `protobuf:"bytes,12,opt,name=check,proto3" json:"check,omitempty"`
-	FileOp        *FileOpEvent      `protobuf:"bytes,13,opt,name=file_op,json=fileOp,proto3" json:"file_op,omitempty"`
-	Strategy      *StrategyEvent    `protobuf:"bytes,14,opt,name=strategy,proto3" json:"strategy,omitempty"`
-	Llm           *LLMEvent         `protobuf:"bytes,15,opt,name=llm,proto3" json:"llm,omitempty"`
-	Tool          *ToolEvent        `protobuf:"bytes,16,opt,name=tool,proto3" json:"tool,omitempty"`
-	Completion    *CompletionEvent  `protobuf:"bytes,17,opt,name=completion,proto3" json:"completion,omitempty"`
+	Plan *PlanPhaseEvent `protobuf:"bytes,10,opt,name=plan,proto3" json:"plan,omitempty"`
+	// iteration carries iteration lifecycle details when this is an iteration event.
+	Iteration *IterationEvent `protobuf:"bytes,11,opt,name=iteration,proto3" json:"iteration,omitempty"`
+	// check carries a verification event emitted during execution.
+	Check *CheckResultEvent `protobuf:"bytes,12,opt,name=check,proto3" json:"check,omitempty"`
+	// file_op carries a file operation event emitted during execution.
+	FileOp *FileOpEvent `protobuf:"bytes,13,opt,name=file_op,json=fileOp,proto3" json:"file_op,omitempty"`
+	// strategy carries the reasoning behind a strategy decision.
+	Strategy *StrategyEvent `protobuf:"bytes,14,opt,name=strategy,proto3" json:"strategy,omitempty"`
+	// llm carries model-call metadata emitted during execution.
+	Llm *LLMEvent `protobuf:"bytes,15,opt,name=llm,proto3" json:"llm,omitempty"`
+	// tool carries a tool call or tool result event.
+	Tool *ToolEvent `protobuf:"bytes,16,opt,name=tool,proto3" json:"tool,omitempty"`
+	// completion carries the final execution summary.
+	Completion    *CompletionEvent `protobuf:"bytes,17,opt,name=completion,proto3" json:"completion,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1871,9 +2000,12 @@ func (x *ExecutionEvent) GetCompletion() *CompletionEvent {
 	return nil
 }
 
+// PlanPhaseEvent is a streamable event emitted during plan phase.
 type PlanPhaseEvent struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Phase         string                  `protobuf:"bytes,1,opt,name=phase,proto3" json:"phase,omitempty"` // "understand", "plan", "detail", "review"
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// phase names the current initialization, planning, or execution phase.
+	Phase string `protobuf:"bytes,1,opt,name=phase,proto3" json:"phase,omitempty"` // "understand", "plan", "detail", "review"
+	// graph is the objective graph produced by planning.
 	Graph         *ObjectiveGraphSnapshot `protobuf:"bytes,2,opt,name=graph,proto3" json:"graph,omitempty"` // current objective graph state
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1923,10 +2055,13 @@ func (x *PlanPhaseEvent) GetGraph() *ObjectiveGraphSnapshot {
 	return nil
 }
 
+// ObjectiveGraphSnapshot captures the objective DAG at a planning moment.
 type ObjectiveGraphSnapshot struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*ObjectiveNode       `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	Edges         []*ObjectiveEdge       `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// nodes are graph vertices returned by the objective or dependency graph.
+	Nodes []*ObjectiveNode `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// edges are graph relationships between returned nodes.
+	Edges         []*ObjectiveEdge `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1975,14 +2110,21 @@ func (x *ObjectiveGraphSnapshot) GetEdges() []*ObjectiveEdge {
 	return nil
 }
 
+// IterationEvent is a streamable event emitted during iteration.
 type IterationEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Number        int32                  `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
-	ObjectiveId   string                 `protobuf:"bytes,2,opt,name=objective_id,json=objectiveId,proto3" json:"objective_id,omitempty"`
-	ObjectiveDo   string                 `protobuf:"bytes,3,opt,name=objective_do,json=objectiveDo,proto3" json:"objective_do,omitempty"`
-	Outcome       string                 `protobuf:"bytes,4,opt,name=outcome,proto3" json:"outcome,omitempty"` // "achieved", "failed", "decomposed"
-	ChecksPassed  int32                  `protobuf:"varint,5,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
-	ChecksTotal   int32                  `protobuf:"varint,6,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// number is the 1-based iteration or sequence number.
+	Number int32 `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
+	// objective_id identifies a planned or running objective node.
+	ObjectiveId string `protobuf:"bytes,2,opt,name=objective_id,json=objectiveId,proto3" json:"objective_id,omitempty"`
+	// objective_do is the objective text active during this iteration.
+	ObjectiveDo string `protobuf:"bytes,3,opt,name=objective_do,json=objectiveDo,proto3" json:"objective_do,omitempty"`
+	// outcome summarizes the result of an iteration or memory entry.
+	Outcome string `protobuf:"bytes,4,opt,name=outcome,proto3" json:"outcome,omitempty"` // "achieved", "failed", "decomposed"
+	// checks_passed is the number of verification checks that passed.
+	ChecksPassed int32 `protobuf:"varint,5,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
+	// checks_total is the number of verification checks that ran.
+	ChecksTotal   int32 `protobuf:"varint,6,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2059,13 +2201,19 @@ func (x *IterationEvent) GetChecksTotal() int32 {
 	return 0
 }
 
+// CheckResultEvent reports one verification check result.
 type CheckResultEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Passed        bool                   `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
-	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
-	Output        string                 `protobuf:"bytes,5,opt,name=output,proto3" json:"output,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the check name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// type identifies the check mechanism, such as command, test, build, or lint.
+	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// passed is true when the check met its expected condition.
+	Passed bool `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output        string `protobuf:"bytes,5,opt,name=output,proto3" json:"output,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2135,11 +2283,15 @@ func (x *CheckResultEvent) GetOutput() string {
 	return ""
 }
 
+// FileOpEvent is a streamable event emitted during file op.
 type FileOpEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Op            string                 `protobuf:"bytes,1,opt,name=op,proto3" json:"op,omitempty"` // "create", "edit", "delete"
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	Diff          string                 `protobuf:"bytes,3,opt,name=diff,proto3" json:"diff,omitempty"` // unified diff (optional, may be large)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// op is the file operation such as create, update, delete, or rename.
+	Op string `protobuf:"bytes,1,opt,name=op,proto3" json:"op,omitempty"` // "create", "edit", "delete"
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	// diff is the unified diff for the file or git change.
+	Diff          string `protobuf:"bytes,3,opt,name=diff,proto3" json:"diff,omitempty"` // unified diff (optional, may be large)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2195,10 +2347,13 @@ func (x *FileOpEvent) GetDiff() string {
 	return ""
 }
 
+// StrategyEvent is a streamable event emitted during strategy.
 type StrategyEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Action        string                 `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"` // "pivot", "widen", "decompose", "escalate"
-	Reasoning     string                 `protobuf:"bytes,2,opt,name=reasoning,proto3" json:"reasoning,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// action is the strategy, file, or debug action that occurred.
+	Action string `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"` // "pivot", "widen", "decompose", "escalate"
+	// reasoning explains why Mind selected this strategy.
+	Reasoning     string `protobuf:"bytes,2,opt,name=reasoning,proto3" json:"reasoning,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2247,14 +2402,21 @@ func (x *StrategyEvent) GetReasoning() string {
 	return ""
 }
 
+// LLMEvent records token, model, cost, and timing data for one model call.
 type LLMEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Model         string                 `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,2,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,3,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,4,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	DurationMs    int64                  `protobuf:"varint,6,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// model is the provider model identifier used for the call.
+	Model string `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,2,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,3,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,4,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// duration_ms is wall-clock time in milliseconds.
+	DurationMs    int64 `protobuf:"varint,6,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2331,13 +2493,19 @@ func (x *LLMEvent) GetDurationMs() int64 {
 	return 0
 }
 
+// ToolEvent is a streamable event emitted during tool.
 type ToolEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tool          string                 `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`
-	Args          map[string]string      `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Output        string                 `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
-	IsError       bool                   `protobuf:"varint,4,opt,name=is_error,json=isError,proto3" json:"is_error,omitempty"`
-	Cached        bool                   `protobuf:"varint,5,opt,name=cached,proto3" json:"cached,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// tool is the tool name involved in this chat or execution event.
+	Tool string `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`
+	// args are command-line arguments passed to the executable.
+	Args map[string]string `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output string `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
+	// is_error is true when the tool result represents an application-level failure.
+	IsError bool `protobuf:"varint,4,opt,name=is_error,json=isError,proto3" json:"is_error,omitempty"`
+	// cached is true when the tool or model result came from a cache.
+	Cached        bool `protobuf:"varint,5,opt,name=cached,proto3" json:"cached,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2407,14 +2575,21 @@ func (x *ToolEvent) GetCached() bool {
 	return false
 }
 
+// CompletionEvent is a streamable event emitted during completion.
 type CompletionEvent struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Achieved        bool                   `protobuf:"varint,1,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	Iterations      int32                  `protobuf:"varint,2,opt,name=iterations,proto3" json:"iterations,omitempty"`
-	CostUsd         float64                `protobuf:"fixed64,3,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	FilesChanged    []*FileChange          `protobuf:"bytes,4,rep,name=files_changed,json=filesChanged,proto3" json:"files_changed,omitempty"`
-	Checks          []*CheckResult         `protobuf:"bytes,5,rep,name=checks,proto3" json:"checks,omitempty"`
-	PendingApproval bool                   `protobuf:"varint,6,opt,name=pending_approval,json=pendingApproval,proto3" json:"pending_approval,omitempty"` // true if changes need ApproveChanges
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved bool `protobuf:"varint,1,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations int32 `protobuf:"varint,2,opt,name=iterations,proto3" json:"iterations,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,3,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// files_changed is the number of files modified by the operation.
+	FilesChanged []*FileChange `protobuf:"bytes,4,rep,name=files_changed,json=filesChanged,proto3" json:"files_changed,omitempty"`
+	// checks are verification steps requested by the caller.
+	Checks []*CheckResult `protobuf:"bytes,5,rep,name=checks,proto3" json:"checks,omitempty"`
+	// pending_approval is true when execution stopped for human approval.
+	PendingApproval bool `protobuf:"varint,6,opt,name=pending_approval,json=pendingApproval,proto3" json:"pending_approval,omitempty"` // true if changes need ApproveChanges
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -2491,10 +2666,13 @@ func (x *CompletionEvent) GetPendingApproval() bool {
 	return false
 }
 
+// ApproveChangesRequest commits pending overlay changes for a session or objective.
 type ApproveChangesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	ObjectiveId   string                 `protobuf:"bytes,2,opt,name=objective_id,json=objectiveId,proto3" json:"objective_id,omitempty"` // optional: approve specific objective
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// objective_id identifies the objective being approved, reverted, or reported.
+	ObjectiveId   string `protobuf:"bytes,2,opt,name=objective_id,json=objectiveId,proto3" json:"objective_id,omitempty"` // optional: approve specific objective
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2543,9 +2721,11 @@ func (x *ApproveChangesRequest) GetObjectiveId() string {
 	return ""
 }
 
+// ApproveChangesResponse lists files committed from the overlay.
 type ApproveChangesResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	FilesCommitted []string               `protobuf:"bytes,1,rep,name=files_committed,json=filesCommitted,proto3" json:"files_committed,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// files_committed are paths written to the real workspace.
+	FilesCommitted []string `protobuf:"bytes,1,rep,name=files_committed,json=filesCommitted,proto3" json:"files_committed,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -2587,10 +2767,13 @@ func (x *ApproveChangesResponse) GetFilesCommitted() []string {
 	return nil
 }
 
+// RevertChangesRequest discards pending overlay changes for a session or objective.
 type RevertChangesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	ObjectiveId   string                 `protobuf:"bytes,2,opt,name=objective_id,json=objectiveId,proto3" json:"objective_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// objective_id identifies a planned or running objective node.
+	ObjectiveId   string `protobuf:"bytes,2,opt,name=objective_id,json=objectiveId,proto3" json:"objective_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2639,9 +2822,11 @@ func (x *RevertChangesRequest) GetObjectiveId() string {
 	return ""
 }
 
+// RevertChangesResponse lists pending files discarded from the overlay.
 type RevertChangesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	FilesReverted []string               `protobuf:"bytes,1,rep,name=files_reverted,json=filesReverted,proto3" json:"files_reverted,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// files_reverted are paths whose pending overlay changes were discarded.
+	FilesReverted []string `protobuf:"bytes,1,rep,name=files_reverted,json=filesReverted,proto3" json:"files_reverted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2683,10 +2868,13 @@ func (x *RevertChangesResponse) GetFilesReverted() []string {
 	return nil
 }
 
+// ReadFileRequest identifies a workspace file to read.
 type ReadFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path          string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2735,11 +2923,15 @@ func (x *ReadFileRequest) GetPath() string {
 	return ""
 }
 
+// ReadFileResponse returns a file body and detected language hint.
 type ReadFileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
-	Language      string                 `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// content is the complete file body.
+	Content string `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	// language is the implementation language reported by tooling or project metadata.
+	Language      string `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2795,11 +2987,15 @@ func (x *ReadFileResponse) GetLanguage() string {
 	return ""
 }
 
+// WriteFileRequest writes a complete file body through Mind's overlay or gateway path.
 type WriteFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	// content is the complete file body to write.
+	Content       string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2855,6 +3051,7 @@ func (x *WriteFileRequest) GetContent() string {
 	return ""
 }
 
+// WriteFileResponse acknowledges that the write request was accepted.
 type WriteFileResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2891,15 +3088,21 @@ func (*WriteFileResponse) Descriptor() ([]byte, []int) {
 	return file_mind_v1_mind_proto_rawDescGZIP(), []int{42}
 }
 
+// SearchCodeRequest searches source files visible to the session.
 type SearchCodeRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	SessionId       string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Pattern         string                 `protobuf:"bytes,2,opt,name=pattern,proto3" json:"pattern,omitempty"`
-	CaseInsensitive bool                   `protobuf:"varint,3,opt,name=case_insensitive,json=caseInsensitive,proto3" json:"case_insensitive,omitempty"`
-	FilePattern     string                 `protobuf:"bytes,4,opt,name=file_pattern,json=filePattern,proto3" json:"file_pattern,omitempty"` // glob filter (e.g. "*.go")
-	Limit           int32                  `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// pattern is the search expression or literal text to match.
+	Pattern string `protobuf:"bytes,2,opt,name=pattern,proto3" json:"pattern,omitempty"`
+	// case_insensitive makes matching ignore letter case.
+	CaseInsensitive bool `protobuf:"varint,3,opt,name=case_insensitive,json=caseInsensitive,proto3" json:"case_insensitive,omitempty"`
+	// file_pattern restricts search to paths matching the pattern.
+	FilePattern string `protobuf:"bytes,4,opt,name=file_pattern,json=filePattern,proto3" json:"file_pattern,omitempty"` // glob filter (e.g. "*.go")
+	// limit caps the number of records returned.
+	Limit         int32 `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SearchCodeRequest) Reset() {
@@ -2967,10 +3170,13 @@ func (x *SearchCodeRequest) GetLimit() int32 {
 	return 0
 }
 
+// SearchCodeResponse returns matching source lines and total hit count.
 type SearchCodeResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Matches       []*SearchMatch         `protobuf:"bytes,1,rep,name=matches,proto3" json:"matches,omitempty"`
-	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// matches are the search hits returned by the gateway.
+	Matches []*SearchMatch `protobuf:"bytes,1,rep,name=matches,proto3" json:"matches,omitempty"`
+	// total is the total number of matching lines before limiting.
+	Total         int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3019,11 +3225,15 @@ func (x *SearchCodeResponse) GetTotal() int32 {
 	return 0
 }
 
+// SearchMatch identifies one matching source line.
 type SearchMatch struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	Text          string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
+	// text is the matched source line.
+	Text          string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3079,10 +3289,13 @@ func (x *SearchMatch) GetText() string {
 	return ""
 }
 
+// ListSymbolsRequest carries optional filters for listing symbols.
 type ListSymbolsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Filter        string                 `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// filter restricts results to matching names or patterns.
+	Filter        string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3131,9 +3344,11 @@ func (x *ListSymbolsRequest) GetFilter() string {
 	return ""
 }
 
+// ListSymbolsResponse returns symbols discovered for the session.
 type ListSymbolsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbols       []*SymbolInfo          `protobuf:"bytes,1,rep,name=symbols,proto3" json:"symbols,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// symbols are code entities returned by language analysis.
+	Symbols       []*SymbolInfo `protobuf:"bytes,1,rep,name=symbols,proto3" json:"symbols,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3175,13 +3390,19 @@ func (x *ListSymbolsResponse) GetSymbols() []*SymbolInfo {
 	return nil
 }
 
+// SymbolInfo is a compact symbol record for code search and navigation.
 type SymbolInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	File          string                 `protobuf:"bytes,3,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,4,opt,name=line,proto3" json:"line,omitempty"`
-	Signature     string                 `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the symbol name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// kind classifies the language construct.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,3,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,4,opt,name=line,proto3" json:"line,omitempty"`
+	// signature is the declaration text or callable shape for a symbol.
+	Signature     string `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3251,9 +3472,11 @@ func (x *SymbolInfo) GetSignature() string {
 	return ""
 }
 
+// BuildRequest asks Mind to run the session build through the gateway.
 type BuildRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3295,10 +3518,13 @@ func (x *BuildRequest) GetSessionId() string {
 	return ""
 }
 
+// BuildResponse returns build success and raw output.
 type BuildResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output        string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3347,10 +3573,13 @@ func (x *BuildResponse) GetOutput() string {
 	return ""
 }
 
+// TestRequest asks Mind to run session tests through the gateway.
 type TestRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Pattern       string                 `protobuf:"bytes,2,opt,name=pattern,proto3" json:"pattern,omitempty"` // optional: test name filter
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// pattern is the search expression or test filter requested by the caller.
+	Pattern       string `protobuf:"bytes,2,opt,name=pattern,proto3" json:"pattern,omitempty"` // optional: test name filter
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3399,12 +3628,17 @@ func (x *TestRequest) GetPattern() string {
 	return ""
 }
 
+// TestResponse returns test success, raw output, and simple counts.
 type TestResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
-	Passed        int32                  `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
-	Failed        int32                  `protobuf:"varint,4,opt,name=failed,proto3" json:"failed,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	// passed is the number of cases that passed.
+	Passed int32 `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	// failed is the number of cases that failed assertions.
+	Failed        int32 `protobuf:"varint,4,opt,name=failed,proto3" json:"failed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3467,9 +3701,11 @@ func (x *TestResponse) GetFailed() int32 {
 	return 0
 }
 
+// LintRequest asks Mind to run session linting through the gateway.
 type LintRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3511,11 +3747,15 @@ func (x *LintRequest) GetSessionId() string {
 	return ""
 }
 
+// LintResponse returns lint success, raw output, and issue count.
 type LintResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
-	Issues        int32                  `protobuf:"varint,3,opt,name=issues,proto3" json:"issues,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	// issues are lint or diagnostic findings returned by the operation.
+	Issues        int32 `protobuf:"varint,3,opt,name=issues,proto3" json:"issues,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3571,14 +3811,21 @@ func (x *LintResponse) GetIssues() int32 {
 	return 0
 }
 
+// ContextMetrics aggregates token counts and cacheability for context segments.
 type ContextMetrics struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	SystemTokens   int32                  `protobuf:"varint,1,opt,name=system_tokens,json=systemTokens,proto3" json:"system_tokens,omitempty"`
-	StateTokens    int32                  `protobuf:"varint,2,opt,name=state_tokens,json=stateTokens,proto3" json:"state_tokens,omitempty"`
-	TurnTokens     int32                  `protobuf:"varint,3,opt,name=turn_tokens,json=turnTokens,proto3" json:"turn_tokens,omitempty"`
-	TotalTokens    int32                  `protobuf:"varint,4,opt,name=total_tokens,json=totalTokens,proto3" json:"total_tokens,omitempty"`
-	SavedTokens    int32                  `protobuf:"varint,5,opt,name=saved_tokens,json=savedTokens,proto3" json:"saved_tokens,omitempty"`
-	CacheableRatio float64                `protobuf:"fixed64,6,opt,name=cacheable_ratio,json=cacheableRatio,proto3" json:"cacheable_ratio,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// system_tokens is the number of tokens used by system context.
+	SystemTokens int32 `protobuf:"varint,1,opt,name=system_tokens,json=systemTokens,proto3" json:"system_tokens,omitempty"`
+	// state_tokens is the number of tokens used by state context.
+	StateTokens int32 `protobuf:"varint,2,opt,name=state_tokens,json=stateTokens,proto3" json:"state_tokens,omitempty"`
+	// turn_tokens is the number of tokens used by the current turn.
+	TurnTokens int32 `protobuf:"varint,3,opt,name=turn_tokens,json=turnTokens,proto3" json:"turn_tokens,omitempty"`
+	// total_tokens is the total token count for the measured context.
+	TotalTokens int32 `protobuf:"varint,4,opt,name=total_tokens,json=totalTokens,proto3" json:"total_tokens,omitempty"`
+	// saved_tokens is the estimated token reduction from compaction or caching.
+	SavedTokens int32 `protobuf:"varint,5,opt,name=saved_tokens,json=savedTokens,proto3" json:"saved_tokens,omitempty"`
+	// cacheable_ratio is the fraction of context that can be provider-cached.
+	CacheableRatio float64 `protobuf:"fixed64,6,opt,name=cacheable_ratio,json=cacheableRatio,proto3" json:"cacheable_ratio,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -3655,9 +3902,11 @@ func (x *ContextMetrics) GetCacheableRatio() float64 {
 	return 0
 }
 
+// GetDashboardRequest identifies the dashboard data to retrieve.
 type GetDashboardRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3699,25 +3948,41 @@ func (x *GetDashboardRequest) GetSessionId() string {
 	return ""
 }
 
+// GetDashboardResponse is the top-level KPI snapshot for the Mind session.
 type GetDashboardResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ActiveObjective string                 `protobuf:"bytes,1,opt,name=active_objective,json=activeObjective,proto3" json:"active_objective,omitempty"`
-	Iteration       int32                  `protobuf:"varint,2,opt,name=iteration,proto3" json:"iteration,omitempty"`
-	Phase           string                 `protobuf:"bytes,3,opt,name=phase,proto3" json:"phase,omitempty"`
-	CostUsd         float64                `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	TokensUsed      int32                  `protobuf:"varint,5,opt,name=tokens_used,json=tokensUsed,proto3" json:"tokens_used,omitempty"`
-	ContextWindow   int32                  `protobuf:"varint,6,opt,name=context_window,json=contextWindow,proto3" json:"context_window,omitempty"`
-	BudgetRemaining float64                `protobuf:"fixed64,7,opt,name=budget_remaining,json=budgetRemaining,proto3" json:"budget_remaining,omitempty"`
-	Uptime          *durationpb.Duration   `protobuf:"bytes,8,opt,name=uptime,proto3" json:"uptime,omitempty"`
-	ChecksPassed    int32                  `protobuf:"varint,9,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
-	ChecksTotal     int32                  `protobuf:"varint,10,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
-	LlmCalls        int32                  `protobuf:"varint,11,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	InputTokens     int32                  `protobuf:"varint,12,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens    int32                  `protobuf:"varint,13,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens    int32                  `protobuf:"varint,14,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	Achieved        bool                   `protobuf:"varint,15,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// active_objective is the objective currently being planned or executed.
+	ActiveObjective string `protobuf:"bytes,1,opt,name=active_objective,json=activeObjective,proto3" json:"active_objective,omitempty"`
+	// iteration is the execution loop number for this event.
+	Iteration int32 `protobuf:"varint,2,opt,name=iteration,proto3" json:"iteration,omitempty"`
+	// phase names the current initialization, planning, or execution phase.
+	Phase string `protobuf:"bytes,3,opt,name=phase,proto3" json:"phase,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// tokens_used is the total model token count consumed by the session.
+	TokensUsed int32 `protobuf:"varint,5,opt,name=tokens_used,json=tokensUsed,proto3" json:"tokens_used,omitempty"`
+	// context_window is the maximum model context size currently available.
+	ContextWindow int32 `protobuf:"varint,6,opt,name=context_window,json=contextWindow,proto3" json:"context_window,omitempty"`
+	// budget_remaining is the remaining cost or token budget.
+	BudgetRemaining float64 `protobuf:"fixed64,7,opt,name=budget_remaining,json=budgetRemaining,proto3" json:"budget_remaining,omitempty"`
+	// uptime is how long the session or server has been running.
+	Uptime *durationpb.Duration `protobuf:"bytes,8,opt,name=uptime,proto3" json:"uptime,omitempty"`
+	// checks_passed is the number of verification checks that passed.
+	ChecksPassed int32 `protobuf:"varint,9,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
+	// checks_total is the number of verification checks that ran.
+	ChecksTotal int32 `protobuf:"varint,10,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,11,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,12,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,13,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,14,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved      bool `protobuf:"varint,15,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetDashboardResponse) Reset() {
@@ -3855,9 +4120,11 @@ func (x *GetDashboardResponse) GetAchieved() bool {
 	return false
 }
 
+// GetContextStateRequest identifies the context state data to retrieve.
 type GetContextStateRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3899,22 +4166,35 @@ func (x *GetContextStateRequest) GetSessionId() string {
 	return ""
 }
 
+// GetContextStateResponse shows the prompt context layers currently available to Mind.
 type GetContextStateResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	ProjectName    string                 `protobuf:"bytes,1,opt,name=project_name,json=projectName,proto3" json:"project_name,omitempty"`
-	ServiceName    string                 `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	HasConventions bool                   `protobuf:"varint,3,opt,name=has_conventions,json=hasConventions,proto3" json:"has_conventions,omitempty"`
-	HasRules       bool                   `protobuf:"varint,4,opt,name=has_rules,json=hasRules,proto3" json:"has_rules,omitempty"`
-	HasSymbolMap   bool                   `protobuf:"varint,5,opt,name=has_symbol_map,json=hasSymbolMap,proto3" json:"has_symbol_map,omitempty"`
-	HasMemory      bool                   `protobuf:"varint,6,opt,name=has_memory,json=hasMemory,proto3" json:"has_memory,omitempty"`
-	HasSession     bool                   `protobuf:"varint,7,opt,name=has_session,json=hasSession,proto3" json:"has_session,omitempty"`
-	SystemPreview  string                 `protobuf:"bytes,8,opt,name=system_preview,json=systemPreview,proto3" json:"system_preview,omitempty"`
-	StatePreview   string                 `protobuf:"bytes,9,opt,name=state_preview,json=statePreview,proto3" json:"state_preview,omitempty"`
-	TurnPreview    string                 `protobuf:"bytes,10,opt,name=turn_preview,json=turnPreview,proto3" json:"turn_preview,omitempty"`
-	Metrics        *ContextMetrics        `protobuf:"bytes,11,opt,name=metrics,proto3" json:"metrics,omitempty"`
-	Conventions    []*ConventionEntry     `protobuf:"bytes,12,rep,name=conventions,proto3" json:"conventions,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// project_name is the stable name of the project.
+	ProjectName string `protobuf:"bytes,1,opt,name=project_name,json=projectName,proto3" json:"project_name,omitempty"`
+	// service_name is the stable name of the service.
+	ServiceName string `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	// has_conventions is true when convention context is loaded.
+	HasConventions bool `protobuf:"varint,3,opt,name=has_conventions,json=hasConventions,proto3" json:"has_conventions,omitempty"`
+	// has_rules is true when rule context is loaded.
+	HasRules bool `protobuf:"varint,4,opt,name=has_rules,json=hasRules,proto3" json:"has_rules,omitempty"`
+	// has_symbol_map is true when symbol context is loaded.
+	HasSymbolMap bool `protobuf:"varint,5,opt,name=has_symbol_map,json=hasSymbolMap,proto3" json:"has_symbol_map,omitempty"`
+	// has_memory is true when session memory is loaded.
+	HasMemory bool `protobuf:"varint,6,opt,name=has_memory,json=hasMemory,proto3" json:"has_memory,omitempty"`
+	// has_session is true when persistent session state is loaded.
+	HasSession bool `protobuf:"varint,7,opt,name=has_session,json=hasSession,proto3" json:"has_session,omitempty"`
+	// system_preview is a bounded excerpt of system context.
+	SystemPreview string `protobuf:"bytes,8,opt,name=system_preview,json=systemPreview,proto3" json:"system_preview,omitempty"`
+	// state_preview is a bounded excerpt of state context.
+	StatePreview string `protobuf:"bytes,9,opt,name=state_preview,json=statePreview,proto3" json:"state_preview,omitempty"`
+	// turn_preview is a bounded excerpt of current turn context.
+	TurnPreview string `protobuf:"bytes,10,opt,name=turn_preview,json=turnPreview,proto3" json:"turn_preview,omitempty"`
+	// metrics summarizes token usage for the context layers.
+	Metrics *ContextMetrics `protobuf:"bytes,11,opt,name=metrics,proto3" json:"metrics,omitempty"`
+	// conventions are conventions loaded into context for the current project.
+	Conventions   []*ConventionEntry `protobuf:"bytes,12,rep,name=conventions,proto3" json:"conventions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetContextStateResponse) Reset() {
@@ -4031,12 +4311,17 @@ func (x *GetContextStateResponse) GetConventions() []*ConventionEntry {
 	return nil
 }
 
+// ConventionEntry describes a detected project convention available to Mind.
 type ConventionEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Category      string                 `protobuf:"bytes,1,opt,name=category,proto3" json:"category,omitempty"`
-	Package       string                 `protobuf:"bytes,2,opt,name=package,proto3" json:"package,omitempty"`
-	Pattern       string                 `protobuf:"bytes,3,opt,name=pattern,proto3" json:"pattern,omitempty"`
-	Usage         string                 `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// category groups a convention, rule, or finding.
+	Category string `protobuf:"bytes,1,opt,name=category,proto3" json:"category,omitempty"`
+	// package is the package, dependency, or artifact name.
+	Package string `protobuf:"bytes,2,opt,name=package,proto3" json:"package,omitempty"`
+	// pattern is the search expression or literal text to match.
+	Pattern string `protobuf:"bytes,3,opt,name=pattern,proto3" json:"pattern,omitempty"`
+	// usage is the command-line shape shown to users and agents.
+	Usage         string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4099,9 +4384,11 @@ func (x *ConventionEntry) GetUsage() string {
 	return ""
 }
 
+// GetMemoryRequest identifies the memory data to retrieve.
 type GetMemoryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4143,18 +4430,29 @@ func (x *GetMemoryRequest) GetSessionId() string {
 	return ""
 }
 
+// GetMemoryResponse exposes Mind's working memory for the current objective.
 type GetMemoryResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Objective     string                 `protobuf:"bytes,1,opt,name=objective,proto3" json:"objective,omitempty"`
-	Approach      string                 `protobuf:"bytes,2,opt,name=approach,proto3" json:"approach,omitempty"`
-	FilesModified map[string]string      `protobuf:"bytes,3,rep,name=files_modified,json=filesModified,proto3" json:"files_modified,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	FilesRead     map[string]string      `protobuf:"bytes,4,rep,name=files_read,json=filesRead,proto3" json:"files_read,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Symbols       []*SymbolRef           `protobuf:"bytes,5,rep,name=symbols,proto3" json:"symbols,omitempty"`
-	Hypotheses    []string               `protobuf:"bytes,6,rep,name=hypotheses,proto3" json:"hypotheses,omitempty"`
-	Blockers      []string               `protobuf:"bytes,7,rep,name=blockers,proto3" json:"blockers,omitempty"`
-	NextSteps     []string               `protobuf:"bytes,8,rep,name=next_steps,json=nextSteps,proto3" json:"next_steps,omitempty"`
-	Iterations    []*IterationRecord     `protobuf:"bytes,9,rep,name=iterations,proto3" json:"iterations,omitempty"`
-	ThreadSummary string                 `protobuf:"bytes,10,opt,name=thread_summary,json=threadSummary,proto3" json:"thread_summary,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// objective is the user goal or execution target.
+	Objective string `protobuf:"bytes,1,opt,name=objective,proto3" json:"objective,omitempty"`
+	// approach summarizes the strategy used in prior work.
+	Approach string `protobuf:"bytes,2,opt,name=approach,proto3" json:"approach,omitempty"`
+	// files_modified lists files changed in prior work.
+	FilesModified map[string]string `protobuf:"bytes,3,rep,name=files_modified,json=filesModified,proto3" json:"files_modified,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// files_read lists files inspected in prior work.
+	FilesRead map[string]string `protobuf:"bytes,4,rep,name=files_read,json=filesRead,proto3" json:"files_read,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// symbols are code entities returned by language analysis.
+	Symbols []*SymbolRef `protobuf:"bytes,5,rep,name=symbols,proto3" json:"symbols,omitempty"`
+	// hypotheses are candidate explanations or plans Mind is tracking.
+	Hypotheses []string `protobuf:"bytes,6,rep,name=hypotheses,proto3" json:"hypotheses,omitempty"`
+	// blockers are unresolved issues that may prevent completion.
+	Blockers []string `protobuf:"bytes,7,rep,name=blockers,proto3" json:"blockers,omitempty"`
+	// next_steps are the next actions Mind has identified.
+	NextSteps []string `protobuf:"bytes,8,rep,name=next_steps,json=nextSteps,proto3" json:"next_steps,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations []*IterationRecord `protobuf:"bytes,9,rep,name=iterations,proto3" json:"iterations,omitempty"`
+	// thread_summary is a compact summary of the conversation so far.
+	ThreadSummary string `protobuf:"bytes,10,opt,name=thread_summary,json=threadSummary,proto3" json:"thread_summary,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4259,11 +4557,15 @@ func (x *GetMemoryResponse) GetThreadSummary() string {
 	return ""
 }
 
+// SymbolRef records a code symbol Mind considered relevant.
 type SymbolRef struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Relevance     string                 `protobuf:"bytes,3,opt,name=relevance,proto3" json:"relevance,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the symbol name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// relevance is a score or explanation for why the item matters.
+	Relevance     string `protobuf:"bytes,3,opt,name=relevance,proto3" json:"relevance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4319,12 +4621,17 @@ func (x *SymbolRef) GetRelevance() string {
 	return ""
 }
 
+// IterationRecord summarizes one reasoning or execution loop.
 type IterationRecord struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Number        int32                  `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
-	Outcome       string                 `protobuf:"bytes,2,opt,name=outcome,proto3" json:"outcome,omitempty"`
-	Insight       string                 `protobuf:"bytes,3,opt,name=insight,proto3" json:"insight,omitempty"`
-	Files         []string               `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// number is the 1-based iteration or sequence number.
+	Number int32 `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
+	// outcome summarizes the result of an iteration or memory entry.
+	Outcome string `protobuf:"bytes,2,opt,name=outcome,proto3" json:"outcome,omitempty"`
+	// insight captures what Mind learned during the iteration.
+	Insight string `protobuf:"bytes,3,opt,name=insight,proto3" json:"insight,omitempty"`
+	// files are workspace files touched or inspected during the iteration.
+	Files         []string `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4387,9 +4694,11 @@ func (x *IterationRecord) GetFiles() []string {
 	return nil
 }
 
+// GetObjectiveGraphRequest identifies the objective graph data to retrieve.
 type GetObjectiveGraphRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4431,10 +4740,13 @@ func (x *GetObjectiveGraphRequest) GetSessionId() string {
 	return ""
 }
 
+// GetObjectiveGraphResponse returns the current objective DAG.
 type GetObjectiveGraphResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*ObjectiveNode       `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	Edges         []*ObjectiveEdge       `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// nodes are graph vertices returned by the objective or dependency graph.
+	Nodes []*ObjectiveNode `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// edges are graph relationships between returned nodes.
+	Edges         []*ObjectiveEdge `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4483,17 +4795,27 @@ func (x *GetObjectiveGraphResponse) GetEdges() []*ObjectiveEdge {
 	return nil
 }
 
+// ObjectiveNode represents one objective, subtask, or plan node.
 type ObjectiveNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	Checks        []*CheckEntry          `protobuf:"bytes,4,rep,name=checks,proto3" json:"checks,omitempty"`
-	Changes       []*ChangeEntry         `protobuf:"bytes,5,rep,name=changes,proto3" json:"changes,omitempty"`
-	Children      []*ObjectiveNode       `protobuf:"bytes,6,rep,name=children,proto3" json:"children,omitempty"`
-	WallClockS    float64                `protobuf:"fixed64,7,opt,name=wall_clock_s,json=wallClockS,proto3" json:"wall_clock_s,omitempty"`
-	WorkTimeS     float64                `protobuf:"fixed64,8,opt,name=work_time_s,json=workTimeS,proto3" json:"work_time_s,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,9,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// description is the human-readable objective or subtask text.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// status reports the lifecycle or operation status.
+	Status string `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	// checks are verification steps requested by the caller.
+	Checks []*CheckEntry `protobuf:"bytes,4,rep,name=checks,proto3" json:"checks,omitempty"`
+	// changes are file or behavior changes associated with this node.
+	Changes []*ChangeEntry `protobuf:"bytes,5,rep,name=changes,proto3" json:"changes,omitempty"`
+	// children are nested objectives under this node.
+	Children []*ObjectiveNode `protobuf:"bytes,6,rep,name=children,proto3" json:"children,omitempty"`
+	// wall_clock_s is elapsed wall-clock time in seconds.
+	WallClockS float64 `protobuf:"fixed64,7,opt,name=wall_clock_s,json=wallClockS,proto3" json:"wall_clock_s,omitempty"`
+	// work_time_s is active work time in seconds.
+	WorkTimeS float64 `protobuf:"fixed64,8,opt,name=work_time_s,json=workTimeS,proto3" json:"work_time_s,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd       float64 `protobuf:"fixed64,9,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4591,11 +4913,15 @@ func (x *ObjectiveNode) GetCostUsd() float64 {
 	return 0
 }
 
+// ObjectiveEdge connects related objective graph nodes.
 type ObjectiveEdge struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	From          string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To            string                 `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
-	Kind          string                 `protobuf:"bytes,3,opt,name=kind,proto3" json:"kind,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// from is the beginning timestamp or source endpoint of a relationship.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// to is the ending timestamp or destination endpoint of a relationship.
+	To string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	// kind describes the graph relationship, such as dependency or decomposition.
+	Kind          string `protobuf:"bytes,3,opt,name=kind,proto3" json:"kind,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4651,13 +4977,19 @@ func (x *ObjectiveEdge) GetKind() string {
 	return ""
 }
 
+// CheckEntry summarizes one verification check attached to an objective.
 type CheckEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Passed        bool                   `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
-	HasResult     bool                   `protobuf:"varint,4,opt,name=has_result,json=hasResult,proto3" json:"has_result,omitempty"`
-	Error         string                 `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the check name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// type identifies the check mechanism, such as command, test, build, or lint.
+	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// passed is true when the check met its expected condition.
+	Passed bool `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	// has_result is true when a check produced a retained result payload.
+	HasResult bool `protobuf:"varint,4,opt,name=has_result,json=hasResult,proto3" json:"has_result,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4727,11 +5059,15 @@ func (x *CheckEntry) GetError() string {
 	return ""
 }
 
+// ChangeEntry summarizes a file or behavior change linked to an objective.
 type ChangeEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	Action        string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
-	What          string                 `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// action is the strategy, file, or debug action that occurred.
+	Action string `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	// what describes the changed artifact or behavior.
+	What          string `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4787,9 +5123,11 @@ func (x *ChangeEntry) GetWhat() string {
 	return ""
 }
 
+// GetTraceRequest identifies the trace data to retrieve.
 type GetTraceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4831,9 +5169,11 @@ func (x *GetTraceRequest) GetSessionId() string {
 	return ""
 }
 
+// GetTraceResponse returns the root of the retained execution trace tree.
 type GetTraceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Root          *TraceNode             `protobuf:"bytes,1,opt,name=root,proto3" json:"root,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// root is the root trace node for the returned tree.
+	Root          *TraceNode `protobuf:"bytes,1,opt,name=root,proto3" json:"root,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4875,13 +5215,19 @@ func (x *GetTraceResponse) GetRoot() *TraceNode {
 	return nil
 }
 
+// TraceNode represents one agent, tool, or execution span in the trace tree.
 type TraceNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Agent         string                 `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,2,opt,name=duration,proto3" json:"duration,omitempty"`
-	Events        []*TraceEvent          `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
-	Children      []*TraceNode           `protobuf:"bytes,4,rep,name=children,proto3" json:"children,omitempty"`
-	Stats         *TraceStats            `protobuf:"bytes,5,opt,name=stats,proto3" json:"stats,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,2,opt,name=duration,proto3" json:"duration,omitempty"`
+	// events are trace events emitted within this node.
+	Events []*TraceEvent `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	// children are nested trace spans.
+	Children []*TraceNode `protobuf:"bytes,4,rep,name=children,proto3" json:"children,omitempty"`
+	// stats aggregates trace node counts, timings, and error totals.
+	Stats         *TraceStats `protobuf:"bytes,5,opt,name=stats,proto3" json:"stats,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4951,12 +5297,17 @@ func (x *TraceNode) GetStats() *TraceStats {
 	return nil
 }
 
+// TraceEvent is a streamable event emitted during trace.
 type TraceEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Agent         string                 `protobuf:"bytes,2,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	Data          map[string]string      `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind categorizes the trace event for filtering and rendering.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,2,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the event text shown in the trace view.
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// data is the raw bytes or JSON-shaped payload.
+	Data          map[string]string `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5019,11 +5370,15 @@ func (x *TraceEvent) GetData() map[string]string {
 	return nil
 }
 
+// TraceStats aggregates counts for one trace node.
 type TraceStats struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LlmCalls      int32                  `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	ToolCalls     int32                  `protobuf:"varint,2,opt,name=tool_calls,json=toolCalls,proto3" json:"tool_calls,omitempty"`
-	Errors        int32                  `protobuf:"varint,3,opt,name=errors,proto3" json:"errors,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// tool_calls is the number of tool calls made in this turn or iteration.
+	ToolCalls int32 `protobuf:"varint,2,opt,name=tool_calls,json=toolCalls,proto3" json:"tool_calls,omitempty"`
+	// errors is the number of failed trace nodes or operations.
+	Errors        int32 `protobuf:"varint,3,opt,name=errors,proto3" json:"errors,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5079,9 +5434,11 @@ func (x *TraceStats) GetErrors() int32 {
 	return 0
 }
 
+// GetMetricsRequest identifies the metrics data to retrieve.
 type GetMetricsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5123,16 +5480,25 @@ func (x *GetMetricsRequest) GetSessionId() string {
 	return ""
 }
 
+// GetMetricsResponse returns session-level model, token, and timing metrics.
 type GetMetricsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LlmCalls      int32                  `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,2,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,3,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,4,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,6,opt,name=duration,proto3" json:"duration,omitempty"`
-	Iterations    int32                  `protobuf:"varint,7,opt,name=iterations,proto3" json:"iterations,omitempty"`
-	Context       *ContextMetrics        `protobuf:"bytes,8,opt,name=context,proto3" json:"context,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,2,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,3,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,4,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,6,opt,name=duration,proto3" json:"duration,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations int32 `protobuf:"varint,7,opt,name=iterations,proto3" json:"iterations,omitempty"`
+	// context is the measured context segment or prompt state.
+	Context       *ContextMetrics `protobuf:"bytes,8,opt,name=context,proto3" json:"context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5223,9 +5589,11 @@ func (x *GetMetricsResponse) GetContext() *ContextMetrics {
 	return nil
 }
 
+// GetCostBreakdownRequest identifies the cost breakdown data to retrieve.
 type GetCostBreakdownRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5267,11 +5635,15 @@ func (x *GetCostBreakdownRequest) GetSessionId() string {
 	return ""
 }
 
+// GetCostBreakdownResponse returns hierarchical cost attribution for a session.
 type GetCostBreakdownResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Total         *CostEntry             `protobuf:"bytes,2,opt,name=total,proto3" json:"total,omitempty"`
-	Entries       []*CostEntry           `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// title is the display label for a cost breakdown row.
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	// total is the aggregate cost row for this breakdown.
+	Total *CostEntry `protobuf:"bytes,2,opt,name=total,proto3" json:"total,omitempty"`
+	// entries are child rows contributing to the total.
+	Entries       []*CostEntry `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5327,14 +5699,21 @@ func (x *GetCostBreakdownResponse) GetEntries() []*CostEntry {
 	return nil
 }
 
+// CostEntry is one row in the cost breakdown table.
 type CostEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Calls         int32                  `protobuf:"varint,2,opt,name=calls,proto3" json:"calls,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,3,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,4,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,5,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,6,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name labels the model, agent, objective, or phase being charged.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// calls is the number of model calls attributed to this row.
+	Calls int32 `protobuf:"varint,2,opt,name=calls,proto3" json:"calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,3,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,4,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,5,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd       float64 `protobuf:"fixed64,6,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5411,9 +5790,11 @@ func (x *CostEntry) GetCostUsd() float64 {
 	return 0
 }
 
+// GetSymbolMapRequest identifies the symbol map data to retrieve.
 type GetSymbolMapRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5455,12 +5836,17 @@ func (x *GetSymbolMapRequest) GetSessionId() string {
 	return ""
 }
 
+// GetSymbolMapResponse returns the symbol map currently available to Mind.
 type GetSymbolMapResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TotalSymbols  int32                  `protobuf:"varint,1,opt,name=total_symbols,json=totalSymbols,proto3" json:"total_symbols,omitempty"`
-	TotalFiles    int32                  `protobuf:"varint,2,opt,name=total_files,json=totalFiles,proto3" json:"total_files,omitempty"`
-	OverlayActive bool                   `protobuf:"varint,3,opt,name=overlay_active,json=overlayActive,proto3" json:"overlay_active,omitempty"`
-	Files         []*FileSymbols         `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// total_symbols is the number of symbols available in the symbol map.
+	TotalSymbols int32 `protobuf:"varint,1,opt,name=total_symbols,json=totalSymbols,proto3" json:"total_symbols,omitempty"`
+	// total_files is the number of files included in the response.
+	TotalFiles int32 `protobuf:"varint,2,opt,name=total_files,json=totalFiles,proto3" json:"total_files,omitempty"`
+	// overlay_active is true when Mind has uncommitted overlay edits.
+	OverlayActive bool `protobuf:"varint,3,opt,name=overlay_active,json=overlayActive,proto3" json:"overlay_active,omitempty"`
+	// files are source files included in the symbol map.
+	Files         []*FileSymbols `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5523,10 +5909,13 @@ func (x *GetSymbolMapResponse) GetFiles() []*FileSymbols {
 	return nil
 }
 
+// FileSymbols groups symbols discovered in one source file.
 type FileSymbols struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Symbols       []*SymbolNode          `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// symbols are code entities returned by language analysis.
+	Symbols       []*SymbolNode `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5575,12 +5964,17 @@ func (x *FileSymbols) GetSymbols() []*SymbolNode {
 	return nil
 }
 
+// SymbolNode is a compact symbol entry for the symbol map view.
 type SymbolNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Signature     string                 `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
-	Overlay       bool                   `protobuf:"varint,4,opt,name=overlay,proto3" json:"overlay,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the symbol name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// kind classifies the language construct.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// signature is the declaration text or callable shape for a symbol.
+	Signature string `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	// overlay is true when the symbol or file comes from the active edit overlay.
+	Overlay       bool `protobuf:"varint,4,opt,name=overlay,proto3" json:"overlay,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5643,9 +6037,11 @@ func (x *SymbolNode) GetOverlay() bool {
 	return false
 }
 
+// GetFileChangesRequest identifies the file changes data to retrieve.
 type GetFileChangesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5687,9 +6083,11 @@ func (x *GetFileChangesRequest) GetSessionId() string {
 	return ""
 }
 
+// GetFileChangesResponse returns file changes retained for the current session.
 type GetFileChangesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Files         []*FileChange          `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// files are changed files and their diffs.
+	Files         []*FileChange `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5731,12 +6129,17 @@ func (x *GetFileChangesResponse) GetFiles() []*FileChange {
 	return nil
 }
 
+// FileChange records one file operation and optional diff.
 type FileChange struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Op            string                 `protobuf:"bytes,2,opt,name=op,proto3" json:"op,omitempty"`
-	Reason        string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
-	Diff          string                 `protobuf:"bytes,4,opt,name=diff,proto3" json:"diff,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// op is the file operation such as create, update, delete, or rename.
+	Op string `protobuf:"bytes,2,opt,name=op,proto3" json:"op,omitempty"`
+	// reason explains why this change, state, or decision occurred.
+	Reason string `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	// diff is the unified git diff text.
+	Diff          string `protobuf:"bytes,4,opt,name=diff,proto3" json:"diff,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5799,9 +6202,11 @@ func (x *FileChange) GetDiff() string {
 	return ""
 }
 
+// GetLastSummaryRequest identifies the last summary data to retrieve.
 type GetLastSummaryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5843,19 +6248,31 @@ func (x *GetLastSummaryRequest) GetSessionId() string {
 	return ""
 }
 
+// GetLastSummaryResponse returns the most recent completed-run summary.
 type GetLastSummaryResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Achieved      bool                   `protobuf:"varint,1,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	Iterations    int32                  `protobuf:"varint,2,opt,name=iterations,proto3" json:"iterations,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	LlmCalls      int32                  `protobuf:"varint,5,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,6,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,7,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,8,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	Files         []*FileChange          `protobuf:"bytes,9,rep,name=files,proto3" json:"files,omitempty"`
-	Checks        []*CheckResult         `protobuf:"bytes,10,rep,name=checks,proto3" json:"checks,omitempty"`
-	TraceCompact  string                 `protobuf:"bytes,11,opt,name=trace_compact,json=traceCompact,proto3" json:"trace_compact,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved bool `protobuf:"varint,1,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations int32 `protobuf:"varint,2,opt,name=iterations,proto3" json:"iterations,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,5,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,6,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,7,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,8,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// files are file changes included in the summary.
+	Files []*FileChange `protobuf:"bytes,9,rep,name=files,proto3" json:"files,omitempty"`
+	// checks are verification results included in the summary.
+	Checks []*CheckResult `protobuf:"bytes,10,rep,name=checks,proto3" json:"checks,omitempty"`
+	// trace_compact is a bounded trace summary suitable for UI display or prompts.
+	TraceCompact  string `protobuf:"bytes,11,opt,name=trace_compact,json=traceCompact,proto3" json:"trace_compact,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5967,11 +6384,15 @@ func (x *GetLastSummaryResponse) GetTraceCompact() string {
 	return ""
 }
 
+// CheckResult captures the outcome of one summary verification check.
 type CheckResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Passed        bool                   `protobuf:"varint,2,opt,name=passed,proto3" json:"passed,omitempty"`
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the check name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// passed is true when the check met its expected condition.
+	Passed bool `protobuf:"varint,2,opt,name=passed,proto3" json:"passed,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6027,9 +6448,11 @@ func (x *CheckResult) GetError() string {
 	return ""
 }
 
+// GetRulesRequest identifies the rules data to retrieve.
 type GetRulesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6071,9 +6494,11 @@ func (x *GetRulesRequest) GetSessionId() string {
 	return ""
 }
 
+// GetRulesResponse returns rules loaded into the current Mind context.
 type GetRulesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Rules         []*RuleEntry           `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// rules are loaded rules and their current match state.
+	Rules         []*RuleEntry `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6115,12 +6540,17 @@ func (x *GetRulesResponse) GetRules() []*RuleEntry {
 	return nil
 }
 
+// RuleEntry describes one rule available to Mind.
 type RuleEntry struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Scope          *RuleScope             `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
-	Text           string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
-	MatchedCurrent bool                   `protobuf:"varint,4,opt,name=matched_current,json=matchedCurrent,proto3" json:"matched_current,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// scope describes where a rule applies.
+	Scope *RuleScope `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
+	// text is the plain-text payload or human-readable description.
+	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	// matched_current is true when the rule applies to the current request.
+	MatchedCurrent bool `protobuf:"varint,4,opt,name=matched_current,json=matchedCurrent,proto3" json:"matched_current,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -6183,11 +6613,15 @@ func (x *RuleEntry) GetMatchedCurrent() bool {
 	return false
 }
 
+// RuleScope describes where a rule applies.
 type RuleScope struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Agents        []string               `protobuf:"bytes,1,rep,name=agents,proto3" json:"agents,omitempty"`
-	Objectives    []string               `protobuf:"bytes,2,rep,name=objectives,proto3" json:"objectives,omitempty"`
-	Code          string                 `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// agents are Codefly plugin identities or filters relevant to this operation.
+	Agents []string `protobuf:"bytes,1,rep,name=agents,proto3" json:"agents,omitempty"`
+	// objectives are objective filters or graph nodes.
+	Objectives []string `protobuf:"bytes,2,rep,name=objectives,proto3" json:"objectives,omitempty"`
+	// code is the diagnostic or rule identifier from the producing tool.
+	Code          string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6243,11 +6677,15 @@ func (x *RuleScope) GetCode() string {
 	return ""
 }
 
+// GetLLMCallsRequest identifies retained model-call records to retrieve.
 type GetLLMCallsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// limit caps the number of records returned.
+	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	// offset skips records before returning a paged result.
+	Offset        int32 `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6303,10 +6741,13 @@ func (x *GetLLMCallsRequest) GetOffset() int32 {
 	return 0
 }
 
+// GetLLMCallsResponse returns a paged list of retained model calls.
 type GetLLMCallsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Calls         []*LLMCallEntry        `protobuf:"bytes,1,rep,name=calls,proto3" json:"calls,omitempty"`
-	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// calls are model calls retained in the session log.
+	Calls []*LLMCallEntry `protobuf:"bytes,1,rep,name=calls,proto3" json:"calls,omitempty"`
+	// total is the total number of model calls available before paging.
+	Total         int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6355,25 +6796,41 @@ func (x *GetLLMCallsResponse) GetTotal() int32 {
 	return 0
 }
 
+// LLMCallEntry records one model call and retained prompt/response previews.
 type LLMCallEntry struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp       *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Model           string                 `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
-	Agent           string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	PromptHash      string                 `protobuf:"bytes,4,opt,name=prompt_hash,json=promptHash,proto3" json:"prompt_hash,omitempty"`
-	PromptPreview   string                 `protobuf:"bytes,5,opt,name=prompt_preview,json=promptPreview,proto3" json:"prompt_preview,omitempty"`
-	ResponsePreview string                 `protobuf:"bytes,6,opt,name=response_preview,json=responsePreview,proto3" json:"response_preview,omitempty"`
-	InputTokens     int32                  `protobuf:"varint,7,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens    int32                  `protobuf:"varint,8,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens    int32                  `protobuf:"varint,9,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd         float64                `protobuf:"fixed64,10,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	DurationMs      int64                  `protobuf:"varint,11,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
-	CacheHit        bool                   `protobuf:"varint,12,opt,name=cache_hit,json=cacheHit,proto3" json:"cache_hit,omitempty"`
-	ToolCallCount   int32                  `protobuf:"varint,13,opt,name=tool_call_count,json=toolCallCount,proto3" json:"tool_call_count,omitempty"`
-	FullPrompt      string                 `protobuf:"bytes,14,opt,name=full_prompt,json=fullPrompt,proto3" json:"full_prompt,omitempty"`
-	FullResponse    string                 `protobuf:"bytes,15,opt,name=full_response,json=fullResponse,proto3" json:"full_response,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// model is the provider model identifier used for the call.
+	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// prompt_hash is a stable hash of the prompt payload.
+	PromptHash string `protobuf:"bytes,4,opt,name=prompt_hash,json=promptHash,proto3" json:"prompt_hash,omitempty"`
+	// prompt_preview is a bounded prompt excerpt for debugging.
+	PromptPreview string `protobuf:"bytes,5,opt,name=prompt_preview,json=promptPreview,proto3" json:"prompt_preview,omitempty"`
+	// response_preview is a bounded response excerpt for debugging.
+	ResponsePreview string `protobuf:"bytes,6,opt,name=response_preview,json=responsePreview,proto3" json:"response_preview,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,7,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,8,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,9,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,10,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// duration_ms is wall-clock time in milliseconds.
+	DurationMs int64 `protobuf:"varint,11,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
+	// cache_hit is true when the provider reported a cache hit.
+	CacheHit bool `protobuf:"varint,12,opt,name=cache_hit,json=cacheHit,proto3" json:"cache_hit,omitempty"`
+	// tool_call_count is the number of tool calls associated with the model call.
+	ToolCallCount int32 `protobuf:"varint,13,opt,name=tool_call_count,json=toolCallCount,proto3" json:"tool_call_count,omitempty"`
+	// full_prompt is the complete prompt text when trace retention permits it.
+	FullPrompt string `protobuf:"bytes,14,opt,name=full_prompt,json=fullPrompt,proto3" json:"full_prompt,omitempty"`
+	// full_response is the complete model response when trace retention permits it.
+	FullResponse  string `protobuf:"bytes,15,opt,name=full_response,json=fullResponse,proto3" json:"full_response,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LLMCallEntry) Reset() {
@@ -6511,9 +6968,11 @@ func (x *LLMCallEntry) GetFullResponse() string {
 	return ""
 }
 
+// GetMiddlewareRequest identifies the middleware data to retrieve.
 type GetMiddlewareRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6555,9 +7014,11 @@ func (x *GetMiddlewareRequest) GetSessionId() string {
 	return ""
 }
 
+// GetMiddlewareResponse returns the current middleware pipeline state.
 type GetMiddlewareResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Chain         []*MiddlewareEntry     `protobuf:"bytes,1,rep,name=chain,proto3" json:"chain,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// chain is the ordered middleware stack and its status.
+	Chain         []*MiddlewareEntry `protobuf:"bytes,1,rep,name=chain,proto3" json:"chain,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6599,11 +7060,15 @@ func (x *GetMiddlewareResponse) GetChain() []*MiddlewareEntry {
 	return nil
 }
 
+// MiddlewareEntry describes one middleware stage.
 type MiddlewareEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	Details       map[string]string      `protobuf:"bytes,3,rep,name=details,proto3" json:"details,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the middleware stage name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// status reports the lifecycle or operation status.
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	// details contains expanded middleware or diagnostic metadata.
+	Details       map[string]string `protobuf:"bytes,3,rep,name=details,proto3" json:"details,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6659,11 +7124,15 @@ func (x *MiddlewareEntry) GetDetails() map[string]string {
 	return nil
 }
 
+// StreamEventsRequest filters the live Mind event stream.
 type StreamEventsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Kinds         []string               `protobuf:"bytes,2,rep,name=kinds,proto3" json:"kinds,omitempty"`                                // filter by event kind (empty = all)
-	AgentFilter   string                 `protobuf:"bytes,3,opt,name=agent_filter,json=agentFilter,proto3" json:"agent_filter,omitempty"` // filter by agent name
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the Mind session that owns this request or event.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// kinds filters events by event kind; empty means all kinds.
+	Kinds []string `protobuf:"bytes,2,rep,name=kinds,proto3" json:"kinds,omitempty"` // filter by event kind (empty = all)
+	// agent_filter restricts events to a single agent name.
+	AgentFilter   string `protobuf:"bytes,3,opt,name=agent_filter,json=agentFilter,proto3" json:"agent_filter,omitempty"` // filter by agent name
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6722,12 +7191,17 @@ func (x *StreamEventsRequest) GetAgentFilter() string {
 // MindEvent is the unified event type for all real-time streaming.
 // Superset of the debug.proto DebugEvent — includes execution progress.
 type MindEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"` // "llm_call", "tool_call", "file_op", "check", "iteration", "strategy", "error", "info"
-	Agent         string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	Data          map[string]string      `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// kind categorizes the event for filtering and rendering.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"` // "llm_call", "tool_call", "file_op", "check", "iteration", "strategy", "error", "info"
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the event text shown to clients.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// data is the raw bytes or JSON-shaped payload.
+	Data          map[string]string `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6797,12 +7271,17 @@ func (x *MindEvent) GetData() map[string]string {
 	return nil
 }
 
+// EventEntry is one retained history entry for a session.
 type EventEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Agent         string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// kind categorizes the event for filtering and rendering.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the event text shown in session history.
+	Message       string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6869,7 +7348,7 @@ var File_mind_v1_mind_proto protoreflect.FileDescriptor
 
 const file_mind_v1_mind_proto_rawDesc = "" +
 	"\n" +
-	"\x12mind/v1/mind.proto\x12\amind.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xeb\x01\n" +
+	"\x12mind/v1/mind.proto\x12\amind.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\xeb\x01\n" +
 	"\x14CreateSessionRequest\x12\x19\n" +
 	"\bwork_dir\x18\x01 \x01(\tR\aworkDir\x12\x1f\n" +
 	"\vcodefly_bin\x18\x02 \x01(\tR\n" +

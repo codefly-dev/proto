@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ListServicesRequest carries optional filters for listing services.
 type ListServicesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -57,12 +58,17 @@ func (*ListServicesRequest) Descriptor() ([]byte, []int) {
 	return file_mind_gateway_v1_gateway_proto_rawDescGZIP(), []int{0}
 }
 
+// ServiceInfo describes a service visible through the gateway.
 type ServiceInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Language      string                 `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"` // "go", "rust", "node", etc.
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`         // "library" | "service"
-	Port          int32                  `protobuf:"varint,7,opt,name=port,proto3" json:"port,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the Codefly service name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// language is the implementation language detected for the service.
+	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"` // "go", "rust", "node", etc.
+	// type distinguishes services, libraries, and other service-like resources.
+	Type string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"` // "library" | "service"
+	// port is the primary local port exposed through the gateway when known.
+	Port          int32 `protobuf:"varint,7,opt,name=port,proto3" json:"port,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -125,9 +131,11 @@ func (x *ServiceInfo) GetPort() int32 {
 	return 0
 }
 
+// ListServicesResponse returns the services the gateway can route to.
 type ListServicesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Services      []*ServiceInfo         `protobuf:"bytes,1,rep,name=services,proto3" json:"services,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// services are known Codefly services and libraries in the workspace.
+	Services      []*ServiceInfo `protobuf:"bytes,1,rep,name=services,proto3" json:"services,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -169,10 +177,13 @@ func (x *ListServicesResponse) GetServices() []*ServiceInfo {
 	return nil
 }
 
+// ReadFileRequest identifies a file to read from one service source tree.
 type ReadFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path          string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -221,10 +232,13 @@ func (x *ReadFileRequest) GetPath() string {
 	return ""
 }
 
+// ReadFileResponse returns file content when the requested path exists.
 type ReadFileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
-	Exists        bool                   `protobuf:"varint,2,opt,name=exists,proto3" json:"exists,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// content is the complete file body; it is empty when exists is false.
+	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	// exists reports whether the requested file or resource was found.
+	Exists        bool `protobuf:"varint,2,opt,name=exists,proto3" json:"exists,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -273,11 +287,15 @@ func (x *ReadFileResponse) GetExists() bool {
 	return false
 }
 
+// WriteFileRequest replaces or creates one file in a service source tree.
 type WriteFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
-	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
+	// content is the complete file body to write.
+	Content       string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -333,10 +351,13 @@ func (x *WriteFileRequest) GetContent() string {
 	return ""
 }
 
+// WriteFileResponse reports whether the gateway completed the write.
 type WriteFileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -385,12 +406,17 @@ func (x *WriteFileResponse) GetError() string {
 	return ""
 }
 
+// ListFilesRequest carries optional filters for listing files.
 type ListFilesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`             // optional: subdirectory (empty = root)
-	Extensions    []string               `protobuf:"bytes,3,rep,name=extensions,proto3" json:"extensions,omitempty"` // optional: filter by extension (e.g. ".go", ".py")
-	Recursive     bool                   `protobuf:"varint,4,opt,name=recursive,proto3" json:"recursive,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // optional: subdirectory (empty = root)
+	// extensions restrict file results to the listed suffixes.
+	Extensions []string `protobuf:"bytes,3,rep,name=extensions,proto3" json:"extensions,omitempty"` // optional: filter by extension (e.g. ".go", ".py")
+	// recursive includes nested directories when true.
+	Recursive     bool `protobuf:"varint,4,opt,name=recursive,proto3" json:"recursive,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -453,11 +479,15 @@ func (x *ListFilesRequest) GetRecursive() bool {
 	return false
 }
 
+// FileInfo describes a file or directory returned by ListFiles.
 type FileInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"` // relative path within the service
-	SizeBytes     int64                  `protobuf:"varint,2,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
-	IsDirectory   bool                   `protobuf:"varint,3,opt,name=is_directory,json=isDirectory,proto3" json:"is_directory,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"` // relative path within the service
+	// size_bytes is the file size in bytes.
+	SizeBytes int64 `protobuf:"varint,2,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	// is_directory is true when the path is a directory.
+	IsDirectory   bool `protobuf:"varint,3,opt,name=is_directory,json=isDirectory,proto3" json:"is_directory,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -513,9 +543,11 @@ func (x *FileInfo) GetIsDirectory() bool {
 	return false
 }
 
+// ListFilesResponse returns file metadata for paths matching the request filters.
 type ListFilesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Files         []*FileInfo            `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// files are files or directories under the requested service path.
+	Files         []*FileInfo `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -557,10 +589,13 @@ func (x *ListFilesResponse) GetFiles() []*FileInfo {
 	return nil
 }
 
+// DeleteFileRequest identifies the file resource to delete.
 type DeleteFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path          string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -609,10 +644,13 @@ func (x *DeleteFileRequest) GetPath() string {
 	return ""
 }
 
+// DeleteFileResponse reports whether the gateway removed the file.
 type DeleteFileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -661,12 +699,17 @@ func (x *DeleteFileResponse) GetError() string {
 	return ""
 }
 
+// MoveFileRequest renames or moves a file within one service tree.
 type MoveFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	OldPath       string                 `protobuf:"bytes,2,opt,name=old_path,json=oldPath,proto3" json:"old_path,omitempty"`
-	NewPath       string                 `protobuf:"bytes,3,opt,name=new_path,json=newPath,proto3" json:"new_path,omitempty"`
-	UpdateImports bool                   `protobuf:"varint,4,opt,name=update_imports,json=updateImports,proto3" json:"update_imports,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// old_path is the current service-relative path before a move.
+	OldPath string `protobuf:"bytes,2,opt,name=old_path,json=oldPath,proto3" json:"old_path,omitempty"`
+	// new_path is the desired service-relative path after a move.
+	NewPath string `protobuf:"bytes,3,opt,name=new_path,json=newPath,proto3" json:"new_path,omitempty"`
+	// update_imports asks the language tooling to rewrite imports after a move.
+	UpdateImports bool `protobuf:"varint,4,opt,name=update_imports,json=updateImports,proto3" json:"update_imports,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -729,11 +772,15 @@ func (x *MoveFileRequest) GetUpdateImports() bool {
 	return false
 }
 
+// MoveFileResponse reports the move and any files rewritten because imports changed.
 type MoveFileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	UpdatedFiles  []string               `protobuf:"bytes,3,rep,name=updated_files,json=updatedFiles,proto3" json:"updated_files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	// updated_files lists files changed as a side effect of import rewriting.
+	UpdatedFiles  []string `protobuf:"bytes,3,rep,name=updated_files,json=updatedFiles,proto3" json:"updated_files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -789,12 +836,17 @@ func (x *MoveFileResponse) GetUpdatedFiles() []string {
 	return nil
 }
 
+// CreateFileRequest describes the file resource to create.
 type CreateFileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
-	Overwrite     bool                   `protobuf:"varint,4,opt,name=overwrite,proto3" json:"overwrite,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	// content is the initial file body to write.
+	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	// overwrite allows CreateFile to replace an existing file when true.
+	Overwrite     bool `protobuf:"varint,4,opt,name=overwrite,proto3" json:"overwrite,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -857,10 +909,13 @@ func (x *CreateFileRequest) GetOverwrite() bool {
 	return false
 }
 
+// CreateFileResponse reports whether the gateway created the file.
 type CreateFileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -909,11 +964,15 @@ func (x *CreateFileResponse) GetError() string {
 	return ""
 }
 
+// ListSymbolsRequest carries optional filters for listing symbols.
 type ListSymbolsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"` // optional: omit for cross-service query
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`       // optional: restrict to one file
-	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`   // optional: symbol name pattern
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"` // optional: omit for cross-service query
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"` // optional: restrict to one file
+	// filter restricts symbols or list results to matching names.
+	Filter        string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"` // optional: symbol name pattern
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -969,16 +1028,25 @@ func (x *ListSymbolsRequest) GetFilter() string {
 	return ""
 }
 
+// Symbol is a gateway-normalized view of a language symbol.
 type Symbol struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`           // "function", "method", "struct", "interface", "constant", "variable"
-	Signature     string                 `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"` // declaration line
-	Service       string                 `protobuf:"bytes,4,opt,name=service,proto3" json:"service,omitempty"`     // which service this symbol lives in
-	File          string                 `protobuf:"bytes,5,opt,name=file,proto3" json:"file,omitempty"`           // relative path
-	Line          int32                  `protobuf:"varint,6,opt,name=line,proto3" json:"line,omitempty"`
-	Documentation string                 `protobuf:"bytes,7,opt,name=documentation,proto3" json:"documentation,omitempty"` // doc comment if present
-	Parent        string                 `protobuf:"bytes,8,opt,name=parent,proto3" json:"parent,omitempty"`               // containing symbol (e.g. struct name for a method)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the symbol name reported by language tooling.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// kind classifies the language construct, such as function, method, or struct.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"` // "function", "method", "struct", "interface", "constant", "variable"
+	// signature is the declaration text or callable shape for a symbol.
+	Signature string `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"` // declaration line
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,4,opt,name=service,proto3" json:"service,omitempty"` // which service this symbol lives in
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,5,opt,name=file,proto3" json:"file,omitempty"` // relative path
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,6,opt,name=line,proto3" json:"line,omitempty"`
+	// documentation is the doc comment or hover text supplied by language tooling.
+	Documentation string `protobuf:"bytes,7,opt,name=documentation,proto3" json:"documentation,omitempty"` // doc comment if present
+	// parent is the containing type, package, or symbol when known.
+	Parent        string `protobuf:"bytes,8,opt,name=parent,proto3" json:"parent,omitempty"` // containing symbol (e.g. struct name for a method)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1069,10 +1137,13 @@ func (x *Symbol) GetParent() string {
 	return ""
 }
 
+// ListSymbolsResponse returns symbols discovered through the gateway.
 type ListSymbolsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbols       []*Symbol              `protobuf:"bytes,1,rep,name=symbols,proto3" json:"symbols,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"` // non-fatal error (e.g. LSP not ready yet)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// symbols are code entities returned by language analysis.
+	Symbols []*Symbol `protobuf:"bytes,1,rep,name=symbols,proto3" json:"symbols,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"` // non-fatal error (e.g. LSP not ready yet)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1123,16 +1194,25 @@ func (x *ListSymbolsResponse) GetError() string {
 
 // Diagnostic represents a compiler error, warning, or hint.
 type Diagnostic struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	EndLine       int32                  `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
-	EndColumn     int32                  `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
-	Message       string                 `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`
-	Severity      string                 `protobuf:"bytes,7,opt,name=severity,proto3" json:"severity,omitempty"` // "error", "warning", "information", "hint"
-	Source        string                 `protobuf:"bytes,8,opt,name=source,proto3" json:"source,omitempty"`     // e.g. "gopls", "pylsp"
-	Code          string                 `protobuf:"bytes,9,opt,name=code,proto3" json:"code,omitempty"`         // diagnostic code
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
+	// end_line is the 1-based ending source line for a range.
+	EndLine int32 `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
+	// end_column is the 1-based ending source column for a range.
+	EndColumn int32 `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
+	// message is the diagnostic text returned by the compiler, linter, or language server.
+	Message string `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`
+	// severity is the diagnostic or finding level reported by the producer.
+	Severity string `protobuf:"bytes,7,opt,name=severity,proto3" json:"severity,omitempty"` // "error", "warning", "information", "hint"
+	// source identifies the compiler, linter, language server, or tool that produced the item.
+	Source string `protobuf:"bytes,8,opt,name=source,proto3" json:"source,omitempty"` // e.g. "gopls", "pylsp"
+	// code is the diagnostic or rule identifier from the producing tool.
+	Code          string `protobuf:"bytes,9,opt,name=code,proto3" json:"code,omitempty"` // diagnostic code
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1230,10 +1310,13 @@ func (x *Diagnostic) GetCode() string {
 	return ""
 }
 
+// GetDiagnosticsRequest identifies the diagnostics data to retrieve.
 type GetDiagnosticsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"` // optional: restrict to a single file
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File          string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"` // optional: restrict to a single file
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1282,10 +1365,13 @@ func (x *GetDiagnosticsRequest) GetFile() string {
 	return ""
 }
 
+// GetDiagnosticsResponse returns compiler, linter, or language-server findings.
 type GetDiagnosticsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Diagnostics   []*Diagnostic          `protobuf:"bytes,1,rep,name=diagnostics,proto3" json:"diagnostics,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// diagnostics are compiler, linter, or language-server findings.
+	Diagnostics []*Diagnostic `protobuf:"bytes,1,rep,name=diagnostics,proto3" json:"diagnostics,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1336,12 +1422,17 @@ func (x *GetDiagnosticsResponse) GetError() string {
 
 // Location identifies a position in a file.
 type Location struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	EndLine       int32                  `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
-	EndColumn     int32                  `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
+	// end_line is the 1-based ending source line for a range.
+	EndLine int32 `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
+	// end_column is the 1-based ending source column for a range.
+	EndColumn     int32 `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1411,12 +1502,17 @@ func (x *Location) GetEndColumn() int32 {
 	return 0
 }
 
+// GoToDefinitionRequest identifies a source position whose declaration should be resolved.
 type GoToDefinitionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column        int32 `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1479,10 +1575,13 @@ func (x *GoToDefinitionRequest) GetColumn() int32 {
 	return 0
 }
 
+// GoToDefinitionResponse returns declaration locations for the selected symbol.
 type GoToDefinitionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Locations     []*Location            `protobuf:"bytes,1,rep,name=locations,proto3" json:"locations,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// locations are declaration locations returned by the language server.
+	Locations []*Location `protobuf:"bytes,1,rep,name=locations,proto3" json:"locations,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1531,12 +1630,17 @@ func (x *GoToDefinitionResponse) GetError() string {
 	return ""
 }
 
+// FindReferencesRequest identifies a source position whose usages should be resolved.
 type FindReferencesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column        int32 `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1599,10 +1703,13 @@ func (x *FindReferencesRequest) GetColumn() int32 {
 	return 0
 }
 
+// FindReferencesResponse returns usage locations for the selected symbol.
 type FindReferencesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Locations     []*Location            `protobuf:"bytes,1,rep,name=locations,proto3" json:"locations,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// locations are reference locations returned by the language server.
+	Locations []*Location `protobuf:"bytes,1,rep,name=locations,proto3" json:"locations,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1653,13 +1760,19 @@ func (x *FindReferencesResponse) GetError() string {
 
 // TextEdit represents a single text replacement in a file.
 type TextEdit struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	StartLine     int32                  `protobuf:"varint,2,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
-	StartColumn   int32                  `protobuf:"varint,3,opt,name=start_column,json=startColumn,proto3" json:"start_column,omitempty"`
-	EndLine       int32                  `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
-	EndColumn     int32                  `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
-	NewText       string                 `protobuf:"bytes,6,opt,name=new_text,json=newText,proto3" json:"new_text,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// start_line is the 1-based starting line for an edit range.
+	StartLine int32 `protobuf:"varint,2,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
+	// start_column is the 1-based starting column for an edit range.
+	StartColumn int32 `protobuf:"varint,3,opt,name=start_column,json=startColumn,proto3" json:"start_column,omitempty"`
+	// end_line is the 1-based ending source line for a range.
+	EndLine int32 `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
+	// end_column is the 1-based ending source column for a range.
+	EndColumn int32 `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
+	// new_text is the replacement text inserted by this edit.
+	NewText       string `protobuf:"bytes,6,opt,name=new_text,json=newText,proto3" json:"new_text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1736,13 +1849,19 @@ func (x *TextEdit) GetNewText() string {
 	return ""
 }
 
+// RenameSymbolRequest asks the gateway to perform a language-aware rename.
 type RenameSymbolRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
-	NewName       string                 `protobuf:"bytes,5,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column int32 `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
+	// new_name is the replacement symbol name requested by the caller.
+	NewName       string `protobuf:"bytes,5,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1812,12 +1931,17 @@ func (x *RenameSymbolRequest) GetNewName() string {
 	return ""
 }
 
+// RenameSymbolResponse reports the edits produced and applied for a rename.
 type RenameSymbolResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	Edits         []*TextEdit            `protobuf:"bytes,3,rep,name=edits,proto3" json:"edits,omitempty"`
-	Files         []string               `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	// edits contains the source replacements produced by language tooling.
+	Edits []*TextEdit `protobuf:"bytes,3,rep,name=edits,proto3" json:"edits,omitempty"`
+	// files lists files modified by the rename.
+	Files         []string `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1880,12 +2004,17 @@ func (x *RenameSymbolResponse) GetFiles() []string {
 	return nil
 }
 
+// GetHoverInfoRequest identifies the hover info data to retrieve.
 type GetHoverInfoRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,3,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column        int32 `protobuf:"varint,4,opt,name=column,proto3" json:"column,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1948,11 +2077,15 @@ func (x *GetHoverInfoRequest) GetColumn() int32 {
 	return 0
 }
 
+// GetHoverInfoResponse returns hover text and language metadata for a source position.
 type GetHoverInfoResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
-	Language      string                 `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// content is hover content, often markdown from the language server.
+	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	// language is the implementation language reported by tooling or project metadata.
+	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2008,10 +2141,13 @@ func (x *GetHoverInfoResponse) GetError() string {
 	return ""
 }
 
+// FixRequest asks the gateway to run language-specific formatters or fixers on a file.
 type FixRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path          string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // relative to service root
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2060,12 +2196,17 @@ func (x *FixRequest) GetPath() string {
 	return ""
 }
 
+// FixResponse returns the fixed content and the formatter actions that ran.
 type FixResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"` // the fixed file content (empty if unchanged)
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`     // non-fatal: fixer not available, etc.
-	Actions       []string               `protobuf:"bytes,4,rep,name=actions,proto3" json:"actions,omitempty"` // what was done: "goimports", "gofmt", etc.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// content is the fixed file content; it may be empty when no rewrite was needed.
+	Content string `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"` // the fixed file content (empty if unchanged)
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"` // non-fatal: fixer not available, etc.
+	// actions are native formatter, fixer, or lifecycle actions performed by the agent.
+	Actions       []string `protobuf:"bytes,4,rep,name=actions,proto3" json:"actions,omitempty"` // what was done: "goimports", "gofmt", etc.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2128,13 +2269,19 @@ func (x *FixResponse) GetActions() []string {
 	return nil
 }
 
+// ApplyEditRequest asks the gateway to apply a smart find/replace edit.
 type ApplyEditRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`                       // relative to service root
-	Find          string                 `protobuf:"bytes,3,opt,name=find,proto3" json:"find,omitempty"`                       // text to find (smart matching at plugin level)
-	Replace       string                 `protobuf:"bytes,4,opt,name=replace,proto3" json:"replace,omitempty"`                 // replacement text
-	AutoFix       bool                   `protobuf:"varint,5,opt,name=auto_fix,json=autoFix,proto3" json:"auto_fix,omitempty"` // if true, plugin runs fixers after edit
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"` // relative to service root
+	// find is the text or pattern to locate before applying an edit.
+	Find string `protobuf:"bytes,3,opt,name=find,proto3" json:"find,omitempty"` // text to find (smart matching at plugin level)
+	// replace is the replacement text used by an edit operation.
+	Replace string `protobuf:"bytes,4,opt,name=replace,proto3" json:"replace,omitempty"` // replacement text
+	// auto_fix asks the agent to run language fixers after editing.
+	AutoFix       bool `protobuf:"varint,5,opt,name=auto_fix,json=autoFix,proto3" json:"auto_fix,omitempty"` // if true, plugin runs fixers after edit
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2204,13 +2351,19 @@ func (x *ApplyEditRequest) GetAutoFix() bool {
 	return false
 }
 
+// ApplyEditResponse reports the selected strategy and post-edit content.
 type ApplyEditResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`                         // file content after edit + fix
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`                             // why the edit failed
-	Strategy      string                 `protobuf:"bytes,4,opt,name=strategy,proto3" json:"strategy,omitempty"`                       // which matching strategy
-	FixActions    []string               `protobuf:"bytes,5,rep,name=fix_actions,json=fixActions,proto3" json:"fix_actions,omitempty"` // fixers that ran
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// content is the file content after the edit and optional fixers.
+	Content string `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"` // file content after edit + fix
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"` // why the edit failed
+	// strategy names the edit or execution strategy that produced the result.
+	Strategy string `protobuf:"bytes,4,opt,name=strategy,proto3" json:"strategy,omitempty"` // which matching strategy
+	// fix_actions names formatters or import fixers that ran after the edit.
+	FixActions    []string `protobuf:"bytes,5,rep,name=fix_actions,json=fixActions,proto3" json:"fix_actions,omitempty"` // fixers that ran
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2282,8 +2435,9 @@ func (x *ApplyEditResponse) GetFixActions() []string {
 
 // BatchApplyEditsRequest applies multiple edits in one call.
 type BatchApplyEditsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Edits         []*ApplyEditRequest    `protobuf:"bytes,1,rep,name=edits,proto3" json:"edits,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// edits are the requested edits, potentially spanning services.
+	Edits         []*ApplyEditRequest `protobuf:"bytes,1,rep,name=edits,proto3" json:"edits,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2325,13 +2479,19 @@ func (x *BatchApplyEditsRequest) GetEdits() []*ApplyEditRequest {
 	return nil
 }
 
+// EditResult captures the outcome of one edit inside a batch.
 type EditResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Success       bool                   `protobuf:"varint,3,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
-	Strategy      string                 `protobuf:"bytes,5,opt,name=strategy,proto3" json:"strategy,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,3,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	// strategy names the edit or execution strategy that produced the result.
+	Strategy      string `protobuf:"bytes,5,opt,name=strategy,proto3" json:"strategy,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2401,11 +2561,15 @@ func (x *EditResult) GetStrategy() string {
 	return ""
 }
 
+// BatchApplyEditsResponse returns per-edit outcomes for the batch.
 type BatchApplyEditsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Results       []*EditResult          `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	Succeeded     int32                  `protobuf:"varint,2,opt,name=succeeded,proto3" json:"succeeded,omitempty"`
-	Failed        int32                  `protobuf:"varint,3,opt,name=failed,proto3" json:"failed,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// results are per-item outcomes returned by the operation.
+	Results []*EditResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	// succeeded is the number of edits that applied successfully.
+	Succeeded int32 `protobuf:"varint,2,opt,name=succeeded,proto3" json:"succeeded,omitempty"`
+	// failed is the number of edits that failed.
+	Failed        int32 `protobuf:"varint,3,opt,name=failed,proto3" json:"failed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2461,19 +2625,29 @@ func (x *BatchApplyEditsResponse) GetFailed() int32 {
 	return 0
 }
 
+// SearchRequest searches service files through the gateway.
 type SearchRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Service         string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Pattern         string                 `protobuf:"bytes,2,opt,name=pattern,proto3" json:"pattern,omitempty"`  // regex or literal pattern
-	Literal         bool                   `protobuf:"varint,3,opt,name=literal,proto3" json:"literal,omitempty"` // if true, treat pattern as literal string
-	CaseInsensitive bool                   `protobuf:"varint,4,opt,name=case_insensitive,json=caseInsensitive,proto3" json:"case_insensitive,omitempty"`
-	Path            string                 `protobuf:"bytes,5,opt,name=path,proto3" json:"path,omitempty"`                                      // optional: restrict to subdirectory
-	Extensions      []string               `protobuf:"bytes,6,rep,name=extensions,proto3" json:"extensions,omitempty"`                          // optional: filter by extension (e.g. ".go", ".py")
-	Exclude         []string               `protobuf:"bytes,7,rep,name=exclude,proto3" json:"exclude,omitempty"`                                // optional: glob patterns to exclude
-	MaxResults      int32                  `protobuf:"varint,8,opt,name=max_results,json=maxResults,proto3" json:"max_results,omitempty"`       // 0 = default (100)
-	ContextLines    int32                  `protobuf:"varint,9,opt,name=context_lines,json=contextLines,proto3" json:"context_lines,omitempty"` // lines of context around each match
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// pattern is the search expression or test filter requested by the caller.
+	Pattern string `protobuf:"bytes,2,opt,name=pattern,proto3" json:"pattern,omitempty"` // regex or literal pattern
+	// literal treats pattern as plain text instead of a regular expression.
+	Literal bool `protobuf:"varint,3,opt,name=literal,proto3" json:"literal,omitempty"` // if true, treat pattern as literal string
+	// case_insensitive makes matching ignore letter case.
+	CaseInsensitive bool `protobuf:"varint,4,opt,name=case_insensitive,json=caseInsensitive,proto3" json:"case_insensitive,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,5,opt,name=path,proto3" json:"path,omitempty"` // optional: restrict to subdirectory
+	// extensions restrict file results to the listed suffixes.
+	Extensions []string `protobuf:"bytes,6,rep,name=extensions,proto3" json:"extensions,omitempty"` // optional: filter by extension (e.g. ".go", ".py")
+	// exclude contains glob patterns to skip during the search.
+	Exclude []string `protobuf:"bytes,7,rep,name=exclude,proto3" json:"exclude,omitempty"` // optional: glob patterns to exclude
+	// max_results caps returned matches; zero uses the gateway default.
+	MaxResults int32 `protobuf:"varint,8,opt,name=max_results,json=maxResults,proto3" json:"max_results,omitempty"` // 0 = default (100)
+	// context_lines is the number of neighboring lines returned around each match.
+	ContextLines  int32 `protobuf:"varint,9,opt,name=context_lines,json=contextLines,proto3" json:"context_lines,omitempty"` // lines of context around each match
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SearchRequest) Reset() {
@@ -2569,13 +2743,19 @@ func (x *SearchRequest) GetContextLines() int32 {
 	return 0
 }
 
+// SearchMatch identifies one matching line and optional surrounding context.
 type SearchMatch struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`  // relative path
-	Line          int32                  `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"` // 1-based line number
-	Text          string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`  // the matching line
-	ContextBefore []string               `protobuf:"bytes,4,rep,name=context_before,json=contextBefore,proto3" json:"context_before,omitempty"`
-	ContextAfter  []string               `protobuf:"bytes,5,rep,name=context_after,json=contextAfter,proto3" json:"context_after,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"` // relative path
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"` // 1-based line number
+	// text is the matched source line.
+	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"` // the matching line
+	// context_before contains lines immediately before the match.
+	ContextBefore []string `protobuf:"bytes,4,rep,name=context_before,json=contextBefore,proto3" json:"context_before,omitempty"`
+	// context_after contains lines immediately after the match.
+	ContextAfter  []string `protobuf:"bytes,5,rep,name=context_after,json=contextAfter,proto3" json:"context_after,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2645,11 +2825,15 @@ func (x *SearchMatch) GetContextAfter() []string {
 	return nil
 }
 
+// SearchResponse returns matching source lines and truncation metadata.
 type SearchResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Matches       []*SearchMatch         `protobuf:"bytes,1,rep,name=matches,proto3" json:"matches,omitempty"`
-	Truncated     bool                   `protobuf:"varint,2,opt,name=truncated,proto3" json:"truncated,omitempty"`
-	TotalMatches  int32                  `protobuf:"varint,3,opt,name=total_matches,json=totalMatches,proto3" json:"total_matches,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// matches are the search hits returned by the gateway.
+	Matches []*SearchMatch `protobuf:"bytes,1,rep,name=matches,proto3" json:"matches,omitempty"`
+	// truncated is true when the response was capped before all data could be returned.
+	Truncated bool `protobuf:"varint,2,opt,name=truncated,proto3" json:"truncated,omitempty"`
+	// total_matches is the number of hits observed before truncation.
+	TotalMatches  int32 `protobuf:"varint,3,opt,name=total_matches,json=totalMatches,proto3" json:"total_matches,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2705,9 +2889,11 @@ func (x *SearchResponse) GetTotalMatches() int32 {
 	return 0
 }
 
+// BuildRequest asks the gateway to run the service build.
 type BuildRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2749,13 +2935,19 @@ func (x *BuildRequest) GetService() string {
 	return ""
 }
 
+// BuildError is a structured build or lint diagnostic.
 type BuildError struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	Line          int32                  `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	Column        int32                  `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	Severity      string                 `protobuf:"bytes,5,opt,name=severity,proto3" json:"severity,omitempty"` // "error" | "warning"
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// line is the 1-based source line number.
+	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
+	// column is the 1-based source column number when known.
+	Column int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
+	// message is the diagnostic text returned by the build or lint tool.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// severity is the diagnostic or finding level reported by the producer.
+	Severity      string `protobuf:"bytes,5,opt,name=severity,proto3" json:"severity,omitempty"` // "error" | "warning"
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2825,11 +3017,15 @@ func (x *BuildError) GetSeverity() string {
 	return ""
 }
 
+// BuildResponse returns build success, structured diagnostics, and raw output.
 type BuildResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Errors        []*BuildError          `protobuf:"bytes,2,rep,name=errors,proto3" json:"errors,omitempty"`
-	Output        string                 `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"` // raw build output
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// errors are structured build diagnostics.
+	Errors []*BuildError `protobuf:"bytes,2,rep,name=errors,proto3" json:"errors,omitempty"`
+	// output is raw command, build, lint, or test output retained for diagnosis.
+	Output        string `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"` // raw build output
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2885,9 +3081,11 @@ func (x *BuildResponse) GetOutput() string {
 	return ""
 }
 
+// LintRequest asks the gateway to run the service linter.
 type LintRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2929,11 +3127,15 @@ func (x *LintRequest) GetService() string {
 	return ""
 }
 
+// LintResponse returns lint success, structured diagnostics, and raw output.
 type LintResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Errors        []*BuildError          `protobuf:"bytes,2,rep,name=errors,proto3" json:"errors,omitempty"` // reuse BuildError for lint diagnostics
-	Output        string                 `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"` // raw lint output
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// errors are structured lint diagnostics.
+	Errors []*BuildError `protobuf:"bytes,2,rep,name=errors,proto3" json:"errors,omitempty"` // reuse BuildError for lint diagnostics
+	// output is raw command, build, lint, or test output retained for diagnosis.
+	Output        string `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"` // raw lint output
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2989,9 +3191,11 @@ func (x *LintResponse) GetOutput() string {
 	return ""
 }
 
+// TestRequest asks the gateway to run the service tests.
 type TestRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3033,13 +3237,25 @@ func (x *TestRequest) GetService() string {
 	return ""
 }
 
+// TestResponse returns service test counts and raw runner output.
 type TestResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"` // raw test output
-	TestsRun      int32                  `protobuf:"varint,3,opt,name=tests_run,json=testsRun,proto3" json:"tests_run,omitempty"`
-	TestsPassed   int32                  `protobuf:"varint,4,opt,name=tests_passed,json=testsPassed,proto3" json:"tests_passed,omitempty"`
-	TestsFailed   int32                  `protobuf:"varint,5,opt,name=tests_failed,json=testsFailed,proto3" json:"tests_failed,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// output is raw command, build, lint, or test output retained for diagnosis.
+	Output string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"` // raw test output
+	// tests_run is the total number of tests executed.
+	TestsRun int32 `protobuf:"varint,3,opt,name=tests_run,json=testsRun,proto3" json:"tests_run,omitempty"`
+	// tests_passed is the number of tests that passed.
+	TestsPassed int32 `protobuf:"varint,4,opt,name=tests_passed,json=testsPassed,proto3" json:"tests_passed,omitempty"`
+	// tests_failed is the number of tests that failed.
+	TestsFailed int32 `protobuf:"varint,5,opt,name=tests_failed,json=testsFailed,proto3" json:"tests_failed,omitempty"`
+	// tests_skipped is the number of tests skipped by the runner.
+	TestsSkipped int32 `protobuf:"varint,6,opt,name=tests_skipped,json=testsSkipped,proto3" json:"tests_skipped,omitempty"`
+	// coverage_pct is the overall coverage percentage when available.
+	CoveragePct float32 `protobuf:"fixed32,7,opt,name=coverage_pct,json=coveragePct,proto3" json:"coverage_pct,omitempty"`
+	// failures are concise failing test names or messages.
+	Failures      []string `protobuf:"bytes,8,rep,name=failures,proto3" json:"failures,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3109,15 +3325,42 @@ func (x *TestResponse) GetTestsFailed() int32 {
 	return 0
 }
 
+func (x *TestResponse) GetTestsSkipped() int32 {
+	if x != nil {
+		return x.TestsSkipped
+	}
+	return 0
+}
+
+func (x *TestResponse) GetCoveragePct() float32 {
+	if x != nil {
+		return x.CoveragePct
+	}
+	return 0
+}
+
+func (x *TestResponse) GetFailures() []string {
+	if x != nil {
+		return x.Failures
+	}
+	return nil
+}
+
+// RunCommandRequest asks the gateway to run a command in a service context.
 type RunCommandRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Service        string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Command        string                 `protobuf:"bytes,2,opt,name=command,proto3" json:"command,omitempty"`                                      // command to execute
-	Args           []string               `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty"`                                            // arguments
-	TimeoutSeconds int32                  `protobuf:"varint,4,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"` // 0 = default (30s)
-	WorkingDir     string                 `protobuf:"bytes,5,opt,name=working_dir,json=workingDir,proto3" json:"working_dir,omitempty"`              // optional: relative subdirectory
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// command is the executable or shell command requested by the caller.
+	Command string `protobuf:"bytes,2,opt,name=command,proto3" json:"command,omitempty"` // command to execute
+	// args are structured or command-line arguments supplied to the tool or command.
+	Args []string `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty"` // arguments
+	// timeout_seconds caps command execution time; zero uses the default.
+	TimeoutSeconds int32 `protobuf:"varint,4,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"` // 0 = default (30s)
+	// working_dir is an optional service-relative directory for command execution.
+	WorkingDir    string `protobuf:"bytes,5,opt,name=working_dir,json=workingDir,proto3" json:"working_dir,omitempty"` // optional: relative subdirectory
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RunCommandRequest) Reset() {
@@ -3185,11 +3428,15 @@ func (x *RunCommandRequest) GetWorkingDir() string {
 	return ""
 }
 
+// RunCommandResponse returns process exit status and captured streams.
 type RunCommandResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ExitCode      int32                  `protobuf:"varint,1,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
-	Stdout        string                 `protobuf:"bytes,2,opt,name=stdout,proto3" json:"stdout,omitempty"`
-	Stderr        string                 `protobuf:"bytes,3,opt,name=stderr,proto3" json:"stderr,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// exit_code is the process exit status returned by the operating system.
+	ExitCode int32 `protobuf:"varint,1,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
+	// stdout is the process standard output stream.
+	Stdout string `protobuf:"bytes,2,opt,name=stdout,proto3" json:"stdout,omitempty"`
+	// stderr is the process standard error stream.
+	Stderr        string `protobuf:"bytes,3,opt,name=stderr,proto3" json:"stderr,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3245,10 +3492,13 @@ func (x *RunCommandResponse) GetStderr() string {
 	return ""
 }
 
+// RunChecksRequest asks the gateway to run verification checks for one service.
 type RunChecksRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Checks        []*Check               `protobuf:"bytes,2,rep,name=checks,proto3" json:"checks,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// checks are verification steps requested by the caller.
+	Checks        []*Check `protobuf:"bytes,2,rep,name=checks,proto3" json:"checks,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3297,9 +3547,13 @@ func (x *RunChecksRequest) GetChecks() []*Check {
 	return nil
 }
 
+// Check describes one verification step the gateway can run.
 type Check struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Name  string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// name is a caller-chosen identifier for this check.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// check_type selects exactly one supported check type variant.
+	//
 	// Types that are valid to be assigned to CheckType:
 	//
 	//	*Check_Command
@@ -3406,22 +3660,27 @@ type isCheck_CheckType interface {
 }
 
 type Check_Command struct {
+	// command runs a shell command and evaluates exit code or output.
 	Command *CommandCheck `protobuf:"bytes,2,opt,name=command,proto3,oneof"`
 }
 
 type Check_Http struct {
+	// http calls a service endpoint and evaluates the response.
 	Http *HttpCheck `protobuf:"bytes,3,opt,name=http,proto3,oneof"`
 }
 
 type Check_PluginBuild struct {
+	// plugin_build delegates to the service plugin's Build RPC.
 	PluginBuild *PluginCheck `protobuf:"bytes,4,opt,name=plugin_build,json=pluginBuild,proto3,oneof"`
 }
 
 type Check_PluginTest struct {
+	// plugin_test delegates to the service plugin's Test RPC.
 	PluginTest *PluginCheck `protobuf:"bytes,5,opt,name=plugin_test,json=pluginTest,proto3,oneof"`
 }
 
 type Check_PluginLint struct {
+	// plugin_lint delegates to the service plugin's Lint RPC.
 	PluginLint *PluginCheck `protobuf:"bytes,6,opt,name=plugin_lint,json=pluginLint,proto3,oneof"`
 }
 
@@ -3472,13 +3731,17 @@ func (*PluginCheck) Descriptor() ([]byte, []int) {
 	return file_mind_gateway_v1_gateway_proto_rawDescGZIP(), []int{53}
 }
 
+// CommandCheck validates a command's exit code and optional output text.
 type CommandCheck struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Run              string                 `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
-	ExpectedExitCode int32                  `protobuf:"varint,2,opt,name=expected_exit_code,json=expectedExitCode,proto3" json:"expected_exit_code,omitempty"`
-	OutputContains   string                 `protobuf:"bytes,3,opt,name=output_contains,json=outputContains,proto3" json:"output_contains,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// run is the command line executed by a command check.
+	Run string `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
+	// expected_exit_code is the process status required for success.
+	ExpectedExitCode int32 `protobuf:"varint,2,opt,name=expected_exit_code,json=expectedExitCode,proto3" json:"expected_exit_code,omitempty"`
+	// output_contains is text that must appear in command output.
+	OutputContains string `protobuf:"bytes,3,opt,name=output_contains,json=outputContains,proto3" json:"output_contains,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CommandCheck) Reset() {
@@ -3532,15 +3795,21 @@ func (x *CommandCheck) GetOutputContains() string {
 	return ""
 }
 
+// HttpCheck validates an HTTP endpoint response.
 type HttpCheck struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Method         string                 `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
-	Path           string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	Body           string                 `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
-	ExpectedStatus int32                  `protobuf:"varint,4,opt,name=expected_status,json=expectedStatus,proto3" json:"expected_status,omitempty"`
-	BodyContains   string                 `protobuf:"bytes,5,opt,name=body_contains,json=bodyContains,proto3" json:"body_contains,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// method is the HTTP verb used by the check or API description.
+	Method string `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
+	// path is the HTTP path to request on the service endpoint.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	// body is the request or response payload.
+	Body string `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	// expected_status is the HTTP status code required for success.
+	ExpectedStatus int32 `protobuf:"varint,4,opt,name=expected_status,json=expectedStatus,proto3" json:"expected_status,omitempty"`
+	// body_contains is text that must appear in the HTTP response body.
+	BodyContains  string `protobuf:"bytes,5,opt,name=body_contains,json=bodyContains,proto3" json:"body_contains,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HttpCheck) Reset() {
@@ -3608,12 +3877,17 @@ func (x *HttpCheck) GetBodyContains() string {
 	return ""
 }
 
+// CheckResult captures the outcome of one verification check.
 type CheckResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Passed        bool                   `protobuf:"varint,2,opt,name=passed,proto3" json:"passed,omitempty"`
-	Output        string                 `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
-	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name matches the requested check name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// passed is true when the check met its expected condition.
+	Passed bool `protobuf:"varint,2,opt,name=passed,proto3" json:"passed,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output string `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3676,9 +3950,11 @@ func (x *CheckResult) GetError() string {
 	return ""
 }
 
+// RunChecksResponse returns per-check outcomes.
 type RunChecksResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Results       []*CheckResult         `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// results are per-item outcomes returned by the operation.
+	Results       []*CheckResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3720,9 +3996,11 @@ func (x *RunChecksResponse) GetResults() []*CheckResult {
 	return nil
 }
 
+// GitStatusRequest asks for git status, optionally scoped to one service directory.
 type GitStatusRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"` // optional: filter to service directory
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"` // optional: filter to service directory
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3764,11 +4042,15 @@ func (x *GitStatusRequest) GetService() string {
 	return ""
 }
 
+// GitFileStatus reports the state and message for the git file lifecycle phase.
 type GitFileStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"` // "modified", "added", "deleted", "untracked", "renamed", "copied"
-	Staged        bool                   `protobuf:"varint,3,opt,name=staged,proto3" json:"staged,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// status is the git, lifecycle, diagnostic, or operation state for this item.
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"` // "modified", "added", "deleted", "untracked", "renamed", "copied"
+	// staged selects or reports the git index instead of the worktree.
+	Staged        bool `protobuf:"varint,3,opt,name=staged,proto3" json:"staged,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3824,11 +4106,15 @@ func (x *GitFileStatus) GetStaged() bool {
 	return false
 }
 
+// GitStatusResponse returns branch and changed-file status.
 type GitStatusResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Files         []*GitFileStatus       `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
-	Branch        string                 `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"`
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// files are changed files reported by git status.
+	Files []*GitFileStatus `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	// branch is the current git branch name.
+	Branch string `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3884,11 +4170,15 @@ func (x *GitStatusResponse) GetError() string {
 	return ""
 }
 
+// GitDiffRequest asks for a git diff, optionally scoped to a path or index.
 type GitDiffRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`      // optional: restrict to a file
-	Staged        bool                   `protobuf:"varint,3,opt,name=staged,proto3" json:"staged,omitempty"` // if true, show staged changes
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"` // optional: restrict to a file
+	// staged selects or reports the git index instead of the worktree.
+	Staged        bool `protobuf:"varint,3,opt,name=staged,proto3" json:"staged,omitempty"` // if true, show staged changes
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3944,10 +4234,13 @@ func (x *GitDiffRequest) GetStaged() bool {
 	return false
 }
 
+// GitDiffResponse returns unified diff text.
 type GitDiffResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Diff          string                 `protobuf:"bytes,1,opt,name=diff,proto3" json:"diff,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// diff is the unified git diff text.
+	Diff string `protobuf:"bytes,1,opt,name=diff,proto3" json:"diff,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3996,10 +4289,13 @@ func (x *GitDiffResponse) GetError() string {
 	return ""
 }
 
+// GitLogRequest asks for recent commit history.
 type GitLogRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Count         int32                  `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"` // number of commits (default 10)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// count limits how many records should be returned.
+	Count         int32 `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"` // number of commits (default 10)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4048,13 +4344,19 @@ func (x *GitLogRequest) GetCount() int32 {
 	return 0
 }
 
+// GitCommitInfo summarizes one commit returned by GitLog.
 type GitCommitInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Hash          string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	ShortHash     string                 `protobuf:"bytes,2,opt,name=short_hash,json=shortHash,proto3" json:"short_hash,omitempty"`
-	Author        string                 `protobuf:"bytes,3,opt,name=author,proto3" json:"author,omitempty"`
-	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	Date          string                 `protobuf:"bytes,5,opt,name=date,proto3" json:"date,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// hash is the full git commit or content hash.
+	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	// short_hash is the abbreviated git commit hash.
+	ShortHash string `protobuf:"bytes,2,opt,name=short_hash,json=shortHash,proto3" json:"short_hash,omitempty"`
+	// author is the commit author identity.
+	Author string `protobuf:"bytes,3,opt,name=author,proto3" json:"author,omitempty"`
+	// message is the first line of the commit message.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// date is the commit timestamp as reported by git.
+	Date          string `protobuf:"bytes,5,opt,name=date,proto3" json:"date,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4124,10 +4426,13 @@ func (x *GitCommitInfo) GetDate() string {
 	return ""
 }
 
+// GitLogResponse returns commit history ordered newest first.
 type GitLogResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Commits       []*GitCommitInfo       `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// commits are git history entries ordered newest first.
+	Commits []*GitCommitInfo `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4176,10 +4481,13 @@ func (x *GitLogResponse) GetError() string {
 	return ""
 }
 
+// GitCommitRequest asks the gateway to commit selected workspace changes.
 type GitCommitRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	Paths         []string               `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths,omitempty"` // optional: specific files to commit
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// message is the commit message to use.
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// paths optionally restrict the commit to specific files.
+	Paths         []string `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths,omitempty"` // optional: specific files to commit
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4228,11 +4536,15 @@ func (x *GitCommitRequest) GetPaths() []string {
 	return nil
 }
 
+// GitCommitResponse reports the commit hash when the commit succeeds.
 type GitCommitResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Hash          string                 `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// hash is the full git commit or content hash.
+	Hash string `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4288,11 +4600,15 @@ func (x *GitCommitResponse) GetError() string {
 	return ""
 }
 
+// Dependency represents a package or module dependency.
 type Dependency struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	Direct        bool                   `protobuf:"varint,3,opt,name=direct,proto3" json:"direct,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the package, module, or dependency identifier.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	// direct is true when the dependency is declared directly rather than transitively inferred.
+	Direct        bool `protobuf:"varint,3,opt,name=direct,proto3" json:"direct,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4348,9 +4664,11 @@ func (x *Dependency) GetDirect() bool {
 	return false
 }
 
+// ListDependenciesRequest carries optional filters for listing dependencies.
 type ListDependenciesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4392,10 +4710,13 @@ func (x *ListDependenciesRequest) GetService() string {
 	return ""
 }
 
+// ListDependenciesResponse returns dependencies discovered by the native package manager.
 type ListDependenciesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Dependencies  []*Dependency          `protobuf:"bytes,1,rep,name=dependencies,proto3" json:"dependencies,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// dependencies are packages or services required by this resource.
+	Dependencies []*Dependency `protobuf:"bytes,1,rep,name=dependencies,proto3" json:"dependencies,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4444,11 +4765,15 @@ func (x *ListDependenciesResponse) GetError() string {
 	return ""
 }
 
+// AddDependencyRequest identifies a package to install through the native package manager.
 type AddDependencyRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	PackageName   string                 `protobuf:"bytes,2,opt,name=package_name,json=packageName,proto3" json:"package_name,omitempty"`
-	Version       string                 `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// package_name is the package or dependency identifier used by the native manager.
+	PackageName string `protobuf:"bytes,2,opt,name=package_name,json=packageName,proto3" json:"package_name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version       string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4504,11 +4829,15 @@ func (x *AddDependencyRequest) GetVersion() string {
 	return ""
 }
 
+// AddDependencyResponse reports the dependency version resolved by the package manager.
 type AddDependencyResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Success          bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error            string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	InstalledVersion string                 `protobuf:"bytes,3,opt,name=installed_version,json=installedVersion,proto3" json:"installed_version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	// installed_version is the version resolved by the package manager.
+	InstalledVersion string `protobuf:"bytes,3,opt,name=installed_version,json=installedVersion,proto3" json:"installed_version,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -4564,10 +4893,13 @@ func (x *AddDependencyResponse) GetInstalledVersion() string {
 	return ""
 }
 
+// RemoveDependencyRequest identifies a package to remove through the native package manager.
 type RemoveDependencyRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	PackageName   string                 `protobuf:"bytes,2,opt,name=package_name,json=packageName,proto3" json:"package_name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// package_name is the package or dependency identifier used by the native manager.
+	PackageName   string `protobuf:"bytes,2,opt,name=package_name,json=packageName,proto3" json:"package_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4616,10 +4948,13 @@ func (x *RemoveDependencyRequest) GetPackageName() string {
 	return ""
 }
 
+// RemoveDependencyResponse reports whether the package manager removed the dependency.
 type RemoveDependencyResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4670,12 +5005,17 @@ func (x *RemoveDependencyResponse) GetError() string {
 
 // PackageInfo describes a single package/module within the project.
 type PackageInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                                     // e.g. "github.com/codefly-dev/mind/pkg/run"
-	RelativePath  string                 `protobuf:"bytes,2,opt,name=relative_path,json=relativePath,proto3" json:"relative_path,omitempty"` // e.g. "pkg/run"
-	Files         []string               `protobuf:"bytes,3,rep,name=files,proto3" json:"files,omitempty"`                                   // files in the package
-	Imports       []string               `protobuf:"bytes,4,rep,name=imports,proto3" json:"imports,omitempty"`                               // direct imports
-	Doc           string                 `protobuf:"bytes,5,opt,name=doc,proto3" json:"doc,omitempty"`                                       // package doc comment
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the language-level package or module name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // e.g. "github.com/codefly-dev/mind/pkg/run"
+	// relative_path is the package directory relative to the service root.
+	RelativePath string `protobuf:"bytes,2,opt,name=relative_path,json=relativePath,proto3" json:"relative_path,omitempty"` // e.g. "pkg/run"
+	// files are source files that belong to this package.
+	Files []string `protobuf:"bytes,3,rep,name=files,proto3" json:"files,omitempty"` // files in the package
+	// imports are direct imports used by files in this package.
+	Imports []string `protobuf:"bytes,4,rep,name=imports,proto3" json:"imports,omitempty"` // direct imports
+	// doc is package-level documentation extracted from source comments.
+	Doc           string `protobuf:"bytes,5,opt,name=doc,proto3" json:"doc,omitempty"` // package doc comment
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4745,9 +5085,11 @@ func (x *PackageInfo) GetDoc() string {
 	return ""
 }
 
+// GetProjectInfoRequest identifies the project info data to retrieve.
 type GetProjectInfoRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4789,17 +5131,25 @@ func (x *GetProjectInfoRequest) GetService() string {
 	return ""
 }
 
+// GetProjectInfoResponse returns language metadata useful for ingestion and planning.
 type GetProjectInfoResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Module          string                 `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`                                                                                                     // e.g. "github.com/codefly-dev/mind"
-	Language        string                 `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`                                                                                                 // e.g. "go"
-	LanguageVersion string                 `protobuf:"bytes,3,opt,name=language_version,json=languageVersion,proto3" json:"language_version,omitempty"`                                                            // e.g. "1.25"
-	Packages        []*PackageInfo         `protobuf:"bytes,4,rep,name=packages,proto3" json:"packages,omitempty"`                                                                                                 // package structure
-	Dependencies    []*Dependency          `protobuf:"bytes,5,rep,name=dependencies,proto3" json:"dependencies,omitempty"`                                                                                         // reuse existing Dependency message
-	FileHashes      map[string]string      `protobuf:"bytes,6,rep,name=file_hashes,json=fileHashes,proto3" json:"file_hashes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // path -> SHA-256 for change detection
-	Error           string                 `protobuf:"bytes,7,opt,name=error,proto3" json:"error,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"` // e.g. "github.com/codefly-dev/mind"
+	// language is the implementation language detected for this service or project.
+	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"` // e.g. "go"
+	// language_version is the detected compiler or runtime version.
+	LanguageVersion string `protobuf:"bytes,3,opt,name=language_version,json=languageVersion,proto3" json:"language_version,omitempty"` // e.g. "1.25"
+	// packages describes the package or module layout within the service.
+	Packages []*PackageInfo `protobuf:"bytes,4,rep,name=packages,proto3" json:"packages,omitempty"` // package structure
+	// dependencies are packages discovered from manifests or lock files.
+	Dependencies []*Dependency `protobuf:"bytes,5,rep,name=dependencies,proto3" json:"dependencies,omitempty"` // reuse existing Dependency message
+	// file_hashes maps source paths to content hashes for change detection.
+	FileHashes map[string]string `protobuf:"bytes,6,rep,name=file_hashes,json=fileHashes,proto3" json:"file_hashes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // path -> SHA-256 for change detection
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,7,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetProjectInfoResponse) Reset() {
@@ -4881,15 +5231,23 @@ func (x *GetProjectInfoResponse) GetError() string {
 	return ""
 }
 
+// AvailableCommand describes a built-in or plugin command exposed through the gateway.
 type AvailableCommand struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`               // e.g. "reset_db"
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"` // "Reset the database to a clean state"
-	Usage         string                 `protobuf:"bytes,3,opt,name=usage,proto3" json:"usage,omitempty"`             // "! reset_db [--seed]"
-	Aliases       []string               `protobuf:"bytes,4,rep,name=aliases,proto3" json:"aliases,omitempty"`
-	Tags          []string               `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`
-	Plugin        string                 `protobuf:"bytes,6,opt,name=plugin,proto3" json:"plugin,omitempty"`            // which plugin provides this, empty for built-in
-	Destructive   bool                   `protobuf:"varint,7,opt,name=destructive,proto3" json:"destructive,omitempty"` // if true, requires user confirmation
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the command name accepted by the gateway.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // e.g. "reset_db"
+	// description tells users and agents when this command is useful.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"` // "Reset the database to a clean state"
+	// usage is the command-line shape shown to users and agents.
+	Usage string `protobuf:"bytes,3,opt,name=usage,proto3" json:"usage,omitempty"` // "! reset_db [--seed]"
+	// aliases are alternate command names accepted by the plugin.
+	Aliases []string `protobuf:"bytes,4,rep,name=aliases,proto3" json:"aliases,omitempty"`
+	// tags are labels used for filtering, grouping, or display.
+	Tags []string `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`
+	// plugin identifies the plugin that provides this command; empty means built-in.
+	Plugin string `protobuf:"bytes,6,opt,name=plugin,proto3" json:"plugin,omitempty"` // which plugin provides this, empty for built-in
+	// destructive is true when the operation can mutate or delete user state.
+	Destructive   bool `protobuf:"varint,7,opt,name=destructive,proto3" json:"destructive,omitempty"` // if true, requires user confirmation
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4973,6 +5331,7 @@ func (x *AvailableCommand) GetDestructive() bool {
 	return false
 }
 
+// ListAllCommandsRequest carries optional filters for listing all commands.
 type ListAllCommandsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -5009,9 +5368,11 @@ func (*ListAllCommandsRequest) Descriptor() ([]byte, []int) {
 	return file_mind_gateway_v1_gateway_proto_rawDescGZIP(), []int{79}
 }
 
+// ListAllCommandsResponse returns the gateway command catalog.
 type ListAllCommandsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Commands      []*AvailableCommand    `protobuf:"bytes,1,rep,name=commands,proto3" json:"commands,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// commands are plugin or built-in commands available to callers.
+	Commands      []*AvailableCommand `protobuf:"bytes,1,rep,name=commands,proto3" json:"commands,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5280,13 +5641,16 @@ const file_mind_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x06errors\x18\x02 \x03(\v2\x1b.mind.gateway.v1.BuildErrorR\x06errors\x12\x16\n" +
 	"\x06output\x18\x03 \x01(\tR\x06output\"'\n" +
 	"\vTestRequest\x12\x18\n" +
-	"\aservice\x18\x01 \x01(\tR\aservice\"\xa3\x01\n" +
+	"\aservice\x18\x01 \x01(\tR\aservice\"\x87\x02\n" +
 	"\fTestResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x16\n" +
 	"\x06output\x18\x02 \x01(\tR\x06output\x12\x1b\n" +
 	"\ttests_run\x18\x03 \x01(\x05R\btestsRun\x12!\n" +
 	"\ftests_passed\x18\x04 \x01(\x05R\vtestsPassed\x12!\n" +
-	"\ftests_failed\x18\x05 \x01(\x05R\vtestsFailed\"\xa5\x01\n" +
+	"\ftests_failed\x18\x05 \x01(\x05R\vtestsFailed\x12#\n" +
+	"\rtests_skipped\x18\x06 \x01(\x05R\ftestsSkipped\x12!\n" +
+	"\fcoverage_pct\x18\a \x01(\x02R\vcoveragePct\x12\x1a\n" +
+	"\bfailures\x18\b \x03(\tR\bfailures\"\xa5\x01\n" +
 	"\x11RunCommandRequest\x12\x18\n" +
 	"\aservice\x18\x01 \x01(\tR\aservice\x12\x18\n" +
 	"\acommand\x18\x02 \x01(\tR\acommand\x12\x12\n" +

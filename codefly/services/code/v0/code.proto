@@ -15,102 +15,160 @@ The MCP server in the CLI dispatches tool calls to these RPCs via go-plugin.
 
 // SymbolKind enumerates the kinds of code symbols.
 enum SymbolKind {
+  // SYMBOL_KIND_UNKNOWN is the default value when symbol kind is not specified.
   SYMBOL_KIND_UNKNOWN = 0;
+  // SYMBOL_KIND_FUNCTION represents a function symbol.
   SYMBOL_KIND_FUNCTION = 1;
+  // SYMBOL_KIND_METHOD represents a method symbol.
   SYMBOL_KIND_METHOD = 2;
+  // SYMBOL_KIND_STRUCT represents a struct symbol.
   SYMBOL_KIND_STRUCT = 3;
+  // SYMBOL_KIND_INTERFACE represents an interface symbol.
   SYMBOL_KIND_INTERFACE = 4;
+  // SYMBOL_KIND_CONSTANT represents a constant symbol.
   SYMBOL_KIND_CONSTANT = 5;
+  // SYMBOL_KIND_VARIABLE represents a variable symbol.
   SYMBOL_KIND_VARIABLE = 6;
+  // SYMBOL_KIND_TYPE_ALIAS represents a type alias symbol.
   SYMBOL_KIND_TYPE_ALIAS = 7;
+  // SYMBOL_KIND_PACKAGE represents a package symbol.
   SYMBOL_KIND_PACKAGE = 8;
+  // SYMBOL_KIND_FIELD represents a field symbol.
   SYMBOL_KIND_FIELD = 9;
+  // SYMBOL_KIND_ENUM represents an enum symbol.
   SYMBOL_KIND_ENUM = 10;
+  // SYMBOL_KIND_CLASS represents a class symbol.
   SYMBOL_KIND_CLASS = 11;
 }
 
 // Location identifies where a symbol lives in the source code.
 message Location {
+  // file is a workspace- or service-relative source file path.
   string file = 1;     // Relative path within the service, e.g. "pkg/handlers/health.go"
+  // line is the 1-based source line number.
   int32  line = 2;     // 1-based line number
+  // column is the 1-based source column number when known.
   int32  column = 3;   // 1-based column number
+  // end_line is the 1-based ending source line for a range.
   int32  end_line = 4;
+  // end_column is the 1-based ending source column for a range.
   int32  end_column = 5;
 }
 
 // Symbol represents a single code symbol (function, type, method, etc.).
 message Symbol {
+  // name is the symbol name as reported by the language analyzer.
   string     name = 1;          // e.g. "HandleHealth"
+  // kind classifies the language construct so callers can filter or render it.
   SymbolKind kind = 2;
+  // location points to the declaration range for this symbol.
   Location   location = 3;
+  // signature is the declaration text or callable shape for a symbol.
   string     signature = 4;     // e.g. "func HandleHealth(w http.ResponseWriter, r *http.Request)"
+  // documentation is the doc comment or hover text supplied by language tooling.
   string     documentation = 5; // Doc comment, if present
+  // parent is the containing type, package, or symbol name when the analyzer provides one.
   string     parent = 6;        // Containing symbol name, e.g. "Server" for a method
+  // children contains nested symbols such as struct fields or interface methods.
   repeated Symbol children = 7; // Nested symbols (struct fields, interface methods, etc.)
 
   // Versioned graph: content-addressed dedup (HyperAST-style).
   // Agents compute these from the parsed AST. Mind uses them for
   // symbol-level dedup across versions.
   string qualified_name = 8;    // "<package>.<name>" or "<package>.<Type>.<name>"
+  // body_hash is a normalized hash of a function or method body.
   string body_hash = 9;         // sha256 of normalized function body
+  // signature_hash is a normalized hash of a declaration signature.
   string signature_hash = 10;   // sha256 of function signature
 }
 
+// ListSymbolsRequest carries optional filters for listing symbols.
 message ListSymbolsRequest {
   // Optional: restrict to a single file (relative path). If empty, returns
   // symbols for all source files in the service.
   string file = 1;
 }
 
+// ListSymbolsStatus reports the state and message for the list symbols lifecycle phase.
 message ListSymbolsStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// ListSymbolsResponse returns language symbols discovered for the requested scope.
 message ListSymbolsResponse {
+  // status reports the lifecycle or operation status.
   ListSymbolsStatus status = 1;
+  // symbols are code entities returned by language analysis.
   repeated Symbol symbols = 2;
 }
 
 // --- File Operations ---
 
+// ReadFileRequest identifies a source file to read from the service tree.
 message ReadFileRequest {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;  // relative path within the service
 }
 
+// ReadFileResponse returns the file contents when the path exists.
 message ReadFileResponse {
+  // content is the full file body; it is empty when exists is false.
   string content = 1;
+  // exists reports whether the requested file or resource was found.
   bool exists = 2;
 }
 
+// WriteFileRequest writes a complete file body under the service tree.
 message WriteFileRequest {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;     // relative path within the service
+  // content is the complete replacement body for the file.
   string content = 2;
 }
 
+// WriteFileResponse reports whether the file write succeeded.
 message WriteFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// ListFilesRequest carries optional filters for listing files.
 message ListFilesRequest {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;                // optional: subdirectory (empty = root)
+  // extensions restrict file results to the listed suffixes.
   repeated string extensions = 2; // optional: filter by extension (e.g. ".go", ".py")
+  // recursive includes nested directories when true.
   bool recursive = 3;             // if true, list recursively
 }
 
+// FileInfo describes a file or directory returned by ListFiles.
 message FileInfo {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;       // relative path within the service
+  // size_bytes is the file size in bytes.
   int64 size_bytes = 2;
+  // is_directory is true when the path is a directory.
   bool is_directory = 3;
 }
 
+// ListFilesResponse contains file metadata for paths matching the request filters.
 message ListFilesResponse {
+  // files are files or directories under the requested path.
   repeated FileInfo files = 1;
 }
 
@@ -119,13 +177,19 @@ message ListFilesResponse {
 // FixRequest asks the agent to run language-specific fixers on a file.
 // For Go: goimports + gofmt. For Python: ruff/isort + black. For TS: prettier.
 message FixRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;  // relative path within the service
 }
 
+// FixResponse returns the formatted content and the fixer actions that ran.
 message FixResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // content is the fixed file content; it may be empty when no rewrite was needed.
   string content = 2;          // the fixed file content (empty if unchanged)
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;            // non-fatal: fixer not available, etc.
+  // actions are native formatter, fixer, or lifecycle actions performed by the agent.
   repeated string actions = 4; // what was done: "goimports", "gofmt", etc.
 }
 
@@ -136,44 +200,73 @@ message FixResponse {
 // exact match, whitespace-normalized, indent-shifted, anchor-based, fuzzy scored.
 // After a successful edit, the plugin runs Fix (goimports, gofmt, etc.) automatically.
 message ApplyEditRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;        // relative path within the service
+  // find is the text or pattern to locate before applying an edit.
   string find = 2;        // text to find (may not be an exact match)
+  // replace is the replacement text used by an edit operation.
   string replace = 3;     // replacement text
+  // auto_fix asks the agent to run language fixers after editing.
   bool auto_fix = 4;      // if true, run language-specific fixers after edit
 }
 
+// ApplyEditResponse reports the selected matching strategy and post-edit content.
 message ApplyEditResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // content is the file content after the edit and optional fixers.
   string content = 2;              // the file content after edit + fix
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;                // why the edit failed (e.g. "FIND block not matched")
+  // strategy names the edit or execution strategy that produced the result.
   string strategy = 4;             // which matching strategy was used: "exact", "trailing", "trimmed", "indent_shifted", "anchor", "fuzzy_score", "fuzzy_block"
+  // fix_actions names formatters or import fixers that ran after the edit.
   repeated string fix_actions = 5; // what fixers ran: "goimports", "gofmt", etc.
 }
 
 // --- Search ---
 
+// SearchRequest searches service files using either regex or literal matching.
 message SearchRequest {
+  // pattern is the search expression or test filter requested by the caller.
   string pattern = 1;              // regex or literal pattern
+  // literal treats pattern as plain text instead of a regular expression.
   bool literal = 2;                // if true, treat pattern as literal string (no regex)
+  // case_insensitive makes matching ignore letter case.
   bool case_insensitive = 3;
+  // path is a workspace- or service-relative filesystem path.
   string path = 4;                 // optional: restrict to subdirectory
+  // extensions restrict file results to the listed suffixes.
   repeated string extensions = 5;  // optional: filter by extension (e.g. ".go", ".py")
+  // exclude contains glob patterns to skip during the search.
   repeated string exclude = 6;     // optional: glob patterns to exclude
+  // max_results caps returned matches; zero uses the gateway default.
   int32 max_results = 7;           // 0 = default (100)
+  // context_lines is the number of neighboring lines returned around each match.
   int32 context_lines = 8;         // lines of context around each match
 }
 
+// SearchMatch identifies one matching line and optional surrounding context.
 message SearchMatch {
+  // file is a workspace- or service-relative source file path.
   string file = 1;                 // relative path within the service
+  // line is the 1-based source line number.
   int32 line = 2;                  // 1-based line number
+  // text is the matched line, usually trimmed by the search implementation.
   string text = 3;                 // the matching line (trimmed)
+  // context_before contains lines immediately before the match.
   repeated string context_before = 4;
+  // context_after contains lines immediately after the match.
   repeated string context_after = 5;
 }
 
+// SearchResponse returns matching source lines and truncation metadata.
 message SearchResponse {
+  // matches are the search hits returned by the gateway.
   repeated SearchMatch matches = 1;
+  // truncated is true when max_results stopped the search before all hits were returned.
   bool truncated = 2;              // true if max_results was hit
+  // total_matches is the number of hits observed before truncation.
   int32 total_matches = 3;
 }
 
@@ -181,11 +274,15 @@ message SearchResponse {
 
 // DeleteFile removes a file from the service's source tree.
 message DeleteFileRequest {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;  // relative path within the service
 }
 
+// DeleteFileResponse reports whether the file was removed.
 message DeleteFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
@@ -193,14 +290,21 @@ message DeleteFileResponse {
 
 // MoveFile renames or moves a file within the service, optionally updating imports.
 message MoveFileRequest {
+  // old_path is the current service-relative file path.
   string old_path = 1;       // current relative path
+  // new_path is the target service-relative file path.
   string new_path = 2;       // target relative path
+  // update_imports asks the agent to rewrite imports that referenced old_path.
   bool update_imports = 3;   // if true, rewrite imports across the codebase
 }
 
+// MoveFileResponse reports the move and any files rewritten because imports changed.
 message MoveFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
+  // updated_files lists files whose imports or references were rewritten.
   repeated string updated_files = 3; // files whose imports were rewritten
 }
 
@@ -208,13 +312,19 @@ message MoveFileResponse {
 
 // CreateFile creates a new file. Fails if the file already exists unless overwrite is set.
 message CreateFileRequest {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;       // relative path within the service
+  // content is the initial file body to write.
   string content = 2;
+  // overwrite permits replacing an existing file when true.
   bool overwrite = 3;    // if true, overwrite existing file
 }
 
+// CreateFileResponse reports whether the file was created.
 message CreateFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
@@ -222,32 +332,49 @@ message CreateFileResponse {
 
 // Diagnostic represents a compiler error, warning, or hint from the language server.
 message Diagnostic {
+  // file is a workspace- or service-relative source file path.
   string file = 1;         // relative path
+  // line is the 1-based source line number.
   int32 line = 2;          // 1-based line number
+  // column is the 1-based source column number when known.
   int32 column = 3;        // 1-based column number
+  // end_line is the 1-based ending source line for a range.
   int32 end_line = 4;
+  // end_column is the 1-based ending source column for a range.
   int32 end_column = 5;
+  // message is the compiler, linter, or language-server diagnostic text.
   string message = 6;
+  // severity is the diagnostic level such as error, warning, information, or hint.
   DiagnosticSeverity severity = 7;
+  // source identifies the compiler, linter, language server, or tool that produced the item.
   string source = 8;       // e.g. "gopls", "pylsp", "typescript"
+  // code is the diagnostic or rule identifier from the producing tool.
   string code = 9;         // diagnostic code (e.g. "unusedimport")
 }
 
 // DiagnosticSeverity mirrors LSP DiagnosticSeverity.
 enum DiagnosticSeverity {
+  // DIAGNOSTIC_SEVERITY_UNKNOWN is the default value when diagnostic severity is not specified.
   DIAGNOSTIC_SEVERITY_UNKNOWN = 0;
+  // DIAGNOSTIC_SEVERITY_ERROR reports an error diagnostic.
   DIAGNOSTIC_SEVERITY_ERROR = 1;
+  // DIAGNOSTIC_SEVERITY_WARNING reports a warning diagnostic.
   DIAGNOSTIC_SEVERITY_WARNING = 2;
+  // DIAGNOSTIC_SEVERITY_INFORMATION reports an informational diagnostic.
   DIAGNOSTIC_SEVERITY_INFORMATION = 3;
+  // DIAGNOSTIC_SEVERITY_HINT reports a hint diagnostic.
   DIAGNOSTIC_SEVERITY_HINT = 4;
 }
 
 // GetDiagnostics returns compiler/linter diagnostics from the language server.
 message GetDiagnosticsRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;  // optional: restrict to a single file; empty = all files
 }
 
+// GetDiagnosticsResponse returns compiler, linter, or language-server diagnostics.
 message GetDiagnosticsResponse {
+  // diagnostics are compiler, linter, or language-server findings.
   repeated Diagnostic diagnostics = 1;
 }
 
@@ -255,12 +382,17 @@ message GetDiagnosticsResponse {
 
 // GoToDefinition finds where a symbol at a given position is defined.
 message GoToDefinitionRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;     // relative path
+  // line is the 1-based source line number.
   int32 line = 2;      // 1-based
+  // column is the 1-based source column number when known.
   int32 column = 3;    // 1-based
 }
 
+// GoToDefinitionResponse returns zero or more declaration locations for the symbol.
 message GoToDefinitionResponse {
+  // locations are declaration locations returned by the language server.
   repeated Location locations = 1;
 }
 
@@ -268,12 +400,17 @@ message GoToDefinitionResponse {
 
 // FindReferences finds all usages of a symbol at a given position.
 message FindReferencesRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;     // relative path
+  // line is the 1-based source line number.
   int32 line = 2;      // 1-based
+  // column is the 1-based source column number when known.
   int32 column = 3;    // 1-based
 }
 
+// FindReferencesResponse returns source locations that reference the selected symbol.
 message FindReferencesResponse {
+  // locations are usage sites returned by the language server.
   repeated Location locations = 1;
 }
 
@@ -281,26 +418,41 @@ message FindReferencesResponse {
 
 // TextEdit represents a single text replacement in a file.
 message TextEdit {
+  // file is a workspace- or service-relative source file path.
   string file = 1;       // relative path
+  // start_line is the 1-based starting line of the replacement range.
   int32 start_line = 2;  // 1-based
+  // start_column is the 1-based starting column for an edit range.
   int32 start_column = 3;
+  // end_line is the 1-based ending source line for a range.
   int32 end_line = 4;
+  // end_column is the 1-based ending source column for a range.
   int32 end_column = 5;
+  // new_text is the replacement text inserted by this edit.
   string new_text = 6;
 }
 
 // RenameSymbol performs a language-aware rename of a symbol across all files.
 message RenameSymbolRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;       // relative path
+  // line is the 1-based source line number.
   int32 line = 2;        // 1-based
+  // column is the 1-based source column number when known.
   int32 column = 3;      // 1-based
+  // new_name is the replacement symbol name requested by the caller.
   string new_name = 4;
 }
 
+// RenameSymbolResponse reports the language-server edits applied by the rename.
 message RenameSymbolResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
+  // edits contains the text replacements produced by the language server.
   repeated TextEdit edits = 3;    // the edits that were applied
+  // files lists files modified by the rename.
   repeated string files = 4;      // files that were modified
 }
 
@@ -308,14 +460,21 @@ message RenameSymbolResponse {
 
 // GetHoverInfo returns type information and documentation at a position.
 message GetHoverInfoRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;     // relative path
+  // line is the 1-based source line number.
   int32 line = 2;      // 1-based
+  // column is the 1-based source column number when known.
   int32 column = 3;    // 1-based
 }
 
+// GetHoverInfoResponse returns hover text and the source range it describes.
 message GetHoverInfoResponse {
+  // content is the hover content, often markdown from the language server.
   string content = 1;       // the hover content (may contain markdown)
+  // language is the implementation language detected for this service or project.
   string language = 2;      // language hint for code blocks (e.g. "go")
+  // range is the source range covered by hover or diagnostic information.
   Location range = 3;       // the range the hover applies to
 }
 
@@ -323,53 +482,91 @@ message GetHoverInfoResponse {
 
 // CompletionKind mirrors LSP CompletionItemKind.
 enum CompletionKind {
+  // COMPLETION_KIND_UNKNOWN is the default value when completion kind is not specified.
   COMPLETION_KIND_UNKNOWN = 0;
+  // COMPLETION_KIND_TEXT represents a text completion item.
   COMPLETION_KIND_TEXT = 1;
+  // COMPLETION_KIND_METHOD represents a method completion item.
   COMPLETION_KIND_METHOD = 2;
+  // COMPLETION_KIND_FUNCTION represents a function completion item.
   COMPLETION_KIND_FUNCTION = 3;
+  // COMPLETION_KIND_CONSTRUCTOR represents a constructor completion item.
   COMPLETION_KIND_CONSTRUCTOR = 4;
+  // COMPLETION_KIND_FIELD represents a field completion item.
   COMPLETION_KIND_FIELD = 5;
+  // COMPLETION_KIND_VARIABLE represents a variable completion item.
   COMPLETION_KIND_VARIABLE = 6;
+  // COMPLETION_KIND_CLASS represents a class completion item.
   COMPLETION_KIND_CLASS = 7;
+  // COMPLETION_KIND_INTERFACE represents an interface completion item.
   COMPLETION_KIND_INTERFACE = 8;
+  // COMPLETION_KIND_MODULE represents a module completion item.
   COMPLETION_KIND_MODULE = 9;
+  // COMPLETION_KIND_PROPERTY represents a property completion item.
   COMPLETION_KIND_PROPERTY = 10;
+  // COMPLETION_KIND_UNIT represents a unit completion item.
   COMPLETION_KIND_UNIT = 11;
+  // COMPLETION_KIND_VALUE represents a value completion item.
   COMPLETION_KIND_VALUE = 12;
+  // COMPLETION_KIND_ENUM represents an enum completion item.
   COMPLETION_KIND_ENUM = 13;
+  // COMPLETION_KIND_KEYWORD represents a keyword completion item.
   COMPLETION_KIND_KEYWORD = 14;
+  // COMPLETION_KIND_SNIPPET represents a snippet completion item.
   COMPLETION_KIND_SNIPPET = 15;
+  // COMPLETION_KIND_COLOR represents a color completion item.
   COMPLETION_KIND_COLOR = 16;
+  // COMPLETION_KIND_FILE represents a file completion item.
   COMPLETION_KIND_FILE = 17;
+  // COMPLETION_KIND_REFERENCE represents a reference completion item.
   COMPLETION_KIND_REFERENCE = 18;
+  // COMPLETION_KIND_FOLDER represents a folder completion item.
   COMPLETION_KIND_FOLDER = 19;
+  // COMPLETION_KIND_ENUM_MEMBER represents an enum member completion item.
   COMPLETION_KIND_ENUM_MEMBER = 20;
+  // COMPLETION_KIND_CONSTANT represents a constant completion item.
   COMPLETION_KIND_CONSTANT = 21;
+  // COMPLETION_KIND_STRUCT represents a struct completion item.
   COMPLETION_KIND_STRUCT = 22;
+  // COMPLETION_KIND_EVENT represents an event completion item.
   COMPLETION_KIND_EVENT = 23;
+  // COMPLETION_KIND_OPERATOR represents an operator completion item.
   COMPLETION_KIND_OPERATOR = 24;
+  // COMPLETION_KIND_TYPE_PARAMETER represents a type parameter completion item.
   COMPLETION_KIND_TYPE_PARAMETER = 25;
 }
 
 // CompletionItem represents a single completion suggestion.
 message CompletionItem {
+  // label is the text shown to the user for this suggestion.
   string label = 1;            // the text to display and insert
+  // kind classifies the completion item using LSP-style categories.
   CompletionKind kind = 2;
+  // detail is a short description such as a type signature.
   string detail = 3;           // short description (e.g. type signature)
+  // documentation is the doc comment or hover text supplied by language tooling.
   string documentation = 4;    // longer documentation (may be markdown)
+  // insert_text is inserted when it differs from label.
   string insert_text = 5;      // text to insert (if different from label)
+  // sort_text controls client-side ordering when provided by the analyzer.
   string sort_text = 6;        // text used for sorting
 }
 
 // GetCompletions returns context-aware code completions at a position.
 message GetCompletionsRequest {
+  // file is a workspace- or service-relative source file path.
   string file = 1;     // relative path
+  // line is the 1-based source line number.
   int32 line = 2;      // 1-based
+  // column is the 1-based source column number when known.
   int32 column = 3;    // 1-based
 }
 
+// GetCompletionsResponse returns suggestions for the requested source position.
 message GetCompletionsResponse {
+  // items are completion suggestions from the language server.
   repeated CompletionItem items = 1;
+  // is_incomplete means further typing may change or refine the result set.
   bool is_incomplete = 2;  // if true, further typing may refine results
 }
 
@@ -377,15 +574,22 @@ message GetCompletionsResponse {
 
 // Dependency represents a package/module dependency.
 message Dependency {
+  // name is the package, module, or dependency identifier.
   string name = 1;       // e.g. "github.com/gin-gonic/gin", "requests"
+  // version is the semantic or service-specific version for this resource.
   string version = 2;    // e.g. "v1.9.1", "2.31.0"
+  // direct is true when the project explicitly depends on this package.
   bool direct = 3;       // true if directly imported (vs transitive)
 }
 
+// ListDependenciesRequest carries optional filters for listing dependencies.
 message ListDependenciesRequest {}
 
+// ListDependenciesResponse returns dependencies discovered by the native package manager.
 message ListDependenciesResponse {
+  // dependencies are packages or services required by this resource.
   repeated Dependency dependencies = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
@@ -393,13 +597,19 @@ message ListDependenciesResponse {
 
 // AddDependency adds a package/module via the language package manager.
 message AddDependencyRequest {
+  // package_name is the identifier accepted by the native package manager.
   string package_name = 1;   // e.g. "github.com/gin-gonic/gin"
+  // version is the semantic or service-specific version for this resource.
   string version = 2;        // optional: specific version
 }
 
+// AddDependencyResponse reports the dependency version resolved by the package manager.
 message AddDependencyResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
+  // installed_version is the version resolved by the package manager.
   string installed_version = 3;
 }
 
@@ -407,11 +617,15 @@ message AddDependencyResponse {
 
 // RemoveDependency removes a package/module via the language package manager.
 message RemoveDependencyRequest {
+  // package_name is the package or dependency identifier used by the native manager.
   string package_name = 1;
 }
 
+// RemoveDependencyResponse reports whether the package manager removed the dependency.
 message RemoveDependencyResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
@@ -419,23 +633,36 @@ message RemoveDependencyResponse {
 
 // PackageInfo describes a single package/module within the project.
 message PackageInfo {
+  // name is the language-level package or module name.
   string name = 1;           // e.g. "github.com/codefly-dev/mind/pkg/run"
+  // relative_path is the package directory relative to the service root.
   string relative_path = 2;  // e.g. "pkg/run"
+  // files are source files that belong to the package.
   repeated string files = 3; // Go files in the package
+  // imports are direct imports used by files in the package.
   repeated string imports = 4; // direct imports
+  // doc is package-level documentation extracted from source comments.
   string doc = 5;            // package doc comment
 }
 
 // GetProjectInfo returns rich, language-specific project metadata.
 message GetProjectInfoRequest {}
 
+// GetProjectInfoResponse returns language metadata useful for ingestion and planning.
 message GetProjectInfoResponse {
+  // module is the Codefly module name that groups services.
   string module = 1;                    // e.g. "github.com/codefly-dev/mind"
+  // language is the implementation language detected for this service or project.
   string language = 2;                  // e.g. "go"
+  // language_version is the detected compiler or runtime version.
   string language_version = 3;          // e.g. "1.25"
+  // packages describes the package or module layout within the service.
   repeated PackageInfo packages = 4;    // package structure
+  // dependencies are packages discovered from manifests or lock files.
   repeated Dependency dependencies = 5; // reuse existing Dependency message
+  // file_hashes maps source paths to content hashes for change detection.
   map<string, string> file_hashes = 6;  // path -> SHA-256 for change detection
+  // error explains why the operation failed; empty means success at this layer.
   string error = 7;
 }
 
@@ -443,77 +670,123 @@ message GetProjectInfoResponse {
 
 // GitLogRequest returns recent commit history.
 message GitLogRequest {
+  // max_count limits how many commits are returned; zero selects the default.
   int32 max_count = 1;         // 0 = default (50)
+  // since filters commits using a git-compatible date expression.
   string since = 2;            // optional: ISO date or relative (e.g. "2 weeks ago")
+  // path is a workspace- or service-relative filesystem path.
   string path = 3;             // optional: restrict to commits touching this path
+  // ref selects the branch, tag, or commit used as the history tip.
   string ref = 4;              // optional: branch/tag/ref (default: HEAD)
 }
 
+// GitCommit summarizes one commit returned by GitLog.
 message GitCommit {
+  // hash is the full commit SHA.
   string hash = 1;             // full SHA
+  // short_hash is an abbreviated commit SHA for display.
   string short_hash = 2;       // abbreviated SHA
+  // author is the commit author identity.
   string author = 3;
+  // date is the commit timestamp in ISO 8601 form.
   string date = 4;             // ISO 8601
+  // message is the first line of the commit message.
   string message = 5;          // first line of commit message
+  // files_changed is the number of files modified by the operation.
   int32 files_changed = 6;
 }
 
+// GitLogResponse returns commit history for the requested ref and path filter.
 message GitLogResponse {
+  // commits are git history entries ordered newest first.
   repeated GitCommit commits = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
 // GitDiffRequest returns a unified diff between two refs or the working tree.
 message GitDiffRequest {
+  // base_ref selects the older side of the diff, or the working tree base when empty.
   string base_ref = 1;         // e.g. "HEAD~3", a commit SHA, or empty for working tree
+  // head_ref selects the newer side of the diff, or the working tree when empty.
   string head_ref = 2;         // e.g. "HEAD" or empty for working tree
+  // path is a workspace- or service-relative filesystem path.
   string path = 3;             // optional: restrict to a specific file or directory
+  // stat_only omits unified diff text and returns only changed-file stats.
   bool stat_only = 4;          // if true, return only file stats (no diff text)
+  // context_lines controls the unified diff context size.
   int32 context_lines = 5;     // lines of context around changes (default: 3)
 }
 
+// GitDiffFile summarizes changes for one path in a diff.
 message GitDiffFile {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // additions is the number of added lines for this path.
   int32 additions = 2;
+  // deletions is the number of removed lines for this path.
   int32 deletions = 3;
+  // status is the git, lifecycle, diagnostic, or operation state for this item.
   string status = 4;           // "added", "modified", "deleted", "renamed"
 }
 
+// GitDiffResponse returns unified diff text and per-file change stats.
 message GitDiffResponse {
+  // diff is the unified diff for the file or git change.
   string diff = 1;             // unified diff text (empty if stat_only)
+  // files are workspace- or service-relative file paths affected by this operation.
   repeated GitDiffFile files = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
 // GitShowRequest returns file content at a specific git ref.
 message GitShowRequest {
+  // ref is the git revision to read from.
   string ref = 1;              // commit hash, branch, tag (e.g. "HEAD~5", "abc123")
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;             // relative path within the service
 }
 
+// GitShowResponse returns file content as it existed at the requested git ref.
 message GitShowResponse {
+  // content is the file body at ref; it is empty when exists is false.
   string content = 1;
+  // exists reports whether the path existed at the requested ref.
   bool exists = 2;             // false if the file didn't exist at that ref
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
 // GitBlameRequest returns per-line blame information for a file.
 message GitBlameRequest {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;             // relative path within the service
+  // start_line is the optional 1-based first line to inspect.
   int32 start_line = 2;        // optional: 1-based start line (0 = from beginning)
+  // end_line is the optional 1-based final line to inspect.
   int32 end_line = 3;          // optional: 1-based end line (0 = to end)
 }
 
+// GitBlameLine attributes one source line to the commit that last changed it.
 message GitBlameLine {
+  // hash is the commit SHA responsible for the line.
   string hash = 1;             // commit SHA
+  // author is the commit author identity.
   string author = 2;
+  // date is the commit timestamp in ISO 8601 form.
   string date = 3;             // ISO 8601
+  // line is the 1-based source line number.
   int32 line = 4;              // 1-based line number
+  // content is the source text on this line.
   string content = 5;          // the line content
 }
 
+// GitBlameResponse returns blame attribution for the requested line range.
 message GitBlameResponse {
+  // lines are blame records in source order.
   repeated GitBlameLine lines = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
@@ -521,29 +794,42 @@ message GitBlameResponse {
 
 // CallEdge represents a function call from one symbol to another.
 message CallEdge {
+  // caller_id is the qualified symbol name of the calling function.
   string caller_id = 1;       // qualified name of the calling function
+  // callee_id is the qualified symbol name of the called function.
   string callee_id = 2;       // qualified name of the called function
+  // call_type identifies how the call was resolved, such as static or interface dispatch.
   string call_type = 3;       // "static", "interface", "closure"
+  // call_site is the source location where the call occurs.
   Location call_site = 4;     // where the call happens in source
 }
 
 // ImplementsEdge records that a concrete type implements an interface.
 message ImplementsEdge {
+  // type_id is the qualified symbol name of the concrete type.
   string type_id = 1;         // qualified name of the concrete type
+  // interface_id is the qualified symbol name of the implemented interface.
   string interface_id = 2;    // qualified name of the interface
 }
 
 // GetCallGraph computes the entire call graph and interface implementations
 // for the project using whole-program analysis (VTA for Go).
 message GetCallGraphRequest {
+  // algorithm selects the call graph algorithm when the language backend supports choices.
   string algorithm = 1;       // "vta" (default), "cha", "rta"
 }
 
+// GetCallGraphResponse returns call edges and interface implementation edges.
 message GetCallGraphResponse {
+  // calls are function-to-function call edges discovered by whole-program analysis.
   repeated CallEdge calls = 1;
+  // implements are type-to-interface relationships discovered by analysis.
   repeated ImplementsEdge implements = 2;
+  // functions_analyzed is the number of functions included in analysis.
   int32 functions_analyzed = 3;
+  // algorithm_used reports the actual analysis algorithm that ran.
   string algorithm_used = 4;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 5;
 }
 
@@ -560,6 +846,7 @@ message GetCallGraphResponse {
 // tools (`go build`, `npm run`), or handing an LLM-authored shell
 // snippet off to the workspace for execution.
 
+// ShellExecRequest asks the code agent to run a command inside its service sandbox.
 message ShellExecRequest {
   // The full command line, parsed by the shell. Example: "go test ./..."
   string command = 1;
@@ -582,9 +869,13 @@ message ShellExecRequest {
   int32 timeout_seconds = 5;
 }
 
+// ShellExecResponse returns process exit status and captured streams.
 message ShellExecResponse {
+  // exit_code is the process exit status returned by the operating system.
   int32  exit_code = 1;
+  // stdout is the process standard output stream.
   string stdout = 2;
+  // stderr is the process standard error stream.
   string stderr = 3;
   // True if the command was terminated because it exceeded timeout_seconds.
   bool   timed_out = 4;
@@ -603,35 +894,60 @@ message ShellExecResponse {
 // direct RPCs: ListSymbols / FindReferences / GoToDefinition /
 // GetDiagnostics / GetHoverInfo / ApplyEdit / ShellExec / GetCallGraph).
 message CodeRequest {
+  // operation selects exactly one supported operation variant.
   oneof operation {
+    // list_symbols asks the analyzer for symbols in a file or across the service.
     ListSymbolsRequest list_symbols = 7;
+    // get_diagnostics asks language tooling for compiler or linter findings.
     GetDiagnosticsRequest get_diagnostics = 8;
+    // go_to_definition resolves the declaration for a symbol at a source position.
     GoToDefinitionRequest go_to_definition = 9;
+    // find_references resolves usage locations for a symbol at a source position.
     FindReferencesRequest find_references = 10;
+    // rename_symbol requests a language-aware rename across the service.
     RenameSymbolRequest rename_symbol = 11;
+    // get_hover_info asks the language server for hover text at a source position.
     GetHoverInfoRequest get_hover_info = 12;
+    // fix runs language-specific formatting and import fixers for one file.
     FixRequest fix = 13;
+    // apply_edit applies a smart find/replace edit through the plugin.
     ApplyEditRequest apply_edit = 14;
+    // list_dependencies reads dependencies from the native package manager.
     ListDependenciesRequest list_dependencies = 16;
+    // add_dependency installs a package through the native package manager.
     AddDependencyRequest add_dependency = 17;
+    // remove_dependency removes a package through the native package manager.
     RemoveDependencyRequest remove_dependency = 18;
+    // get_project_info asks the plugin for language-specific project metadata.
     GetProjectInfoRequest get_project_info = 19;
+    // get_completions asks the language server for completion items.
     GetCompletionsRequest get_completions = 20;
+    // get_call_graph runs whole-program call graph analysis.
     GetCallGraphRequest get_call_graph = 25;
 
     // File and git operations — handled by the Code agent's default server
     // (pkg/code/DefaultCodeServer in codefly core) backed by the workspace's
     // virtual filesystem and go-git. Mind never touches files directly.
     ReadFileRequest read_file = 26;
+    // write_file replaces a complete file body in the service tree.
     WriteFileRequest write_file = 27;
+    // create_file creates a new file, optionally overwriting an existing path.
     CreateFileRequest create_file = 28;
+    // delete_file removes a file from the service tree.
     DeleteFileRequest delete_file = 29;
+    // move_file renames or moves a file and can rewrite imports.
     MoveFileRequest move_file = 30;
+    // list_files enumerates files under a service-relative path.
     ListFilesRequest list_files = 31;
+    // search runs literal or regex search across service files.
     SearchRequest search = 32;
+    // git_log reads commit history for the service checkout.
     GitLogRequest git_log = 33;
+    // git_show reads a file as it existed at a git ref.
     GitShowRequest git_show = 34;
+    // git_blame attributes source lines to commits.
     GitBlameRequest git_blame = 35;
+    // git_diff returns working-tree or ref-to-ref changes.
     GitDiffRequest git_diff = 36;
 
     // Shell execution — the ONE sanctioned path for running commands
@@ -643,41 +959,68 @@ message CodeRequest {
 
 // CodeResponse wraps all code operation results.
 message CodeResponse {
+  // result selects exactly one supported result variant.
   oneof result {
+    // list_symbols returns symbols discovered by language analysis.
     ListSymbolsResponse list_symbols = 7;
+    // get_diagnostics returns compiler or linter diagnostics.
     GetDiagnosticsResponse get_diagnostics = 8;
+    // go_to_definition returns declaration locations.
     GoToDefinitionResponse go_to_definition = 9;
+    // find_references returns usage locations.
     FindReferencesResponse find_references = 10;
+    // rename_symbol returns edits applied by a language-aware rename.
     RenameSymbolResponse rename_symbol = 11;
+    // get_hover_info returns hover documentation and type information.
     GetHoverInfoResponse get_hover_info = 12;
+    // fix returns formatted content and fixer actions.
     FixResponse fix = 13;
+    // apply_edit returns edited content and the matching strategy used.
     ApplyEditResponse apply_edit = 14;
+    // list_dependencies returns package manager dependencies.
     ListDependenciesResponse list_dependencies = 16;
+    // add_dependency returns the installed dependency version.
     AddDependencyResponse add_dependency = 17;
+    // remove_dependency reports dependency removal status.
     RemoveDependencyResponse remove_dependency = 18;
+    // get_project_info returns package, dependency, and file-hash metadata.
     GetProjectInfoResponse get_project_info = 19;
+    // get_completions returns language-server completion items.
     GetCompletionsResponse get_completions = 20;
+    // get_call_graph returns call and implementation edges.
     GetCallGraphResponse get_call_graph = 25;
 
     // File and git operation responses.
     ReadFileResponse read_file = 26;
+    // write_file reports the result of a file replacement.
     WriteFileResponse write_file = 27;
+    // create_file reports the result of file creation.
     CreateFileResponse create_file = 28;
+    // delete_file reports the result of file deletion.
     DeleteFileResponse delete_file = 29;
+    // move_file reports the result of moving a file and rewriting imports.
     MoveFileResponse move_file = 30;
+    // list_files returns file metadata under the requested path.
     ListFilesResponse list_files = 31;
+    // search returns matching lines and truncation metadata.
     SearchResponse search = 32;
+    // git_log returns commit history.
     GitLogResponse git_log = 33;
+    // git_show returns file content from a git ref.
     GitShowResponse git_show = 34;
+    // git_blame returns per-line commit attribution.
     GitBlameResponse git_blame = 35;
+    // git_diff returns unified diff text and changed-file stats.
     GitDiffResponse git_diff = 36;
 
+    // shell_exec returns process exit status and captured streams.
     ShellExecResponse shell_exec = 37;
   }
 }
 
 // --- Service definition ---
 
+// Code exposes language-aware analysis and editing operations backed by a service agent.
 service Code {
   // Execute is the unified dispatch entry point for every code operation.
   // Clients wrap the specific request type in a CodeRequest oneof; the
@@ -691,12 +1034,19 @@ service Code {
   // delete each RPC here the same way we deleted the file/git/dep
   // operations in this cleanup.
 
+  // ListSymbols directly exposes symbol listing for older CLI callers.
   rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse) {}
+  // GetDiagnostics directly exposes language diagnostics for older CLI callers.
   rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse) {}
+  // GoToDefinition directly exposes definition lookup for older CLI callers.
   rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse) {}
+  // FindReferences directly exposes reference lookup for older CLI callers.
   rpc FindReferences(FindReferencesRequest) returns (FindReferencesResponse) {}
+  // GetHoverInfo directly exposes hover information for older CLI callers.
   rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse) {}
+  // ApplyEdit directly exposes smart edits for older CLI callers.
   rpc ApplyEdit(ApplyEditRequest) returns (ApplyEditResponse) {}
+  // GetCallGraph directly exposes call graph analysis for older CLI callers.
   rpc GetCallGraph(GetCallGraphRequest) returns (GetCallGraphResponse) {}
 
   // ShellExec is the one sanctioned path for running shell commands

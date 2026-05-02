@@ -31,18 +31,18 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // TerminalService provides interactive terminal sessions scoped to workspace/module/service.
-// Sessions persist across client disconnections (daemon model).
+// Sessions persist across client disconnections in the server-backed terminal model.
 // Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
 type TerminalServiceClient interface {
-	// Open a new terminal session
+	// Open creates a new PTY-backed terminal session scoped to the requested workspace context.
 	Open(ctx context.Context, in *OpenTerminalRequest, opts ...grpc.CallOption) (*OpenTerminalResponse, error)
-	// Bidirectional stream: client sends input, server sends output
+	// Attach streams raw input bytes to the PTY and raw output bytes back to the client.
 	Attach(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[TerminalInput, TerminalOutput], error)
-	// Resize the terminal window
+	// Resize changes the PTY dimensions for an active terminal session.
 	Resize(ctx context.Context, in *ResizeTerminalRequest, opts ...grpc.CallOption) (*ResizeTerminalResponse, error)
-	// Close a terminal session
+	// Close terminates an active terminal session.
 	Close(ctx context.Context, in *CloseTerminalRequest, opts ...grpc.CallOption) (*CloseTerminalResponse, error)
-	// List active terminal sessions
+	// List returns active terminal sessions known to the CLI server.
 	List(ctx context.Context, in *ListTerminalsRequest, opts ...grpc.CallOption) (*ListTerminalsResponse, error)
 }
 
@@ -112,18 +112,18 @@ func (c *terminalServiceClient) List(ctx context.Context, in *ListTerminalsReque
 // for forward compatibility.
 //
 // TerminalService provides interactive terminal sessions scoped to workspace/module/service.
-// Sessions persist across client disconnections (daemon model).
+// Sessions persist across client disconnections in the server-backed terminal model.
 // Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
 type TerminalServiceServer interface {
-	// Open a new terminal session
+	// Open creates a new PTY-backed terminal session scoped to the requested workspace context.
 	Open(context.Context, *OpenTerminalRequest) (*OpenTerminalResponse, error)
-	// Bidirectional stream: client sends input, server sends output
+	// Attach streams raw input bytes to the PTY and raw output bytes back to the client.
 	Attach(grpc.BidiStreamingServer[TerminalInput, TerminalOutput]) error
-	// Resize the terminal window
+	// Resize changes the PTY dimensions for an active terminal session.
 	Resize(context.Context, *ResizeTerminalRequest) (*ResizeTerminalResponse, error)
-	// Close a terminal session
+	// Close terminates an active terminal session.
 	Close(context.Context, *CloseTerminalRequest) (*CloseTerminalResponse, error)
-	// List active terminal sessions
+	// List returns active terminal sessions known to the CLI server.
 	List(context.Context, *ListTerminalsRequest) (*ListTerminalsResponse, error)
 	mustEmbedUnimplementedTerminalServiceServer()
 }

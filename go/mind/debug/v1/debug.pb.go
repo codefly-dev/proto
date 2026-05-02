@@ -24,6 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// GetDashboardRequest identifies the dashboard data to retrieve.
 type GetDashboardRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -60,25 +61,41 @@ func (*GetDashboardRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{0}
 }
 
+// GetDashboardResponse is the top-level debug KPI snapshot for the active Mind session.
 type GetDashboardResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ActiveObjective string                 `protobuf:"bytes,1,opt,name=active_objective,json=activeObjective,proto3" json:"active_objective,omitempty"`
-	Iteration       int32                  `protobuf:"varint,2,opt,name=iteration,proto3" json:"iteration,omitempty"`
-	Phase           string                 `protobuf:"bytes,3,opt,name=phase,proto3" json:"phase,omitempty"`
-	CostUsd         float64                `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	TokensUsed      int32                  `protobuf:"varint,5,opt,name=tokens_used,json=tokensUsed,proto3" json:"tokens_used,omitempty"`
-	ContextWindow   int32                  `protobuf:"varint,6,opt,name=context_window,json=contextWindow,proto3" json:"context_window,omitempty"`
-	BudgetRemaining float64                `protobuf:"fixed64,7,opt,name=budget_remaining,json=budgetRemaining,proto3" json:"budget_remaining,omitempty"`
-	Uptime          *durationpb.Duration   `protobuf:"bytes,8,opt,name=uptime,proto3" json:"uptime,omitempty"`
-	ChecksPassed    int32                  `protobuf:"varint,9,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
-	ChecksTotal     int32                  `protobuf:"varint,10,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
-	LlmCalls        int32                  `protobuf:"varint,11,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	InputTokens     int32                  `protobuf:"varint,12,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens    int32                  `protobuf:"varint,13,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens    int32                  `protobuf:"varint,14,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	Achieved        bool                   `protobuf:"varint,15,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// active_objective is the objective currently being planned or executed.
+	ActiveObjective string `protobuf:"bytes,1,opt,name=active_objective,json=activeObjective,proto3" json:"active_objective,omitempty"`
+	// iteration is the execution loop number for this event.
+	Iteration int32 `protobuf:"varint,2,opt,name=iteration,proto3" json:"iteration,omitempty"`
+	// phase names the current initialization, planning, or execution phase.
+	Phase string `protobuf:"bytes,3,opt,name=phase,proto3" json:"phase,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// tokens_used is the total model token count consumed by the session.
+	TokensUsed int32 `protobuf:"varint,5,opt,name=tokens_used,json=tokensUsed,proto3" json:"tokens_used,omitempty"`
+	// context_window is the maximum model context size currently available.
+	ContextWindow int32 `protobuf:"varint,6,opt,name=context_window,json=contextWindow,proto3" json:"context_window,omitempty"`
+	// budget_remaining is the remaining cost or token budget.
+	BudgetRemaining float64 `protobuf:"fixed64,7,opt,name=budget_remaining,json=budgetRemaining,proto3" json:"budget_remaining,omitempty"`
+	// uptime is how long the session or server has been running.
+	Uptime *durationpb.Duration `protobuf:"bytes,8,opt,name=uptime,proto3" json:"uptime,omitempty"`
+	// checks_passed is the number of verification checks that passed.
+	ChecksPassed int32 `protobuf:"varint,9,opt,name=checks_passed,json=checksPassed,proto3" json:"checks_passed,omitempty"`
+	// checks_total is the number of verification checks that ran.
+	ChecksTotal int32 `protobuf:"varint,10,opt,name=checks_total,json=checksTotal,proto3" json:"checks_total,omitempty"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,11,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,12,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,13,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,14,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved      bool `protobuf:"varint,15,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetDashboardResponse) Reset() {
@@ -216,6 +233,7 @@ func (x *GetDashboardResponse) GetAchieved() bool {
 	return false
 }
 
+// GetContextRequest identifies the context data to retrieve.
 type GetContextRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -252,22 +270,35 @@ func (*GetContextRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{2}
 }
 
+// GetContextResponse shows the prompt context layers currently available to Mind.
 type GetContextResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	ProjectName    string                 `protobuf:"bytes,1,opt,name=project_name,json=projectName,proto3" json:"project_name,omitempty"`
-	ServiceName    string                 `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	HasConventions bool                   `protobuf:"varint,3,opt,name=has_conventions,json=hasConventions,proto3" json:"has_conventions,omitempty"`
-	HasRules       bool                   `protobuf:"varint,4,opt,name=has_rules,json=hasRules,proto3" json:"has_rules,omitempty"`
-	HasSymbolMap   bool                   `protobuf:"varint,5,opt,name=has_symbol_map,json=hasSymbolMap,proto3" json:"has_symbol_map,omitempty"`
-	HasMemory      bool                   `protobuf:"varint,6,opt,name=has_memory,json=hasMemory,proto3" json:"has_memory,omitempty"`
-	HasSession     bool                   `protobuf:"varint,7,opt,name=has_session,json=hasSession,proto3" json:"has_session,omitempty"`
-	SystemPreview  string                 `protobuf:"bytes,8,opt,name=system_preview,json=systemPreview,proto3" json:"system_preview,omitempty"`
-	StatePreview   string                 `protobuf:"bytes,9,opt,name=state_preview,json=statePreview,proto3" json:"state_preview,omitempty"`
-	TurnPreview    string                 `protobuf:"bytes,10,opt,name=turn_preview,json=turnPreview,proto3" json:"turn_preview,omitempty"`
-	Metrics        *MetricsSummary        `protobuf:"bytes,11,opt,name=metrics,proto3" json:"metrics,omitempty"`
-	Conventions    []*ConventionEntry     `protobuf:"bytes,12,rep,name=conventions,proto3" json:"conventions,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// project_name is the stable name of the project.
+	ProjectName string `protobuf:"bytes,1,opt,name=project_name,json=projectName,proto3" json:"project_name,omitempty"`
+	// service_name is the stable name of the service.
+	ServiceName string `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	// has_conventions is true when convention context is loaded.
+	HasConventions bool `protobuf:"varint,3,opt,name=has_conventions,json=hasConventions,proto3" json:"has_conventions,omitempty"`
+	// has_rules is true when rule context is loaded.
+	HasRules bool `protobuf:"varint,4,opt,name=has_rules,json=hasRules,proto3" json:"has_rules,omitempty"`
+	// has_symbol_map is true when symbol context is loaded.
+	HasSymbolMap bool `protobuf:"varint,5,opt,name=has_symbol_map,json=hasSymbolMap,proto3" json:"has_symbol_map,omitempty"`
+	// has_memory is true when session memory is loaded.
+	HasMemory bool `protobuf:"varint,6,opt,name=has_memory,json=hasMemory,proto3" json:"has_memory,omitempty"`
+	// has_session is true when persistent session state is loaded.
+	HasSession bool `protobuf:"varint,7,opt,name=has_session,json=hasSession,proto3" json:"has_session,omitempty"`
+	// system_preview is a bounded excerpt of system context.
+	SystemPreview string `protobuf:"bytes,8,opt,name=system_preview,json=systemPreview,proto3" json:"system_preview,omitempty"`
+	// state_preview is a bounded excerpt of state context.
+	StatePreview string `protobuf:"bytes,9,opt,name=state_preview,json=statePreview,proto3" json:"state_preview,omitempty"`
+	// turn_preview is a bounded excerpt of current turn context.
+	TurnPreview string `protobuf:"bytes,10,opt,name=turn_preview,json=turnPreview,proto3" json:"turn_preview,omitempty"`
+	// metrics summarizes token usage for the context layers.
+	Metrics *MetricsSummary `protobuf:"bytes,11,opt,name=metrics,proto3" json:"metrics,omitempty"`
+	// conventions are conventions loaded into context for the current project.
+	Conventions   []*ConventionEntry `protobuf:"bytes,12,rep,name=conventions,proto3" json:"conventions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetContextResponse) Reset() {
@@ -384,14 +415,21 @@ func (x *GetContextResponse) GetConventions() []*ConventionEntry {
 	return nil
 }
 
+// MetricsSummary aggregates token counts and cacheability for context segments.
 type MetricsSummary struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	SystemTokens   int32                  `protobuf:"varint,1,opt,name=system_tokens,json=systemTokens,proto3" json:"system_tokens,omitempty"`
-	StateTokens    int32                  `protobuf:"varint,2,opt,name=state_tokens,json=stateTokens,proto3" json:"state_tokens,omitempty"`
-	TurnTokens     int32                  `protobuf:"varint,3,opt,name=turn_tokens,json=turnTokens,proto3" json:"turn_tokens,omitempty"`
-	TotalTokens    int32                  `protobuf:"varint,4,opt,name=total_tokens,json=totalTokens,proto3" json:"total_tokens,omitempty"`
-	SavedTokens    int32                  `protobuf:"varint,5,opt,name=saved_tokens,json=savedTokens,proto3" json:"saved_tokens,omitempty"`
-	CacheableRatio float64                `protobuf:"fixed64,6,opt,name=cacheable_ratio,json=cacheableRatio,proto3" json:"cacheable_ratio,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// system_tokens is the number of tokens used by system context.
+	SystemTokens int32 `protobuf:"varint,1,opt,name=system_tokens,json=systemTokens,proto3" json:"system_tokens,omitempty"`
+	// state_tokens is the number of tokens used by state context.
+	StateTokens int32 `protobuf:"varint,2,opt,name=state_tokens,json=stateTokens,proto3" json:"state_tokens,omitempty"`
+	// turn_tokens is the number of tokens used by the current turn.
+	TurnTokens int32 `protobuf:"varint,3,opt,name=turn_tokens,json=turnTokens,proto3" json:"turn_tokens,omitempty"`
+	// total_tokens is the total token count for the measured context.
+	TotalTokens int32 `protobuf:"varint,4,opt,name=total_tokens,json=totalTokens,proto3" json:"total_tokens,omitempty"`
+	// saved_tokens is the estimated token reduction from compaction or caching.
+	SavedTokens int32 `protobuf:"varint,5,opt,name=saved_tokens,json=savedTokens,proto3" json:"saved_tokens,omitempty"`
+	// cacheable_ratio is the fraction of context that can be provider-cached.
+	CacheableRatio float64 `protobuf:"fixed64,6,opt,name=cacheable_ratio,json=cacheableRatio,proto3" json:"cacheable_ratio,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -468,12 +506,17 @@ func (x *MetricsSummary) GetCacheableRatio() float64 {
 	return 0
 }
 
+// ConventionEntry describes a detected project convention available to Mind.
 type ConventionEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Category      string                 `protobuf:"bytes,1,opt,name=category,proto3" json:"category,omitempty"`
-	Package       string                 `protobuf:"bytes,2,opt,name=package,proto3" json:"package,omitempty"`
-	Pattern       string                 `protobuf:"bytes,3,opt,name=pattern,proto3" json:"pattern,omitempty"`
-	Usage         string                 `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// category groups a convention, rule, or finding.
+	Category string `protobuf:"bytes,1,opt,name=category,proto3" json:"category,omitempty"`
+	// package is the package, dependency, or artifact name.
+	Package string `protobuf:"bytes,2,opt,name=package,proto3" json:"package,omitempty"`
+	// pattern is the search expression or literal text to match.
+	Pattern string `protobuf:"bytes,3,opt,name=pattern,proto3" json:"pattern,omitempty"`
+	// usage is the command-line shape shown to users and agents.
+	Usage         string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -536,6 +579,7 @@ func (x *ConventionEntry) GetUsage() string {
 	return ""
 }
 
+// GetMemoryRequest identifies the memory data to retrieve.
 type GetMemoryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -572,18 +616,29 @@ func (*GetMemoryRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{6}
 }
 
+// GetMemoryResponse exposes Mind's working memory for the current objective.
 type GetMemoryResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Objective     string                 `protobuf:"bytes,1,opt,name=objective,proto3" json:"objective,omitempty"`
-	Approach      string                 `protobuf:"bytes,2,opt,name=approach,proto3" json:"approach,omitempty"`
-	FilesModified map[string]string      `protobuf:"bytes,3,rep,name=files_modified,json=filesModified,proto3" json:"files_modified,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	FilesRead     map[string]string      `protobuf:"bytes,4,rep,name=files_read,json=filesRead,proto3" json:"files_read,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Symbols       []*SymbolEntry         `protobuf:"bytes,5,rep,name=symbols,proto3" json:"symbols,omitempty"`
-	Hypotheses    []string               `protobuf:"bytes,6,rep,name=hypotheses,proto3" json:"hypotheses,omitempty"`
-	Blockers      []string               `protobuf:"bytes,7,rep,name=blockers,proto3" json:"blockers,omitempty"`
-	NextSteps     []string               `protobuf:"bytes,8,rep,name=next_steps,json=nextSteps,proto3" json:"next_steps,omitempty"`
-	Iterations    []*IterationEntry      `protobuf:"bytes,9,rep,name=iterations,proto3" json:"iterations,omitempty"`
-	ThreadSummary string                 `protobuf:"bytes,10,opt,name=thread_summary,json=threadSummary,proto3" json:"thread_summary,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// objective is the user goal or execution target.
+	Objective string `protobuf:"bytes,1,opt,name=objective,proto3" json:"objective,omitempty"`
+	// approach summarizes the strategy used in prior work.
+	Approach string `protobuf:"bytes,2,opt,name=approach,proto3" json:"approach,omitempty"`
+	// files_modified lists files changed in prior work.
+	FilesModified map[string]string `protobuf:"bytes,3,rep,name=files_modified,json=filesModified,proto3" json:"files_modified,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// files_read lists files inspected in prior work.
+	FilesRead map[string]string `protobuf:"bytes,4,rep,name=files_read,json=filesRead,proto3" json:"files_read,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// symbols are code entities returned by language analysis.
+	Symbols []*SymbolEntry `protobuf:"bytes,5,rep,name=symbols,proto3" json:"symbols,omitempty"`
+	// hypotheses are candidate explanations or plans Mind is tracking.
+	Hypotheses []string `protobuf:"bytes,6,rep,name=hypotheses,proto3" json:"hypotheses,omitempty"`
+	// blockers are unresolved issues that may prevent completion.
+	Blockers []string `protobuf:"bytes,7,rep,name=blockers,proto3" json:"blockers,omitempty"`
+	// next_steps are the next actions Mind has identified.
+	NextSteps []string `protobuf:"bytes,8,rep,name=next_steps,json=nextSteps,proto3" json:"next_steps,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations []*IterationEntry `protobuf:"bytes,9,rep,name=iterations,proto3" json:"iterations,omitempty"`
+	// thread_summary is a compact summary of the conversation so far.
+	ThreadSummary string `protobuf:"bytes,10,opt,name=thread_summary,json=threadSummary,proto3" json:"thread_summary,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -688,11 +743,15 @@ func (x *GetMemoryResponse) GetThreadSummary() string {
 	return ""
 }
 
+// SymbolEntry records a code symbol Mind considered relevant.
 type SymbolEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	File          string                 `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
-	Relevance     string                 `protobuf:"bytes,3,opt,name=relevance,proto3" json:"relevance,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the symbol name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	// relevance is a score or explanation for why the item matters.
+	Relevance     string `protobuf:"bytes,3,opt,name=relevance,proto3" json:"relevance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -748,12 +807,17 @@ func (x *SymbolEntry) GetRelevance() string {
 	return ""
 }
 
+// IterationEntry summarizes one reasoning or execution loop.
 type IterationEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Number        int32                  `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
-	Outcome       string                 `protobuf:"bytes,2,opt,name=outcome,proto3" json:"outcome,omitempty"`
-	Insight       string                 `protobuf:"bytes,3,opt,name=insight,proto3" json:"insight,omitempty"`
-	Files         []string               `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// number is the 1-based iteration or sequence number.
+	Number int32 `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
+	// outcome summarizes the result of an iteration or memory entry.
+	Outcome string `protobuf:"bytes,2,opt,name=outcome,proto3" json:"outcome,omitempty"`
+	// insight captures what Mind learned during the iteration.
+	Insight string `protobuf:"bytes,3,opt,name=insight,proto3" json:"insight,omitempty"`
+	// files are workspace files touched or inspected during the iteration.
+	Files         []string `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -816,6 +880,7 @@ func (x *IterationEntry) GetFiles() []string {
 	return nil
 }
 
+// GetSessionRequest identifies the session data to retrieve.
 type GetSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -852,15 +917,23 @@ func (*GetSessionRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{10}
 }
 
+// GetSessionResponse returns the current debug session and its event timeline.
 type GetSessionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Objective     string                 `protobuf:"bytes,2,opt,name=objective,proto3" json:"objective,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,4,opt,name=duration,proto3" json:"duration,omitempty"`
-	Iteration     int32                  `protobuf:"varint,5,opt,name=iteration,proto3" json:"iteration,omitempty"`
-	Achieved      bool                   `protobuf:"varint,6,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	Events        []*EventEntry          `protobuf:"bytes,7,rep,name=events,proto3" json:"events,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// objective is the user goal or execution target.
+	Objective string `protobuf:"bytes,2,opt,name=objective,proto3" json:"objective,omitempty"`
+	// created_at is when the session or record was created.
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,4,opt,name=duration,proto3" json:"duration,omitempty"`
+	// iteration is the execution loop number for this event.
+	Iteration int32 `protobuf:"varint,5,opt,name=iteration,proto3" json:"iteration,omitempty"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved bool `protobuf:"varint,6,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	// events are chronological debug events for this session.
+	Events        []*EventEntry `protobuf:"bytes,7,rep,name=events,proto3" json:"events,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -944,12 +1017,17 @@ func (x *GetSessionResponse) GetEvents() []*EventEntry {
 	return nil
 }
 
+// EventEntry is one timeline entry for a debug session.
 type EventEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Agent         string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// kind categorizes the event for filtering and rendering.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the event text shown in the debug timeline.
+	Message       string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1012,6 +1090,7 @@ func (x *EventEntry) GetMessage() string {
 	return ""
 }
 
+// GetObjectiveGraphRequest identifies the objective graph data to retrieve.
 type GetObjectiveGraphRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1048,10 +1127,13 @@ func (*GetObjectiveGraphRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{13}
 }
 
+// GetObjectiveGraphResponse returns the current objective DAG.
 type GetObjectiveGraphResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*ObjectiveNode       `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	Edges         []*ObjectiveEdge       `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// nodes are graph vertices returned by the objective or dependency graph.
+	Nodes []*ObjectiveNode `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// edges are graph relationships between returned nodes.
+	Edges         []*ObjectiveEdge `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1100,17 +1182,27 @@ func (x *GetObjectiveGraphResponse) GetEdges() []*ObjectiveEdge {
 	return nil
 }
 
+// ObjectiveNode represents one objective, subtask, or plan node.
 type ObjectiveNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	Checks        []*CheckEntry          `protobuf:"bytes,4,rep,name=checks,proto3" json:"checks,omitempty"`
-	Changes       []*ChangeEntry         `protobuf:"bytes,5,rep,name=changes,proto3" json:"changes,omitempty"`
-	Children      []*ObjectiveNode       `protobuf:"bytes,6,rep,name=children,proto3" json:"children,omitempty"`
-	WallClockS    float64                `protobuf:"fixed64,7,opt,name=wall_clock_s,json=wallClockS,proto3" json:"wall_clock_s,omitempty"`
-	WorkTimeS     float64                `protobuf:"fixed64,8,opt,name=work_time_s,json=workTimeS,proto3" json:"work_time_s,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,9,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// description is the human-readable objective or subtask text.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// status reports the lifecycle or operation status.
+	Status string `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	// checks are verification steps requested by the caller.
+	Checks []*CheckEntry `protobuf:"bytes,4,rep,name=checks,proto3" json:"checks,omitempty"`
+	// changes are file or behavior changes associated with this node.
+	Changes []*ChangeEntry `protobuf:"bytes,5,rep,name=changes,proto3" json:"changes,omitempty"`
+	// children are nested objectives under this node.
+	Children []*ObjectiveNode `protobuf:"bytes,6,rep,name=children,proto3" json:"children,omitempty"`
+	// wall_clock_s is elapsed wall-clock time in seconds.
+	WallClockS float64 `protobuf:"fixed64,7,opt,name=wall_clock_s,json=wallClockS,proto3" json:"wall_clock_s,omitempty"`
+	// work_time_s is active work time in seconds.
+	WorkTimeS float64 `protobuf:"fixed64,8,opt,name=work_time_s,json=workTimeS,proto3" json:"work_time_s,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd       float64 `protobuf:"fixed64,9,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1208,11 +1300,15 @@ func (x *ObjectiveNode) GetCostUsd() float64 {
 	return 0
 }
 
+// ObjectiveEdge connects related objective graph nodes.
 type ObjectiveEdge struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	From          string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To            string                 `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
-	Kind          string                 `protobuf:"bytes,3,opt,name=kind,proto3" json:"kind,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// from is the beginning timestamp or source endpoint of a relationship.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// to is the ending timestamp or destination endpoint of a relationship.
+	To string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	// kind describes the graph relationship, such as dependency or decomposition.
+	Kind          string `protobuf:"bytes,3,opt,name=kind,proto3" json:"kind,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1268,13 +1364,19 @@ func (x *ObjectiveEdge) GetKind() string {
 	return ""
 }
 
+// CheckEntry summarizes one verification check attached to an objective.
 type CheckEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Passed        bool                   `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
-	HasResult     bool                   `protobuf:"varint,4,opt,name=has_result,json=hasResult,proto3" json:"has_result,omitempty"`
-	Error         string                 `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the check name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// type identifies the check mechanism, such as command, test, build, or lint.
+	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// passed is true when the check met its expected condition.
+	Passed bool `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	// has_result is true when a check produced a retained result payload.
+	HasResult bool `protobuf:"varint,4,opt,name=has_result,json=hasResult,proto3" json:"has_result,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1344,11 +1446,15 @@ func (x *CheckEntry) GetError() string {
 	return ""
 }
 
+// ChangeEntry summarizes a file or behavior change linked to an objective.
 type ChangeEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	File          string                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	Action        string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
-	What          string                 `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// file is a workspace- or service-relative source file path.
+	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// action is the strategy, file, or debug action that occurred.
+	Action string `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	// what describes the changed artifact or behavior.
+	What          string `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1404,6 +1510,7 @@ func (x *ChangeEntry) GetWhat() string {
 	return ""
 }
 
+// GetTraceRequest identifies the trace data to retrieve.
 type GetTraceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1440,9 +1547,11 @@ func (*GetTraceRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{19}
 }
 
+// GetTraceResponse returns the root of the retained execution trace tree.
 type GetTraceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Root          *TraceNode             `protobuf:"bytes,1,opt,name=root,proto3" json:"root,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// root is the root trace node for the returned tree.
+	Root          *TraceNode `protobuf:"bytes,1,opt,name=root,proto3" json:"root,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1484,13 +1593,19 @@ func (x *GetTraceResponse) GetRoot() *TraceNode {
 	return nil
 }
 
+// TraceNode represents one agent, tool, or execution span in the trace tree.
 type TraceNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Agent         string                 `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,2,opt,name=duration,proto3" json:"duration,omitempty"`
-	Events        []*TraceEvent          `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
-	Children      []*TraceNode           `protobuf:"bytes,4,rep,name=children,proto3" json:"children,omitempty"`
-	Stats         *TraceStats            `protobuf:"bytes,5,opt,name=stats,proto3" json:"stats,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,2,opt,name=duration,proto3" json:"duration,omitempty"`
+	// events are trace events emitted within this node.
+	Events []*TraceEvent `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	// children are nested trace spans.
+	Children []*TraceNode `protobuf:"bytes,4,rep,name=children,proto3" json:"children,omitempty"`
+	// stats aggregates trace node counts, timings, and error totals.
+	Stats         *TraceStats `protobuf:"bytes,5,opt,name=stats,proto3" json:"stats,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1560,12 +1675,17 @@ func (x *TraceNode) GetStats() *TraceStats {
 	return nil
 }
 
+// TraceEvent is a streamable event emitted during trace.
 type TraceEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Agent         string                 `protobuf:"bytes,2,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	Data          map[string]string      `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind categorizes the trace event for filtering and rendering.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,2,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the event text shown in the trace view.
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// data is the raw bytes or JSON-shaped payload.
+	Data          map[string]string `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1628,11 +1748,15 @@ func (x *TraceEvent) GetData() map[string]string {
 	return nil
 }
 
+// TraceStats aggregates counts for one trace node.
 type TraceStats struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LlmCalls      int32                  `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	ToolCalls     int32                  `protobuf:"varint,2,opt,name=tool_calls,json=toolCalls,proto3" json:"tool_calls,omitempty"`
-	Errors        int32                  `protobuf:"varint,3,opt,name=errors,proto3" json:"errors,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// tool_calls is the number of tool calls made in this turn or iteration.
+	ToolCalls int32 `protobuf:"varint,2,opt,name=tool_calls,json=toolCalls,proto3" json:"tool_calls,omitempty"`
+	// errors is the number of failed trace nodes or operations.
+	Errors        int32 `protobuf:"varint,3,opt,name=errors,proto3" json:"errors,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1688,6 +1812,7 @@ func (x *TraceStats) GetErrors() int32 {
 	return 0
 }
 
+// GetMetricsRequest identifies the metrics data to retrieve.
 type GetMetricsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1724,16 +1849,25 @@ func (*GetMetricsRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{24}
 }
 
+// GetMetricsResponse returns session-level model, token, and timing metrics.
 type GetMetricsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LlmCalls      int32                  `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,2,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,3,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,4,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,6,opt,name=duration,proto3" json:"duration,omitempty"`
-	Iterations    int32                  `protobuf:"varint,7,opt,name=iterations,proto3" json:"iterations,omitempty"`
-	Context       *MetricsSummary        `protobuf:"bytes,8,opt,name=context,proto3" json:"context,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,1,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,2,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,3,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,4,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,5,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,6,opt,name=duration,proto3" json:"duration,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations int32 `protobuf:"varint,7,opt,name=iterations,proto3" json:"iterations,omitempty"`
+	// context is the measured context segment or prompt state.
+	Context       *MetricsSummary `protobuf:"bytes,8,opt,name=context,proto3" json:"context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1824,6 +1958,7 @@ func (x *GetMetricsResponse) GetContext() *MetricsSummary {
 	return nil
 }
 
+// GetCostBreakdownRequest identifies the cost breakdown data to retrieve.
 type GetCostBreakdownRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1860,11 +1995,15 @@ func (*GetCostBreakdownRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{26}
 }
 
+// GetCostBreakdownResponse returns hierarchical cost attribution for a session.
 type GetCostBreakdownResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Total         *CostEntry             `protobuf:"bytes,2,opt,name=total,proto3" json:"total,omitempty"`
-	Entries       []*CostEntry           `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// title is the display label for a cost breakdown row.
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	// total is the aggregate number of cases represented.
+	Total *CostEntry `protobuf:"bytes,2,opt,name=total,proto3" json:"total,omitempty"`
+	// entries are child rows contributing to the total.
+	Entries       []*CostEntry `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1920,14 +2059,21 @@ func (x *GetCostBreakdownResponse) GetEntries() []*CostEntry {
 	return nil
 }
 
+// CostEntry is one row in the cost breakdown table.
 type CostEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Calls         int32                  `protobuf:"varint,2,opt,name=calls,proto3" json:"calls,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,3,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,4,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,5,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,6,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name labels the model, agent, objective, or phase being charged.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// calls is the number of model calls attributed to this row.
+	Calls int32 `protobuf:"varint,2,opt,name=calls,proto3" json:"calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,3,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,4,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,5,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd       float64 `protobuf:"fixed64,6,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2004,6 +2150,7 @@ func (x *CostEntry) GetCostUsd() float64 {
 	return 0
 }
 
+// GetSymbolMapRequest identifies the symbol map data to retrieve.
 type GetSymbolMapRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2040,12 +2187,17 @@ func (*GetSymbolMapRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{29}
 }
 
+// GetSymbolMapResponse returns the symbol map currently available to the debug UI.
 type GetSymbolMapResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TotalSymbols  int32                  `protobuf:"varint,1,opt,name=total_symbols,json=totalSymbols,proto3" json:"total_symbols,omitempty"`
-	TotalFiles    int32                  `protobuf:"varint,2,opt,name=total_files,json=totalFiles,proto3" json:"total_files,omitempty"`
-	OverlayActive bool                   `protobuf:"varint,3,opt,name=overlay_active,json=overlayActive,proto3" json:"overlay_active,omitempty"`
-	Files         []*FileSymbols         `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// total_symbols is the number of symbols available in the symbol map.
+	TotalSymbols int32 `protobuf:"varint,1,opt,name=total_symbols,json=totalSymbols,proto3" json:"total_symbols,omitempty"`
+	// total_files is the number of files included in the response.
+	TotalFiles int32 `protobuf:"varint,2,opt,name=total_files,json=totalFiles,proto3" json:"total_files,omitempty"`
+	// overlay_active is true when Mind has uncommitted overlay edits.
+	OverlayActive bool `protobuf:"varint,3,opt,name=overlay_active,json=overlayActive,proto3" json:"overlay_active,omitempty"`
+	// files are source files included in the symbol map.
+	Files         []*FileSymbols `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2108,10 +2260,13 @@ func (x *GetSymbolMapResponse) GetFiles() []*FileSymbols {
 	return nil
 }
 
+// FileSymbols groups symbols discovered in one source file.
 type FileSymbols struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Symbols       []*SymbolNode          `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// symbols are code entities returned by language analysis.
+	Symbols       []*SymbolNode `protobuf:"bytes,2,rep,name=symbols,proto3" json:"symbols,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2160,12 +2315,17 @@ func (x *FileSymbols) GetSymbols() []*SymbolNode {
 	return nil
 }
 
+// SymbolNode is a compact symbol entry for the symbol map view.
 type SymbolNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Signature     string                 `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
-	Overlay       bool                   `protobuf:"varint,4,opt,name=overlay,proto3" json:"overlay,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the symbol name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// kind classifies the language construct.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// signature is the declaration text or callable shape for a symbol.
+	Signature string `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	// overlay is true when the symbol or file comes from the active edit overlay.
+	Overlay       bool `protobuf:"varint,4,opt,name=overlay,proto3" json:"overlay,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2228,6 +2388,7 @@ func (x *SymbolNode) GetOverlay() bool {
 	return false
 }
 
+// GetFileChangesRequest identifies the file changes data to retrieve.
 type GetFileChangesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2264,9 +2425,11 @@ func (*GetFileChangesRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{33}
 }
 
+// GetFileChangesResponse returns file changes retained for the current run.
 type GetFileChangesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Files         []*FileChange          `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// files are changed files and their diffs.
+	Files         []*FileChange `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2308,12 +2471,17 @@ func (x *GetFileChangesResponse) GetFiles() []*FileChange {
 	return nil
 }
 
+// FileChange records one file operation and optional diff.
 type FileChange struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Op            string                 `protobuf:"bytes,2,opt,name=op,proto3" json:"op,omitempty"`
-	Reason        string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
-	Diff          string                 `protobuf:"bytes,4,opt,name=diff,proto3" json:"diff,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// op is the file operation such as create, update, delete, or rename.
+	Op string `protobuf:"bytes,2,opt,name=op,proto3" json:"op,omitempty"`
+	// reason explains why this change, state, or decision occurred.
+	Reason string `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	// diff is the unified git diff text.
+	Diff          string `protobuf:"bytes,4,opt,name=diff,proto3" json:"diff,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2376,6 +2544,7 @@ func (x *FileChange) GetDiff() string {
 	return ""
 }
 
+// GetLastSummaryRequest identifies the last summary data to retrieve.
 type GetLastSummaryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2412,19 +2581,31 @@ func (*GetLastSummaryRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{36}
 }
 
+// GetLastSummaryResponse returns the most recent completed-run summary.
 type GetLastSummaryResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Achieved      bool                   `protobuf:"varint,1,opt,name=achieved,proto3" json:"achieved,omitempty"`
-	Iterations    int32                  `protobuf:"varint,2,opt,name=iterations,proto3" json:"iterations,omitempty"`
-	Duration      *durationpb.Duration   `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
-	CostUsd       float64                `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	LlmCalls      int32                  `protobuf:"varint,5,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
-	InputTokens   int32                  `protobuf:"varint,6,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens  int32                  `protobuf:"varint,7,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens  int32                  `protobuf:"varint,8,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	Files         []*FileChange          `protobuf:"bytes,9,rep,name=files,proto3" json:"files,omitempty"`
-	Checks        []*CheckResult         `protobuf:"bytes,10,rep,name=checks,proto3" json:"checks,omitempty"`
-	TraceCompact  string                 `protobuf:"bytes,11,opt,name=trace_compact,json=traceCompact,proto3" json:"trace_compact,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// achieved is true when Mind believes the objective was satisfied.
+	Achieved bool `protobuf:"varint,1,opt,name=achieved,proto3" json:"achieved,omitempty"`
+	// iterations is the number of execution loops completed.
+	Iterations int32 `protobuf:"varint,2,opt,name=iterations,proto3" json:"iterations,omitempty"`
+	// duration is wall-clock time spent on the run, suite, case, or operation.
+	Duration *durationpb.Duration `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,4,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// llm_calls is the number of model calls made during the operation.
+	LlmCalls int32 `protobuf:"varint,5,opt,name=llm_calls,json=llmCalls,proto3" json:"llm_calls,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,6,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,7,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,8,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// files are file changes included in the summary.
+	Files []*FileChange `protobuf:"bytes,9,rep,name=files,proto3" json:"files,omitempty"`
+	// checks are verification results included in the summary.
+	Checks []*CheckResult `protobuf:"bytes,10,rep,name=checks,proto3" json:"checks,omitempty"`
+	// trace_compact is a bounded trace summary suitable for UI display or prompts.
+	TraceCompact  string `protobuf:"bytes,11,opt,name=trace_compact,json=traceCompact,proto3" json:"trace_compact,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2536,11 +2717,15 @@ func (x *GetLastSummaryResponse) GetTraceCompact() string {
 	return ""
 }
 
+// CheckResult captures the outcome of one summary verification check.
 type CheckResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Passed        bool                   `protobuf:"varint,2,opt,name=passed,proto3" json:"passed,omitempty"`
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the check name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// passed is true when the check met its expected condition.
+	Passed bool `protobuf:"varint,2,opt,name=passed,proto3" json:"passed,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2596,6 +2781,7 @@ func (x *CheckResult) GetError() string {
 	return ""
 }
 
+// GetRulesRequest identifies the rules data to retrieve.
 type GetRulesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2632,9 +2818,11 @@ func (*GetRulesRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{39}
 }
 
+// GetRulesResponse returns rules loaded into the current Mind context.
 type GetRulesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Rules         []*RuleEntry           `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// rules are loaded rules and their current match state.
+	Rules         []*RuleEntry `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2676,12 +2864,17 @@ func (x *GetRulesResponse) GetRules() []*RuleEntry {
 	return nil
 }
 
+// RuleEntry describes one rule available to Mind.
 type RuleEntry struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Scope          *RuleScope             `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
-	Text           string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
-	MatchedCurrent bool                   `protobuf:"varint,4,opt,name=matched_current,json=matchedCurrent,proto3" json:"matched_current,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// scope describes where a rule applies.
+	Scope *RuleScope `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
+	// text is the plain-text payload or human-readable description.
+	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	// matched_current is true when the rule applies to the current request.
+	MatchedCurrent bool `protobuf:"varint,4,opt,name=matched_current,json=matchedCurrent,proto3" json:"matched_current,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -2744,11 +2937,15 @@ func (x *RuleEntry) GetMatchedCurrent() bool {
 	return false
 }
 
+// RuleScope describes where a rule applies.
 type RuleScope struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Agents        []string               `protobuf:"bytes,1,rep,name=agents,proto3" json:"agents,omitempty"`
-	Objectives    []string               `protobuf:"bytes,2,rep,name=objectives,proto3" json:"objectives,omitempty"`
-	Code          string                 `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// agents are Codefly plugin identities or filters relevant to this operation.
+	Agents []string `protobuf:"bytes,1,rep,name=agents,proto3" json:"agents,omitempty"`
+	// objectives are objective filters or graph nodes.
+	Objectives []string `protobuf:"bytes,2,rep,name=objectives,proto3" json:"objectives,omitempty"`
+	// code is the diagnostic or rule identifier from the producing tool.
+	Code          string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2804,10 +3001,13 @@ func (x *RuleScope) GetCode() string {
 	return ""
 }
 
+// GetLLMCallsRequest identifies retained model-call records to retrieve.
 type GetLLMCallsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// limit caps the number of records returned.
+	Limit int32 `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	// offset skips records before returning a paged result.
+	Offset        int32 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2856,10 +3056,13 @@ func (x *GetLLMCallsRequest) GetOffset() int32 {
 	return 0
 }
 
+// GetLLMCallsResponse returns a paged list of retained model calls.
 type GetLLMCallsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Calls         []*LLMCallEntry        `protobuf:"bytes,1,rep,name=calls,proto3" json:"calls,omitempty"`
-	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// calls are model calls retained in the debug log.
+	Calls []*LLMCallEntry `protobuf:"bytes,1,rep,name=calls,proto3" json:"calls,omitempty"`
+	// total is the total number of model calls available before paging.
+	Total         int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2908,25 +3111,41 @@ func (x *GetLLMCallsResponse) GetTotal() int32 {
 	return 0
 }
 
+// LLMCallEntry records one model call and retained prompt/response previews.
 type LLMCallEntry struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp       *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Model           string                 `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
-	Agent           string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	PromptHash      string                 `protobuf:"bytes,4,opt,name=prompt_hash,json=promptHash,proto3" json:"prompt_hash,omitempty"`
-	PromptPreview   string                 `protobuf:"bytes,5,opt,name=prompt_preview,json=promptPreview,proto3" json:"prompt_preview,omitempty"`
-	ResponsePreview string                 `protobuf:"bytes,6,opt,name=response_preview,json=responsePreview,proto3" json:"response_preview,omitempty"`
-	InputTokens     int32                  `protobuf:"varint,7,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
-	OutputTokens    int32                  `protobuf:"varint,8,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
-	CachedTokens    int32                  `protobuf:"varint,9,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
-	CostUsd         float64                `protobuf:"fixed64,10,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
-	DurationMs      int64                  `protobuf:"varint,11,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
-	CacheHit        bool                   `protobuf:"varint,12,opt,name=cache_hit,json=cacheHit,proto3" json:"cache_hit,omitempty"`
-	ToolCallCount   int32                  `protobuf:"varint,13,opt,name=tool_call_count,json=toolCallCount,proto3" json:"tool_call_count,omitempty"`
-	FullPrompt      string                 `protobuf:"bytes,14,opt,name=full_prompt,json=fullPrompt,proto3" json:"full_prompt,omitempty"`
-	FullResponse    string                 `protobuf:"bytes,15,opt,name=full_response,json=fullResponse,proto3" json:"full_response,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// model is the provider model identifier used for the call.
+	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// prompt_hash is a stable hash of the prompt payload.
+	PromptHash string `protobuf:"bytes,4,opt,name=prompt_hash,json=promptHash,proto3" json:"prompt_hash,omitempty"`
+	// prompt_preview is a bounded prompt excerpt for debugging.
+	PromptPreview string `protobuf:"bytes,5,opt,name=prompt_preview,json=promptPreview,proto3" json:"prompt_preview,omitempty"`
+	// response_preview is a bounded response excerpt for debugging.
+	ResponsePreview string `protobuf:"bytes,6,opt,name=response_preview,json=responsePreview,proto3" json:"response_preview,omitempty"`
+	// input_tokens is the total number of prompt/input tokens consumed.
+	InputTokens int32 `protobuf:"varint,7,opt,name=input_tokens,json=inputTokens,proto3" json:"input_tokens,omitempty"`
+	// output_tokens is the total number of completion/output tokens produced.
+	OutputTokens int32 `protobuf:"varint,8,opt,name=output_tokens,json=outputTokens,proto3" json:"output_tokens,omitempty"`
+	// cached_tokens is the number of input tokens served from provider cache.
+	CachedTokens int32 `protobuf:"varint,9,opt,name=cached_tokens,json=cachedTokens,proto3" json:"cached_tokens,omitempty"`
+	// cost_usd is the estimated model cost in US dollars.
+	CostUsd float64 `protobuf:"fixed64,10,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	// duration_ms is wall-clock time in milliseconds.
+	DurationMs int64 `protobuf:"varint,11,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
+	// cache_hit is true when the provider reported a cache hit.
+	CacheHit bool `protobuf:"varint,12,opt,name=cache_hit,json=cacheHit,proto3" json:"cache_hit,omitempty"`
+	// tool_call_count is the number of tool calls associated with the model call.
+	ToolCallCount int32 `protobuf:"varint,13,opt,name=tool_call_count,json=toolCallCount,proto3" json:"tool_call_count,omitempty"`
+	// full_prompt is the complete prompt text when trace retention permits it.
+	FullPrompt string `protobuf:"bytes,14,opt,name=full_prompt,json=fullPrompt,proto3" json:"full_prompt,omitempty"`
+	// full_response is the complete model response when trace retention permits it.
+	FullResponse  string `protobuf:"bytes,15,opt,name=full_response,json=fullResponse,proto3" json:"full_response,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LLMCallEntry) Reset() {
@@ -3064,6 +3283,7 @@ func (x *LLMCallEntry) GetFullResponse() string {
 	return ""
 }
 
+// GetMiddlewareStateRequest identifies the middleware state data to retrieve.
 type GetMiddlewareStateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -3100,9 +3320,11 @@ func (*GetMiddlewareStateRequest) Descriptor() ([]byte, []int) {
 	return file_mind_debug_v1_debug_proto_rawDescGZIP(), []int{46}
 }
 
+// GetMiddlewareStateResponse returns the current middleware pipeline state.
 type GetMiddlewareStateResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Chain         []*MiddlewareEntry     `protobuf:"bytes,1,rep,name=chain,proto3" json:"chain,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// chain is the ordered middleware stack and its status.
+	Chain         []*MiddlewareEntry `protobuf:"bytes,1,rep,name=chain,proto3" json:"chain,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3144,11 +3366,15 @@ func (x *GetMiddlewareStateResponse) GetChain() []*MiddlewareEntry {
 	return nil
 }
 
+// MiddlewareEntry describes one middleware stage.
 type MiddlewareEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	Details       map[string]string      `protobuf:"bytes,3,rep,name=details,proto3" json:"details,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the middleware stage name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// status reports the lifecycle or operation status.
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	// details contains expanded middleware or diagnostic metadata.
+	Details       map[string]string `protobuf:"bytes,3,rep,name=details,proto3" json:"details,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3204,10 +3430,13 @@ func (x *MiddlewareEntry) GetDetails() map[string]string {
 	return nil
 }
 
+// StreamEventsRequest filters the live debug event stream.
 type StreamEventsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kinds         []string               `protobuf:"bytes,1,rep,name=kinds,proto3" json:"kinds,omitempty"`
-	AgentFilter   string                 `protobuf:"bytes,2,opt,name=agent_filter,json=agentFilter,proto3" json:"agent_filter,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kinds filters events to selected event types.
+	Kinds []string `protobuf:"bytes,1,rep,name=kinds,proto3" json:"kinds,omitempty"`
+	// agent_filter restricts events to a single agent name.
+	AgentFilter   string `protobuf:"bytes,2,opt,name=agent_filter,json=agentFilter,proto3" json:"agent_filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3256,13 +3485,19 @@ func (x *StreamEventsRequest) GetAgentFilter() string {
 	return ""
 }
 
+// DebugEvent is a live event emitted to debug clients.
 type DebugEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Agent         string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
-	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
-	Data          map[string]string      `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// kind categorizes the event for filtering and rendering.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// agent is the Codefly agent plugin responsible for this service type.
+	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
+	// message is the event text shown in the debug UI.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// data is the raw bytes or JSON-shaped payload.
+	Data          map[string]string `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

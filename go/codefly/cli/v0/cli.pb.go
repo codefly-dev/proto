@@ -10,12 +10,10 @@ import (
 	v01 "github.com/codefly-dev/core/generated/go/codefly/base/v0"
 	v0 "github.com/codefly-dev/core/generated/go/codefly/observability/v0"
 	v02 "github.com/codefly-dev/core/generated/go/codefly/services/agent/v0"
-	_ "github.com/codefly-dev/core/generated/go/codefly/services/runtime/v0"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -28,9 +26,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// GetAgentInformationRequest identifies an installed agent to inspect.
 type GetAgentInformationRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Agent         string                 `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// agent is the agent name or reference, such as go-grpc or nextjs.
+	Agent         string `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -72,9 +72,11 @@ func (x *GetAgentInformationRequest) GetAgent() string {
 	return ""
 }
 
+// MultiGraphResponse contains multiple architecture graphs returned by one CLI endpoint.
 type MultiGraphResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Graphs        []*v0.GraphResponse    `protobuf:"bytes,1,rep,name=graphs,proto3" json:"graphs,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// graphs are architecture graphs, usually grouped by public module boundary.
+	Graphs        []*v0.GraphResponse `protobuf:"bytes,1,rep,name=graphs,proto3" json:"graphs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -116,11 +118,15 @@ func (x *MultiGraphResponse) GetGraphs() []*v0.GraphResponse {
 	return nil
 }
 
+// ActiveResponse reports the workspace/module/service context selected by the CLI.
 type ActiveResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Workspace     string                 `protobuf:"bytes,1,opt,name=workspace,proto3" json:"workspace,omitempty"`
-	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// workspace is the Codefly workspace name that scopes modules and services.
+	Workspace string `protobuf:"bytes,1,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -176,11 +182,15 @@ func (x *ActiveResponse) GetService() string {
 	return ""
 }
 
+// RunningInformation reports an active service and the agent process handling it.
 type RunningInformation struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Module        string                 `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
-	AgentPid      int32                  `protobuf:"varint,3,opt,name=agent_pid,json=agentPid,proto3" json:"agent_pid,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
+	// agent_pid is the operating-system process id of the agent process.
+	AgentPid      int32 `protobuf:"varint,3,opt,name=agent_pid,json=agentPid,proto3" json:"agent_pid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -236,11 +246,15 @@ func (x *RunningInformation) GetAgentPid() int32 {
 	return 0
 }
 
+// GetAddressRequest identifies the concrete address for one service endpoint.
 type GetAddressRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Module        string                 `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
-	Endpoint      string                 `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
+	// endpoint is the logical endpoint name declared by a service.
+	Endpoint      string `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -296,9 +310,11 @@ func (x *GetAddressRequest) GetEndpoint() string {
 	return ""
 }
 
+// GetAddressResponse returns the address selected for the caller's runtime context.
 type GetAddressResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// address is the concrete host or URL callers should use.
+	Address       string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -340,11 +356,13 @@ func (x *GetAddressResponse) GetAddress() string {
 	return ""
 }
 
-// Get Network Mappings
+// GetNetworkMappingsRequest identifies a service whose network mappings should be returned.
 type GetNetworkMappingsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Module        string                 `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -393,9 +411,11 @@ func (x *GetNetworkMappingsRequest) GetService() string {
 	return ""
 }
 
+// GetNetworkMappingsResponse returns concrete network instances for a service's endpoints.
 type GetNetworkMappingsResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	NetworkMappings []*v01.NetworkMapping  `protobuf:"bytes,1,rep,name=network_mappings,json=networkMappings,proto3" json:"network_mappings,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// network_mappings map logical endpoints to concrete network instances.
+	NetworkMappings []*v01.NetworkMapping `protobuf:"bytes,1,rep,name=network_mappings,json=networkMappings,proto3" json:"network_mappings,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -437,10 +457,13 @@ func (x *GetNetworkMappingsResponse) GetNetworkMappings() []*v01.NetworkMapping 
 	return nil
 }
 
+// GetConfigurationRequest identifies service-scoped configuration in the active workspace.
 type GetConfigurationRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Module        string                 `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -489,9 +512,11 @@ func (x *GetConfigurationRequest) GetService() string {
 	return ""
 }
 
+// GetConfigurationResponse returns the configuration declared by a service.
 type GetConfigurationResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Configuration *v01.Configuration     `protobuf:"bytes,1,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// configuration is the service or workspace configuration payload.
+	Configuration *v01.Configuration `protobuf:"bytes,1,opt,name=configuration,proto3" json:"configuration,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -533,9 +558,11 @@ func (x *GetConfigurationResponse) GetConfiguration() *v01.Configuration {
 	return nil
 }
 
+// GetConfigurationsResponse returns multiple configuration payloads for dependency/runtime flows.
 type GetConfigurationsResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Configurations []*v01.Configuration   `protobuf:"bytes,1,rep,name=configurations,proto3" json:"configurations,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// configurations are configuration payloads exposed to a service.
+	Configurations []*v01.Configuration `protobuf:"bytes,1,rep,name=configurations,proto3" json:"configurations,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -577,9 +604,11 @@ func (x *GetConfigurationsResponse) GetConfigurations() []*v01.Configuration {
 	return nil
 }
 
+// FlowStatus reports whether the current orchestration flow is ready.
 type FlowStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ready         bool                   `protobuf:"varint,1,opt,name=ready,proto3" json:"ready,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// ready is true when the flow or service has reached an operable state.
+	Ready         bool `protobuf:"varint,1,opt,name=ready,proto3" json:"ready,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -621,6 +650,7 @@ func (x *FlowStatus) GetReady() bool {
 	return false
 }
 
+// StopFlowRequest asks the CLI to stop the active orchestration flow.
 type StopFlowRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -657,6 +687,7 @@ func (*StopFlowRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_cli_v0_cli_proto_rawDescGZIP(), []int{12}
 }
 
+// StopFlowResponse acknowledges that the active flow stop request was accepted.
 type StopFlowResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -693,6 +724,7 @@ func (*StopFlowResponse) Descriptor() ([]byte, []int) {
 	return file_codefly_cli_v0_cli_proto_rawDescGZIP(), []int{13}
 }
 
+// DestroyFlowRequest asks the CLI to destroy resources owned by the active flow.
 type DestroyFlowRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -729,6 +761,7 @@ func (*DestroyFlowRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_cli_v0_cli_proto_rawDescGZIP(), []int{14}
 }
 
+// DestroyFlowResponse acknowledges that destroy flow cleanup was requested.
 type DestroyFlowResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -769,7 +802,7 @@ var File_codefly_cli_v0_cli_proto protoreflect.FileDescriptor
 
 const file_codefly_cli_v0_cli_proto_rawDesc = "" +
 	"\n" +
-	"\x18codefly/cli/v0/cli.proto\x12\x0ecodefly.cli.v0\x1a\x1ecodefly/base/v0/endpoint.proto\x1a\x1dcodefly/base/v0/network.proto\x1a\x1fcodefly/base/v0/workspace.proto\x1a#codefly/base/v0/configuration.proto\x1a%codefly/services/agent/v0/agent.proto\x1a)codefly/services/runtime/v0/runtime.proto\x1a(codefly/observability/v0/inventory.proto\x1a+codefly/observability/v0/dependencies.proto\x1a#codefly/observability/v0/logs.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"2\n" +
+	"\x18codefly/cli/v0/cli.proto\x12\x0ecodefly.cli.v0\x1a\x1dcodefly/base/v0/network.proto\x1a\x1fcodefly/base/v0/workspace.proto\x1a#codefly/base/v0/configuration.proto\x1a%codefly/services/agent/v0/agent.proto\x1a(codefly/observability/v0/inventory.proto\x1a+codefly/observability/v0/dependencies.proto\x1a#codefly/observability/v0/logs.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\"2\n" +
 	"\x1aGetAgentInformationRequest\x12\x14\n" +
 	"\x05agent\x18\x01 \x01(\tR\x05agent\"U\n" +
 	"\x12MultiGraphResponse\x12?\n" +

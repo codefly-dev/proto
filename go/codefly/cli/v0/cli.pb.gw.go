@@ -10,7 +10,6 @@ package v0
 
 import (
 	"context"
-	"errors"
 	"io"
 	"net/http"
 
@@ -27,459 +26,539 @@ import (
 )
 
 // Suppress "imported and not used" errors
-var (
-	_ codes.Code
-	_ io.Reader
-	_ status.Status
-	_ = errors.New
-	_ = runtime.String
-	_ = utilities.NewDoubleArray
-	_ = metadata.Join
-)
+var _ codes.Code
+var _ io.Reader
+var _ status.Status
+var _ = runtime.String
+var _ = utilities.NewDoubleArray
+var _ = metadata.Join
 
 func request_CLI_Ping_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.Ping(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_Ping_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.Ping(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetAgentInformation_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetAgentInformationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetAgentInformationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
-	val, ok := pathParams["agent"]
+
+	val, ok = pathParams["agent"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "agent")
 	}
+
 	protoReq.Agent, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "agent", err)
 	}
+
 	msg, err := client.GetAgentInformation(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetAgentInformation_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetAgentInformationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetAgentInformationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	val, ok := pathParams["agent"]
+
+	val, ok = pathParams["agent"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "agent")
 	}
+
 	protoReq.Agent, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "agent", err)
 	}
+
 	msg, err := server.GetAgentInformation(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetWorkspaceInventory_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.GetWorkspaceInventory(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetWorkspaceInventory_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.GetWorkspaceInventory(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetWorkspaceServiceDependencyGraph_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.GetWorkspaceServiceDependencyGraph(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetWorkspaceServiceDependencyGraph_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.GetWorkspaceServiceDependencyGraph(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetWorkspacePublicModulesDependencyGraph_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.GetWorkspacePublicModulesDependencyGraph(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetWorkspacePublicModulesDependencyGraph_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.GetWorkspacePublicModulesDependencyGraph(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetActive_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.GetActive(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetActive_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.GetActive(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetAddresses_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetAddressRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetAddressRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	val, ok = pathParams["endpoint"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "endpoint")
 	}
+
 	protoReq.Endpoint, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "endpoint", err)
 	}
+
 	msg, err := client.GetAddresses(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetAddresses_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetAddressRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetAddressRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	val, ok = pathParams["endpoint"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "endpoint")
 	}
+
 	protoReq.Endpoint, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "endpoint", err)
 	}
+
 	msg, err := server.GetAddresses(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetConfiguration_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetConfigurationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetConfigurationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := client.GetConfiguration(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetConfiguration_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetConfigurationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetConfigurationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := server.GetConfiguration(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetDependenciesConfigurations_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetConfigurationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetConfigurationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := client.GetDependenciesConfigurations(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetDependenciesConfigurations_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetConfigurationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetConfigurationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := server.GetDependenciesConfigurations(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetDependenciesNetworkMappings_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetNetworkMappingsRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetNetworkMappingsRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := client.GetDependenciesNetworkMappings(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetDependenciesNetworkMappings_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetNetworkMappingsRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetNetworkMappingsRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := server.GetDependenciesNetworkMappings(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetRuntimeConfigurations_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetConfigurationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetConfigurationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := client.GetRuntimeConfigurations(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetRuntimeConfigurations_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetConfigurationRequest
+	var metadata runtime.ServerMetadata
+
 	var (
-		protoReq GetConfigurationRequest
-		metadata runtime.ServerMetadata
-		err      error
+		val string
+		ok  bool
+		err error
+		_   = err
 	)
-	val, ok := pathParams["module"]
+
+	val, ok = pathParams["module"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "module")
 	}
+
 	protoReq.Module, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "module", err)
 	}
+
 	val, ok = pathParams["service"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "service")
 	}
+
 	protoReq.Service, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "service", err)
 	}
+
 	msg, err := server.GetRuntimeConfigurations(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_Logs_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (CLI_LogsClient, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	stream, err := client.Logs(ctx, &protoReq)
 	if err != nil {
 		return nil, metadata, err
@@ -490,119 +569,114 @@ func request_CLI_Logs_0(ctx context.Context, marshaler runtime.Marshaler, client
 	}
 	metadata.HeaderMD = header
 	return stream, metadata, nil
+
 }
 
-var filter_CLI_ActiveLogHistory_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+var (
+	filter_CLI_ActiveLogHistory_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
 
 func request_CLI_ActiveLogHistory_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq v0_1.LogRequest
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq v0_1.LogRequest
+	var metadata runtime.ServerMetadata
+
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_CLI_ActiveLogHistory_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+
 	msg, err := client.ActiveLogHistory(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_ActiveLogHistory_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq v0_1.LogRequest
-		metadata runtime.ServerMetadata
-	)
+	var protoReq v0_1.LogRequest
+	var metadata runtime.ServerMetadata
+
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_CLI_ActiveLogHistory_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+
 	msg, err := server.ActiveLogHistory(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_GetFlowStatus_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.GetFlowStatus(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_GetFlowStatus_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq emptypb.Empty
-		metadata runtime.ServerMetadata
-	)
+	var protoReq emptypb.Empty
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.GetFlowStatus(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_StopFlow_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq StopFlowRequest
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq StopFlowRequest
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.StopFlow(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_StopFlow_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq StopFlowRequest
-		metadata runtime.ServerMetadata
-	)
+	var protoReq StopFlowRequest
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.StopFlow(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 func request_CLI_DestroyFlow_0(ctx context.Context, marshaler runtime.Marshaler, client CLIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq DestroyFlowRequest
-		metadata runtime.ServerMetadata
-	)
-	if req.Body != nil {
-		_, _ = io.Copy(io.Discard, req.Body)
-	}
+	var protoReq DestroyFlowRequest
+	var metadata runtime.ServerMetadata
+
 	msg, err := client.DestroyFlow(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
+
 }
 
 func local_request_CLI_DestroyFlow_0(ctx context.Context, marshaler runtime.Marshaler, server CLIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq DestroyFlowRequest
-		metadata runtime.ServerMetadata
-	)
+	var protoReq DestroyFlowRequest
+	var metadata runtime.ServerMetadata
+
 	msg, err := server.DestroyFlow(ctx, &protoReq)
 	return msg, metadata, err
+
 }
 
 // RegisterCLIHandlerServer registers the http handlers for service CLI to "mux".
 // UnaryRPC     :call CLIServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterCLIHandlerFromEndpoint instead.
-// GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server CLIServer) error {
-	mux.Handle(http.MethodGet, pattern_CLI_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/Ping", runtime.WithHTTPPathPattern("/ping"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/Ping", runtime.WithHTTPPathPattern("/ping"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -614,15 +688,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_Ping_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetAgentInformation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetAgentInformation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAgentInformation", runtime.WithHTTPPathPattern("/agent/{agent}/information"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAgentInformation", runtime.WithHTTPPathPattern("/agent/{agent}/information"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -634,15 +713,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetAgentInformation_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetWorkspaceInventory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetWorkspaceInventory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceInventory", runtime.WithHTTPPathPattern("/workspace/inventory"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceInventory", runtime.WithHTTPPathPattern("/workspace/inventory"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -654,15 +738,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetWorkspaceInventory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetWorkspaceServiceDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetWorkspaceServiceDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceServiceDependencyGraph", runtime.WithHTTPPathPattern("/workspace/service-dependency-graph"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceServiceDependencyGraph", runtime.WithHTTPPathPattern("/workspace/service-dependency-graph"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -674,15 +763,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetWorkspaceServiceDependencyGraph_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetWorkspacePublicModulesDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetWorkspacePublicModulesDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspacePublicModulesDependencyGraph", runtime.WithHTTPPathPattern("/workspace/public-endpoints-graph"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspacePublicModulesDependencyGraph", runtime.WithHTTPPathPattern("/workspace/public-endpoints-graph"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -694,15 +788,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetWorkspacePublicModulesDependencyGraph_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetActive_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetActive_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetActive", runtime.WithHTTPPathPattern("/workspace/information"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetActive", runtime.WithHTTPPathPattern("/workspace/information"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -714,15 +813,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetActive_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetAddresses_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetAddresses_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAddresses", runtime.WithHTTPPathPattern("/workspace/network-mapping/{module}/{service}/{endpoint}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAddresses", runtime.WithHTTPPathPattern("/workspace/network-mapping/{module}/{service}/{endpoint}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -734,15 +838,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetAddresses_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetConfiguration_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetConfiguration_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetConfiguration", runtime.WithHTTPPathPattern("/workspace/configuration/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetConfiguration", runtime.WithHTTPPathPattern("/workspace/configuration/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -754,15 +863,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetConfiguration_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetDependenciesConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetDependenciesConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesConfigurations", runtime.WithHTTPPathPattern("/workspace/dependencies-configurations/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesConfigurations", runtime.WithHTTPPathPattern("/workspace/dependencies-configurations/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -774,15 +888,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetDependenciesConfigurations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetDependenciesNetworkMappings_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetDependenciesNetworkMappings_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesNetworkMappings", runtime.WithHTTPPathPattern("/workspace/dependencies-network-mappings/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesNetworkMappings", runtime.WithHTTPPathPattern("/workspace/dependencies-network-mappings/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -794,15 +913,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetDependenciesNetworkMappings_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetRuntimeConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetRuntimeConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetRuntimeConfigurations", runtime.WithHTTPPathPattern("/workspace/runtime-configurations/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetRuntimeConfigurations", runtime.WithHTTPPathPattern("/workspace/runtime-configurations/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -814,22 +938,27 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetRuntimeConfigurations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
 
-	mux.Handle(http.MethodGet, pattern_CLI_Logs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_CLI_Logs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 		return
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_ActiveLogHistory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_ActiveLogHistory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/ActiveLogHistory", runtime.WithHTTPPathPattern("/workspace/logs/history"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/ActiveLogHistory", runtime.WithHTTPPathPattern("/workspace/logs/history"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -841,15 +970,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_ActiveLogHistory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetFlowStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetFlowStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetFlowStatus", runtime.WithHTTPPathPattern("/workspace/flow/status"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetFlowStatus", runtime.WithHTTPPathPattern("/workspace/flow/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -861,15 +995,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetFlowStatus_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodPost, pattern_CLI_StopFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("POST", pattern_CLI_StopFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/StopFlow", runtime.WithHTTPPathPattern("/workspace/flow/stop"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/StopFlow", runtime.WithHTTPPathPattern("/workspace/flow/stop"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -881,15 +1020,20 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_StopFlow_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodPost, pattern_CLI_DestroyFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("POST", pattern_CLI_DestroyFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/DestroyFlow", runtime.WithHTTPPathPattern("/workspace/flow/destroy"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/codefly.cli.v0.CLI/DestroyFlow", runtime.WithHTTPPathPattern("/workspace/flow/destroy"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -901,7 +1045,9 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_DestroyFlow_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
 
 	return nil
@@ -910,24 +1056,25 @@ func RegisterCLIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server
 // RegisterCLIHandlerFromEndpoint is same as RegisterCLIHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterCLIHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
-	conn, err := grpc.NewClient(endpoint, opts...)
+	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
 	}
 	defer func() {
 		if err != nil {
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Errorf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 			return
 		}
 		go func() {
 			<-ctx.Done()
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Errorf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 		}()
 	}()
+
 	return RegisterCLIHandler(ctx, mux, conn)
 }
 
@@ -941,13 +1088,16 @@ func RegisterCLIHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.C
 // to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "CLIClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "CLIClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "CLIClient" to call the correct interceptors. This client ignores the HTTP middlewares.
+// "CLIClient" to call the correct interceptors.
 func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client CLIClient) error {
-	mux.Handle(http.MethodGet, pattern_CLI_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/Ping", runtime.WithHTTPPathPattern("/ping"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/Ping", runtime.WithHTTPPathPattern("/ping"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -958,13 +1108,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_Ping_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetAgentInformation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetAgentInformation_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAgentInformation", runtime.WithHTTPPathPattern("/agent/{agent}/information"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAgentInformation", runtime.WithHTTPPathPattern("/agent/{agent}/information"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -975,13 +1130,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetAgentInformation_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetWorkspaceInventory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetWorkspaceInventory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceInventory", runtime.WithHTTPPathPattern("/workspace/inventory"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceInventory", runtime.WithHTTPPathPattern("/workspace/inventory"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -992,13 +1152,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetWorkspaceInventory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetWorkspaceServiceDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetWorkspaceServiceDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceServiceDependencyGraph", runtime.WithHTTPPathPattern("/workspace/service-dependency-graph"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspaceServiceDependencyGraph", runtime.WithHTTPPathPattern("/workspace/service-dependency-graph"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1009,13 +1174,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetWorkspaceServiceDependencyGraph_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetWorkspacePublicModulesDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetWorkspacePublicModulesDependencyGraph_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspacePublicModulesDependencyGraph", runtime.WithHTTPPathPattern("/workspace/public-endpoints-graph"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetWorkspacePublicModulesDependencyGraph", runtime.WithHTTPPathPattern("/workspace/public-endpoints-graph"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1026,13 +1196,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetWorkspacePublicModulesDependencyGraph_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetActive_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetActive_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetActive", runtime.WithHTTPPathPattern("/workspace/information"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetActive", runtime.WithHTTPPathPattern("/workspace/information"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1043,13 +1218,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetActive_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetAddresses_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetAddresses_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAddresses", runtime.WithHTTPPathPattern("/workspace/network-mapping/{module}/{service}/{endpoint}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetAddresses", runtime.WithHTTPPathPattern("/workspace/network-mapping/{module}/{service}/{endpoint}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1060,13 +1240,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetAddresses_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetConfiguration_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetConfiguration_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetConfiguration", runtime.WithHTTPPathPattern("/workspace/configuration/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetConfiguration", runtime.WithHTTPPathPattern("/workspace/configuration/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1077,13 +1262,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetConfiguration_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetDependenciesConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetDependenciesConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesConfigurations", runtime.WithHTTPPathPattern("/workspace/dependencies-configurations/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesConfigurations", runtime.WithHTTPPathPattern("/workspace/dependencies-configurations/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1094,13 +1284,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetDependenciesConfigurations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetDependenciesNetworkMappings_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetDependenciesNetworkMappings_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesNetworkMappings", runtime.WithHTTPPathPattern("/workspace/dependencies-network-mappings/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetDependenciesNetworkMappings", runtime.WithHTTPPathPattern("/workspace/dependencies-network-mappings/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1111,13 +1306,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetDependenciesNetworkMappings_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetRuntimeConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetRuntimeConfigurations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetRuntimeConfigurations", runtime.WithHTTPPathPattern("/workspace/runtime-configurations/{module}/{service}"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetRuntimeConfigurations", runtime.WithHTTPPathPattern("/workspace/runtime-configurations/{module}/{service}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1128,13 +1328,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetRuntimeConfigurations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_Logs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_Logs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/Logs", runtime.WithHTTPPathPattern("/workspace/logs"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/Logs", runtime.WithHTTPPathPattern("/workspace/logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1145,13 +1350,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_Logs_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_ActiveLogHistory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_ActiveLogHistory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/ActiveLogHistory", runtime.WithHTTPPathPattern("/workspace/logs/history"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/ActiveLogHistory", runtime.WithHTTPPathPattern("/workspace/logs/history"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1162,13 +1372,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_ActiveLogHistory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodGet, pattern_CLI_GetFlowStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("GET", pattern_CLI_GetFlowStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetFlowStatus", runtime.WithHTTPPathPattern("/workspace/flow/status"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/GetFlowStatus", runtime.WithHTTPPathPattern("/workspace/flow/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1179,13 +1394,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_GetFlowStatus_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodPost, pattern_CLI_StopFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("POST", pattern_CLI_StopFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/StopFlow", runtime.WithHTTPPathPattern("/workspace/flow/stop"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/StopFlow", runtime.WithHTTPPathPattern("/workspace/flow/stop"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1196,13 +1416,18 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_StopFlow_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
-	mux.Handle(http.MethodPost, pattern_CLI_DestroyFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	mux.Handle("POST", pattern_CLI_DestroyFlow_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/DestroyFlow", runtime.WithHTTPPathPattern("/workspace/flow/destroy"))
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/codefly.cli.v0.CLI/DestroyFlow", runtime.WithHTTPPathPattern("/workspace/flow/destroy"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1213,45 +1438,78 @@ func RegisterCLIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
+
 		forward_CLI_DestroyFlow_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
+
 	return nil
 }
 
 var (
-	pattern_CLI_Ping_0                                     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ping"}, ""))
-	pattern_CLI_GetAgentInformation_0                      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 0, 2, 1}, []string{"agent", "information"}, ""))
-	pattern_CLI_GetWorkspaceInventory_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "inventory"}, ""))
-	pattern_CLI_GetWorkspaceServiceDependencyGraph_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "service-dependency-graph"}, ""))
+	pattern_CLI_Ping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ping"}, ""))
+
+	pattern_CLI_GetAgentInformation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 0, 2, 1}, []string{"agent", "information"}, ""))
+
+	pattern_CLI_GetWorkspaceInventory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "inventory"}, ""))
+
+	pattern_CLI_GetWorkspaceServiceDependencyGraph_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "service-dependency-graph"}, ""))
+
 	pattern_CLI_GetWorkspacePublicModulesDependencyGraph_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "public-endpoints-graph"}, ""))
-	pattern_CLI_GetActive_0                                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "information"}, ""))
-	pattern_CLI_GetAddresses_0                             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"workspace", "network-mapping", "module", "service", "endpoint"}, ""))
-	pattern_CLI_GetConfiguration_0                         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "configuration", "module", "service"}, ""))
-	pattern_CLI_GetDependenciesConfigurations_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "dependencies-configurations", "module", "service"}, ""))
-	pattern_CLI_GetDependenciesNetworkMappings_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "dependencies-network-mappings", "module", "service"}, ""))
-	pattern_CLI_GetRuntimeConfigurations_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "runtime-configurations", "module", "service"}, ""))
-	pattern_CLI_Logs_0                                     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "logs"}, ""))
-	pattern_CLI_ActiveLogHistory_0                         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "logs", "history"}, ""))
-	pattern_CLI_GetFlowStatus_0                            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "flow", "status"}, ""))
-	pattern_CLI_StopFlow_0                                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "flow", "stop"}, ""))
-	pattern_CLI_DestroyFlow_0                              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "flow", "destroy"}, ""))
+
+	pattern_CLI_GetActive_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "information"}, ""))
+
+	pattern_CLI_GetAddresses_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"workspace", "network-mapping", "module", "service", "endpoint"}, ""))
+
+	pattern_CLI_GetConfiguration_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "configuration", "module", "service"}, ""))
+
+	pattern_CLI_GetDependenciesConfigurations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "dependencies-configurations", "module", "service"}, ""))
+
+	pattern_CLI_GetDependenciesNetworkMappings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "dependencies-network-mappings", "module", "service"}, ""))
+
+	pattern_CLI_GetRuntimeConfigurations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"workspace", "runtime-configurations", "module", "service"}, ""))
+
+	pattern_CLI_Logs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"workspace", "logs"}, ""))
+
+	pattern_CLI_ActiveLogHistory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "logs", "history"}, ""))
+
+	pattern_CLI_GetFlowStatus_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "flow", "status"}, ""))
+
+	pattern_CLI_StopFlow_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "flow", "stop"}, ""))
+
+	pattern_CLI_DestroyFlow_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"workspace", "flow", "destroy"}, ""))
 )
 
 var (
-	forward_CLI_Ping_0                                     = runtime.ForwardResponseMessage
-	forward_CLI_GetAgentInformation_0                      = runtime.ForwardResponseMessage
-	forward_CLI_GetWorkspaceInventory_0                    = runtime.ForwardResponseMessage
-	forward_CLI_GetWorkspaceServiceDependencyGraph_0       = runtime.ForwardResponseMessage
+	forward_CLI_Ping_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetAgentInformation_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetWorkspaceInventory_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetWorkspaceServiceDependencyGraph_0 = runtime.ForwardResponseMessage
+
 	forward_CLI_GetWorkspacePublicModulesDependencyGraph_0 = runtime.ForwardResponseMessage
-	forward_CLI_GetActive_0                                = runtime.ForwardResponseMessage
-	forward_CLI_GetAddresses_0                             = runtime.ForwardResponseMessage
-	forward_CLI_GetConfiguration_0                         = runtime.ForwardResponseMessage
-	forward_CLI_GetDependenciesConfigurations_0            = runtime.ForwardResponseMessage
-	forward_CLI_GetDependenciesNetworkMappings_0           = runtime.ForwardResponseMessage
-	forward_CLI_GetRuntimeConfigurations_0                 = runtime.ForwardResponseMessage
-	forward_CLI_Logs_0                                     = runtime.ForwardResponseStream
-	forward_CLI_ActiveLogHistory_0                         = runtime.ForwardResponseMessage
-	forward_CLI_GetFlowStatus_0                            = runtime.ForwardResponseMessage
-	forward_CLI_StopFlow_0                                 = runtime.ForwardResponseMessage
-	forward_CLI_DestroyFlow_0                              = runtime.ForwardResponseMessage
+
+	forward_CLI_GetActive_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetAddresses_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetConfiguration_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetDependenciesConfigurations_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetDependenciesNetworkMappings_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetRuntimeConfigurations_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_Logs_0 = runtime.ForwardResponseStream
+
+	forward_CLI_ActiveLogHistory_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_GetFlowStatus_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_StopFlow_0 = runtime.ForwardResponseMessage
+
+	forward_CLI_DestroyFlow_0 = runtime.ForwardResponseMessage
 )

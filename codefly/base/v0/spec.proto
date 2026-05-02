@@ -4,15 +4,21 @@ package codefly.base.v0;
 import "google/protobuf/any.proto";
 
 
+// GenericValue carries opaque bytes for legacy or dynamically typed agent settings.
 message GenericValue {
+    // value is the configuration or specification value.
     bytes value = 1; // Could also be a string if you prefer JSON
 }
 
+// SpecValue wraps an arbitrary typed value from service YAML settings.
 message SpecValue {
+    // value is the configuration or schema value.
     google.protobuf.Any value = 1;
 }
 
 
+// Specs carries agent-specific service settings parsed from Codefly YAML.
 message Specs {
+    // fields are agent-specific structured settings from service YAML.
     map<string, SpecValue> fields = 1;
 }

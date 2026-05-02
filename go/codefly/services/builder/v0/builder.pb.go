@@ -23,12 +23,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Status enumerates lifecycle status values.
 type LoadStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	LoadStatus_UNKNOWN LoadStatus_Status = 0
-	LoadStatus_READY   LoadStatus_Status = 1
-	LoadStatus_ERROR   LoadStatus_Status = 2
+	// READY means the phase completed and the agent can continue.
+	LoadStatus_READY LoadStatus_Status = 1
+	// ERROR means the phase failed and message carries diagnostics.
+	LoadStatus_ERROR LoadStatus_Status = 2
 )
 
 // Enum value maps for LoadStatus_Status.
@@ -72,12 +76,16 @@ func (LoadStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Status enumerates lifecycle status values.
 type CreateStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	CreateStatus_UNKNOWN CreateStatus_Status = 0
+	// CREATED means the builder generated the requested service files.
 	CreateStatus_CREATED CreateStatus_Status = 1
-	CreateStatus_ERROR   CreateStatus_Status = 2
+	// ERROR means the phase failed and message carries diagnostics.
+	CreateStatus_ERROR CreateStatus_Status = 2
 )
 
 // Enum value maps for CreateStatus_Status.
@@ -121,12 +129,16 @@ func (CreateStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{6, 0}
 }
 
+// Status enumerates lifecycle status values.
 type InitStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	InitStatus_UNKNOWN InitStatus_Status = 0
+	// SUCCESS means the operation completed successfully.
 	InitStatus_SUCCESS InitStatus_Status = 1
-	InitStatus_ERROR   InitStatus_Status = 2
+	// ERROR means the phase failed and message carries diagnostics.
+	InitStatus_ERROR InitStatus_Status = 2
 )
 
 // Enum value maps for InitStatus_Status.
@@ -170,12 +182,16 @@ func (InitStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{8, 0}
 }
 
+// Status enumerates lifecycle status values.
 type UpdateStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	UpdateStatus_UNKNOWN UpdateStatus_Status = 0
+	// SUCCESS means the operation completed successfully.
 	UpdateStatus_SUCCESS UpdateStatus_Status = 1
-	UpdateStatus_ERROR   UpdateStatus_Status = 2
+	// ERROR means the phase failed and message carries diagnostics.
+	UpdateStatus_ERROR UpdateStatus_Status = 2
 )
 
 // Enum value maps for UpdateStatus_Status.
@@ -219,12 +235,16 @@ func (UpdateStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{11, 0}
 }
 
+// Status enumerates lifecycle status values.
 type SyncStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	SyncStatus_UNKNOWN SyncStatus_Status = 0
+	// SUCCESS means the operation completed successfully.
 	SyncStatus_SUCCESS SyncStatus_Status = 1
-	SyncStatus_ERROR   SyncStatus_Status = 2
+	// ERROR means the phase failed and message carries diagnostics.
+	SyncStatus_ERROR SyncStatus_Status = 2
 )
 
 // Enum value maps for SyncStatus_Status.
@@ -268,13 +288,18 @@ func (SyncStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{15, 0}
 }
 
+// Status enumerates lifecycle status values.
 type BuildStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	BuildStatus_UNKNOWN BuildStatus_Status = 0
+	// SUCCESS means the operation completed successfully.
 	BuildStatus_SUCCESS BuildStatus_Status = 1
-	BuildStatus_ERROR   BuildStatus_Status = 2
-	BuildStatus_NOOP    BuildStatus_Status = 3
+	// ERROR means the phase failed and message carries diagnostics.
+	BuildStatus_ERROR BuildStatus_Status = 2
+	// NOOP means no lifecycle transition is currently requested.
+	BuildStatus_NOOP BuildStatus_Status = 3
 )
 
 // Enum value maps for BuildStatus_Status.
@@ -320,13 +345,18 @@ func (BuildStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{20, 0}
 }
 
+// Status enumerates lifecycle status values.
 type DeploymentStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	DeploymentStatus_UNKNOWN DeploymentStatus_Status = 0
+	// SUCCESS means the operation completed successfully.
 	DeploymentStatus_SUCCESS DeploymentStatus_Status = 1
-	DeploymentStatus_ERROR   DeploymentStatus_Status = 2
-	DeploymentStatus_NOOP    DeploymentStatus_Status = 3
+	// ERROR means the phase failed and message carries diagnostics.
+	DeploymentStatus_ERROR DeploymentStatus_Status = 2
+	// NOOP means no lifecycle transition is currently requested.
+	DeploymentStatus_NOOP DeploymentStatus_Status = 3
 )
 
 // Enum value maps for DeploymentStatus_Status.
@@ -372,13 +402,19 @@ func (DeploymentStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{23, 0}
 }
 
+// Severity enumerates diagnostic severity levels.
 type AuditFinding_Severity int32
 
 const (
-	AuditFinding_UNKNOWN  AuditFinding_Severity = 0
-	AuditFinding_LOW      AuditFinding_Severity = 1
-	AuditFinding_MEDIUM   AuditFinding_Severity = 2
-	AuditFinding_HIGH     AuditFinding_Severity = 3
+	// UNKNOWN is the default value when severity is not specified.
+	AuditFinding_UNKNOWN AuditFinding_Severity = 0
+	// LOW is an informational or low-impact finding.
+	AuditFinding_LOW AuditFinding_Severity = 1
+	// MEDIUM is a moderate-impact finding.
+	AuditFinding_MEDIUM AuditFinding_Severity = 2
+	// HIGH is a high-impact finding.
+	AuditFinding_HIGH AuditFinding_Severity = 3
+	// CRITICAL is an urgent finding that should normally fail release gates.
 	AuditFinding_CRITICAL AuditFinding_Severity = 4
 )
 
@@ -427,13 +463,18 @@ func (AuditFinding_Severity) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{26, 0}
 }
 
+// Status enumerates lifecycle status values.
 type AuditStatus_Status int32
 
 const (
-	AuditStatus_UNKNOWN  AuditStatus_Status = 0
-	AuditStatus_CLEAN    AuditStatus_Status = 1 // no findings
+	// UNKNOWN is the default value when status is not specified.
+	AuditStatus_UNKNOWN AuditStatus_Status = 0
+	// CLEAN means the audit found no actionable issues.
+	AuditStatus_CLEAN AuditStatus_Status = 1 // no findings
+	// FINDINGS means the audit completed and returned issues to review.
 	AuditStatus_FINDINGS AuditStatus_Status = 2 // findings present (still a successful scan)
-	AuditStatus_ERROR    AuditStatus_Status = 3 // tool failed or fail_on_vuln tripped
+	// ERROR means the phase failed and message carries diagnostics.
+	AuditStatus_ERROR AuditStatus_Status = 3 // tool failed or fail_on_vuln tripped
 )
 
 // Enum value maps for AuditStatus_Status.
@@ -479,13 +520,18 @@ func (AuditStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{28, 0}
 }
 
+// Status enumerates lifecycle status values.
 type UpgradeStatus_Status int32
 
 const (
+	// UNKNOWN is the default value when status is not specified.
 	UpgradeStatus_UNKNOWN UpgradeStatus_Status = 0
+	// SUCCESS means the operation completed successfully.
 	UpgradeStatus_SUCCESS UpgradeStatus_Status = 1 // changes applied (or would be, in dry_run)
-	UpgradeStatus_NOOP    UpgradeStatus_Status = 2 // nothing to upgrade
-	UpgradeStatus_ERROR   UpgradeStatus_Status = 3
+	// NOOP means no action was required.
+	UpgradeStatus_NOOP UpgradeStatus_Status = 2 // nothing to upgrade
+	// ERROR means the phase failed and message carries diagnostics.
+	UpgradeStatus_ERROR UpgradeStatus_Status = 3
 )
 
 // Enum value maps for UpgradeStatus_Status.
@@ -531,10 +577,13 @@ func (UpgradeStatus_Status) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{32, 0}
 }
 
+// LoadStatus reports the state and message for the load lifecycle phase.
 type LoadStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         LoadStatus_Status      `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.LoadStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State LoadStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.LoadStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -583,17 +632,18 @@ func (x *LoadStatus) GetMessage() string {
 	return ""
 }
 
+// LoadRequest starts a builder agent and asks it to read service metadata.
 type LoadRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Developer debug
+	// developer_debug enables agent-side debug behavior.
 	DeveloperDebug bool `protobuf:"varint,1,opt,name=developer_debug,json=developerDebug,proto3" json:"developer_debug,omitempty"`
-	// Disable catch
+	// disable_catch disables agent panic/error catching for debugging.
 	DisableCatch bool `protobuf:"varint,2,opt,name=disable_catch,json=disableCatch,proto3" json:"disable_catch,omitempty"`
 	// Identity of the service
 	Identity *v0.ServiceIdentity `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	// Details for creation
+	// creation_mode configures interactive scaffolding behavior.
 	CreationMode *CreationMode `protobuf:"bytes,4,opt,name=creation_mode,json=creationMode,proto3" json:"creation_mode,omitempty"`
-	// Details for sync
+	// sync_mode configures interactive synchronization behavior.
 	SyncMode      *SyncMode `protobuf:"bytes,5,opt,name=sync_mode,json=syncMode,proto3" json:"sync_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -664,9 +714,11 @@ func (x *LoadRequest) GetSyncMode() *SyncMode {
 	return nil
 }
 
+// CreationMode configures Builder.Create behavior.
 type CreationMode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Communicate   bool                   `protobuf:"varint,1,opt,name=communicate,proto3" json:"communicate,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// communicate enables interactive agent questions during this mode.
+	Communicate   bool `protobuf:"varint,1,opt,name=communicate,proto3" json:"communicate,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -708,9 +760,11 @@ func (x *CreationMode) GetCommunicate() bool {
 	return false
 }
 
+// SyncMode configures Builder.Sync behavior.
 type SyncMode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Communicate   bool                   `protobuf:"varint,1,opt,name=communicate,proto3" json:"communicate,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// communicate enables interactive agent questions during this mode.
+	Communicate   bool `protobuf:"varint,1,opt,name=communicate,proto3" json:"communicate,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -752,13 +806,16 @@ func (x *SyncMode) GetCommunicate() bool {
 	return false
 }
 
+// LoadResponse returns builder metadata discovered during Load.
 type LoadResponse struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	State   *LoadStatus            `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Version *v0.Version            `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	// Endpoints exposed by the service
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State *LoadStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version *v0.Version `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	// endpoints are logical endpoints the builder knows the service will expose.
 	Endpoints []*v0.Endpoint `protobuf:"bytes,3,rep,name=endpoints,proto3" json:"endpoints,omitempty"`
-	// For logging to console
+	// getting_started is human-facing guidance printed after scaffolding or loading.
 	GettingStarted string `protobuf:"bytes,4,opt,name=getting_started,json=gettingStarted,proto3" json:"getting_started,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -822,6 +879,7 @@ func (x *LoadResponse) GetGettingStarted() string {
 	return ""
 }
 
+// CreateRequest asks the builder to scaffold service code.
 type CreateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -858,10 +916,13 @@ func (*CreateRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{5}
 }
 
+// CreateStatus reports the state and message for the create lifecycle phase.
 type CreateStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         CreateStatus_Status    `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.CreateStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State CreateStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.CreateStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -910,10 +971,13 @@ func (x *CreateStatus) GetMessage() string {
 	return ""
 }
 
+// CreateResponse reports generated endpoints and creation status.
 type CreateResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         *CreateStatus          `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Endpoints     []*v0.Endpoint         `protobuf:"bytes,2,rep,name=endpoints,proto3" json:"endpoints,omitempty"` // The endpoints of the created service
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State *CreateStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// endpoints are logical APIs created by the scaffolded service.
+	Endpoints     []*v0.Endpoint `protobuf:"bytes,2,rep,name=endpoints,proto3" json:"endpoints,omitempty"` // The endpoints of the created service
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -964,9 +1028,11 @@ func (x *CreateResponse) GetEndpoints() []*v0.Endpoint {
 
 // Init
 type InitStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         InitStatus_Status      `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.InitStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State InitStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.InitStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1015,9 +1081,10 @@ func (x *InitStatus) GetMessage() string {
 	return ""
 }
 
+// InitRequest provides dependency metadata needed before build/deploy operations.
 type InitRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Endpoints of the dependencies
+	// dependencies_endpoints are logical endpoints exposed by upstream services.
 	DependenciesEndpoints []*v0.Endpoint `protobuf:"bytes,1,rep,name=dependencies_endpoints,json=dependenciesEndpoints,proto3" json:"dependencies_endpoints,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
@@ -1060,9 +1127,11 @@ func (x *InitRequest) GetDependenciesEndpoints() []*v0.Endpoint {
 	return nil
 }
 
+// InitResponse reports whether builder initialization succeeded.
 type InitResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         *InitStatus            `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State         *InitStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1104,10 +1173,13 @@ func (x *InitResponse) GetState() *InitStatus {
 	return nil
 }
 
+// UpdateStatus reports the state and message for the update lifecycle phase.
 type UpdateStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         UpdateStatus_Status    `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.UpdateStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State UpdateStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.UpdateStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1156,6 +1228,7 @@ func (x *UpdateStatus) GetMessage() string {
 	return ""
 }
 
+// UpdateRequest asks the builder to update an existing service from its template or agent rules.
 type UpdateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1192,9 +1265,11 @@ func (*UpdateRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{12}
 }
 
+// UpdateResponse reports whether the update completed.
 type UpdateResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         *UpdateStatus          `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State         *UpdateStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1236,6 +1311,7 @@ func (x *UpdateResponse) GetState() *UpdateStatus {
 	return nil
 }
 
+// SyncRequest asks the builder to resynchronize generated or configuration-derived files.
 type SyncRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1272,10 +1348,13 @@ func (*SyncRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_builder_proto_rawDescGZIP(), []int{14}
 }
 
+// SyncStatus reports the state and message for the sync lifecycle phase.
 type SyncStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         SyncStatus_Status      `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.SyncStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State SyncStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.SyncStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1324,9 +1403,11 @@ func (x *SyncStatus) GetMessage() string {
 	return ""
 }
 
+// SyncResponse reports whether synchronization completed.
 type SyncResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         *SyncStatus            `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State         *SyncStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1368,8 +1449,11 @@ func (x *SyncResponse) GetState() *SyncStatus {
 	return nil
 }
 
+// BuildContext selects the concrete packaging/build system for this service.
 type BuildContext struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind selects one build-context implementation.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*BuildContext_DockerBuildContext
@@ -1429,14 +1513,17 @@ type isBuildContext_Kind interface {
 }
 
 type BuildContext_DockerBuildContext struct {
+	// docker_build_context carries the DockerBuildContext variant for BuildContext.
 	DockerBuildContext *DockerBuildContext `protobuf:"bytes,1,opt,name=docker_build_context,json=dockerBuildContext,proto3,oneof"`
 }
 
 func (*BuildContext_DockerBuildContext) isBuildContext_Kind() {}
 
+// BuildRequest provides the container/package build context for a service.
 type BuildRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BuildContext  *BuildContext          `protobuf:"bytes,1,opt,name=build_context,json=buildContext,proto3" json:"build_context,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// build_context is the container build context supplied to the builder.
+	BuildContext  *BuildContext `protobuf:"bytes,1,opt,name=build_context,json=buildContext,proto3" json:"build_context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1478,11 +1565,17 @@ func (x *BuildRequest) GetBuildContext() *BuildContext {
 	return nil
 }
 
+// BuildResult captures the outcome of build.
 type BuildResult struct {
-	state       protoimpl.MessageState `protogen:"open.v1"`
-	Version     string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	RunningHash string                 `protobuf:"bytes,2,opt,name=running_hash,json=runningHash,proto3" json:"running_hash,omitempty"`
-	ApiHash     string                 `protobuf:"bytes,3,opt,name=api_hash,json=apiHash,proto3" json:"api_hash,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	// running_hash identifies the runtime artifact built for execution.
+	RunningHash string `protobuf:"bytes,2,opt,name=running_hash,json=runningHash,proto3" json:"running_hash,omitempty"`
+	// api_hash identifies the API surface used to detect contract changes.
+	ApiHash string `protobuf:"bytes,3,opt,name=api_hash,json=apiHash,proto3" json:"api_hash,omitempty"`
+	// kind selects one build-result implementation.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*BuildResult_DockerBuildResult
@@ -1563,15 +1656,19 @@ type isBuildResult_Kind interface {
 }
 
 type BuildResult_DockerBuildResult struct {
+	// docker_build_result carries the DockerBuildResult variant for BuildResult.
 	DockerBuildResult *DockerBuildResult `protobuf:"bytes,4,opt,name=docker_build_result,json=dockerBuildResult,proto3,oneof"`
 }
 
 func (*BuildResult_DockerBuildResult) isBuildResult_Kind() {}
 
+// BuildStatus reports the state and message for the build lifecycle phase.
 type BuildStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         BuildStatus_Status     `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.BuildStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State BuildStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.BuildStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1620,10 +1717,13 @@ func (x *BuildStatus) GetMessage() string {
 	return ""
 }
 
+// BuildResponse returns the structured build outcome.
 type BuildResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         *BuildStatus           `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Result        *BuildResult           `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State *BuildStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// result is the structured operation outcome.
+	Result        *BuildResult `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1672,14 +1772,21 @@ func (x *BuildResponse) GetResult() *BuildResult {
 	return nil
 }
 
+// DeploymentRequest provides target environment, build output, and dependency data for deploy.
 type DeploymentRequest struct {
-	state                       protoimpl.MessageState `protogen:"open.v1"`
-	Environment                 *v0.Environment        `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
-	Deployment                  *Deployment            `protobuf:"bytes,2,opt,name=deployment,proto3" json:"deployment,omitempty"`
-	Configuration               *v0.Configuration      `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
-	DependenciesConfigurations  []*v0.Configuration    `protobuf:"bytes,4,rep,name=dependencies_configurations,json=dependenciesConfigurations,proto3" json:"dependencies_configurations,omitempty"`
-	NetworkMappings             []*v0.NetworkMapping   `protobuf:"bytes,5,rep,name=network_mappings,json=networkMappings,proto3" json:"network_mappings,omitempty"`
-	DependenciesNetworkMappings []*v0.NetworkMapping   `protobuf:"bytes,6,rep,name=dependencies_network_mappings,json=dependenciesNetworkMappings,proto3" json:"dependencies_network_mappings,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// environment is the target Codefly environment such as local, staging, or production.
+	Environment *v0.Environment `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
+	// deployment is the deployment target and payload handled by the builder.
+	Deployment *Deployment `protobuf:"bytes,2,opt,name=deployment,proto3" json:"deployment,omitempty"`
+	// configuration is the service or workspace configuration payload.
+	Configuration *v0.Configuration `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	// dependencies_configurations are configuration values exposed by upstream services.
+	DependenciesConfigurations []*v0.Configuration `protobuf:"bytes,4,rep,name=dependencies_configurations,json=dependenciesConfigurations,proto3" json:"dependencies_configurations,omitempty"`
+	// network_mappings map logical endpoints to concrete network instances.
+	NetworkMappings []*v0.NetworkMapping `protobuf:"bytes,5,rep,name=network_mappings,json=networkMappings,proto3" json:"network_mappings,omitempty"`
+	// dependencies_network_mappings are reachable addresses for upstream services.
+	DependenciesNetworkMappings []*v0.NetworkMapping `protobuf:"bytes,6,rep,name=dependencies_network_mappings,json=dependenciesNetworkMappings,proto3" json:"dependencies_network_mappings,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -1756,10 +1863,13 @@ func (x *DeploymentRequest) GetDependenciesNetworkMappings() []*v0.NetworkMappin
 	return nil
 }
 
+// DeploymentStatus reports the state and message for the deployment lifecycle phase.
 type DeploymentStatus struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	State         DeploymentStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.DeploymentStatus_Status" json:"state,omitempty"`
-	Message       string                  `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State DeploymentStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.DeploymentStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1808,11 +1918,15 @@ func (x *DeploymentStatus) GetMessage() string {
 	return ""
 }
 
+// DeploymentResponse returns deployment status and any configuration produced by deployment.
 type DeploymentResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         *DeploymentStatus      `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Configuration *v0.Configuration      `protobuf:"bytes,2,opt,name=configuration,proto3" json:"configuration,omitempty"`
-	Deployment    *DeploymentOutput      `protobuf:"bytes,3,opt,name=deployment,proto3" json:"deployment,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State *DeploymentStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// configuration is the service or workspace configuration payload.
+	Configuration *v0.Configuration `protobuf:"bytes,2,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	// deployment is the deployment target and payload handled by the builder.
+	Deployment    *DeploymentOutput `protobuf:"bytes,3,opt,name=deployment,proto3" json:"deployment,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1868,6 +1982,7 @@ func (x *DeploymentResponse) GetDeployment() *DeploymentOutput {
 	return nil
 }
 
+// AuditRequest asks the builder agent to scan dependencies and artifacts for risk.
 type AuditRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// include_outdated reports patch+minor "available" upgrades alongside
@@ -1924,17 +2039,25 @@ func (x *AuditRequest) GetFailOnVuln() bool {
 	return false
 }
 
+// AuditFinding is one vulnerability or security finding produced by an audit tool.
 type AuditFinding struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Severity       AuditFinding_Severity  `protobuf:"varint,1,opt,name=severity,proto3,enum=codefly.services.builder.v0.AuditFinding_Severity" json:"severity,omitempty"`
-	Id             string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"` // CVE-2025-xxxx, GHSA-xxxx-xxxx, OSV id
-	Package        string                 `protobuf:"bytes,3,opt,name=package,proto3" json:"package,omitempty"`
-	CurrentVersion string                 `protobuf:"bytes,4,opt,name=current_version,json=currentVersion,proto3" json:"current_version,omitempty"`
-	FixedVersion   string                 `protobuf:"bytes,5,opt,name=fixed_version,json=fixedVersion,proto3" json:"fixed_version,omitempty"`
-	Summary        string                 `protobuf:"bytes,6,opt,name=summary,proto3" json:"summary,omitempty"`
-	Url            string                 `protobuf:"bytes,7,opt,name=url,proto3" json:"url,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// severity is the diagnostic level such as error, warning, information, or hint.
+	Severity AuditFinding_Severity `protobuf:"varint,1,opt,name=severity,proto3,enum=codefly.services.builder.v0.AuditFinding_Severity" json:"severity,omitempty"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"` // CVE-2025-xxxx, GHSA-xxxx-xxxx, OSV id
+	// package is the package, dependency, or artifact name.
+	Package string `protobuf:"bytes,3,opt,name=package,proto3" json:"package,omitempty"`
+	// current_version is the vulnerable or outdated version currently installed.
+	CurrentVersion string `protobuf:"bytes,4,opt,name=current_version,json=currentVersion,proto3" json:"current_version,omitempty"`
+	// fixed_version is the version that resolves the reported finding.
+	FixedVersion string `protobuf:"bytes,5,opt,name=fixed_version,json=fixedVersion,proto3" json:"fixed_version,omitempty"`
+	// summary is the compact natural-language result or state description.
+	Summary string `protobuf:"bytes,6,opt,name=summary,proto3" json:"summary,omitempty"`
+	// url links to advisory, package, or documentation details for the item.
+	Url           string `protobuf:"bytes,7,opt,name=url,proto3" json:"url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AuditFinding) Reset() {
@@ -2016,12 +2139,17 @@ func (x *AuditFinding) GetUrl() string {
 	return ""
 }
 
+// OutdatedDep reports an installed dependency with newer versions available.
 type OutdatedDep struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Package       string                 `protobuf:"bytes,1,opt,name=package,proto3" json:"package,omitempty"`
-	Current       string                 `protobuf:"bytes,2,opt,name=current,proto3" json:"current,omitempty"`
-	LatestSafe    string                 `protobuf:"bytes,3,opt,name=latest_safe,json=latestSafe,proto3" json:"latest_safe,omitempty"`    // newest patch+minor without crossing major
-	LatestMajor   string                 `protobuf:"bytes,4,opt,name=latest_major,json=latestMajor,proto3" json:"latest_major,omitempty"` // newest including major bump
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// package is the package, dependency, or artifact name.
+	Package string `protobuf:"bytes,1,opt,name=package,proto3" json:"package,omitempty"`
+	// current is the currently installed dependency version.
+	Current string `protobuf:"bytes,2,opt,name=current,proto3" json:"current,omitempty"`
+	// latest_safe is the newest compatible version that should not require a breaking upgrade.
+	LatestSafe string `protobuf:"bytes,3,opt,name=latest_safe,json=latestSafe,proto3" json:"latest_safe,omitempty"` // newest patch+minor without crossing major
+	// latest_major is the newest major version discovered by the audit.
+	LatestMajor   string `protobuf:"bytes,4,opt,name=latest_major,json=latestMajor,proto3" json:"latest_major,omitempty"` // newest including major bump
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2084,10 +2212,13 @@ func (x *OutdatedDep) GetLatestMajor() string {
 	return ""
 }
 
+// AuditStatus reports the state and message for the audit lifecycle phase.
 type AuditStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         AuditStatus_Status     `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.AuditStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State AuditStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.AuditStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2136,11 +2267,15 @@ func (x *AuditStatus) GetMessage() string {
 	return ""
 }
 
+// AuditResponse returns vulnerability findings, outdated dependencies, and tool metadata.
 type AuditResponse struct {
-	state    protoimpl.MessageState `protogen:"open.v1"`
-	State    *AuditStatus           `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Findings []*AuditFinding        `protobuf:"bytes,2,rep,name=findings,proto3" json:"findings,omitempty"`
-	Outdated []*OutdatedDep         `protobuf:"bytes,3,rep,name=outdated,proto3" json:"outdated,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State *AuditStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// findings are vulnerability or security findings returned by the audit.
+	Findings []*AuditFinding `protobuf:"bytes,2,rep,name=findings,proto3" json:"findings,omitempty"`
+	// outdated are dependency update opportunities returned by the audit.
+	Outdated []*OutdatedDep `protobuf:"bytes,3,rep,name=outdated,proto3" json:"outdated,omitempty"`
 	// tool identifies what produced the report, e.g. "govulncheck+go-list-u",
 	// "npm-audit+outdated", "pip-audit", "trivy", or "missing" when the
 	// required tool is not installed (still returns a successful empty scan).
@@ -2217,6 +2352,7 @@ func (x *AuditResponse) GetLanguage() string {
 	return ""
 }
 
+// UpgradeRequest asks the builder agent to apply or preview dependency upgrades.
 type UpgradeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// include_major also bumps across major-version boundaries. Default false.
@@ -2281,11 +2417,15 @@ func (x *UpgradeRequest) GetOnly() []string {
 	return nil
 }
 
+// UpgradeChange describes one dependency version change.
 type UpgradeChange struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Package       string                 `protobuf:"bytes,1,opt,name=package,proto3" json:"package,omitempty"`
-	From          string                 `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	To            string                 `protobuf:"bytes,3,opt,name=to,proto3" json:"to,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// package is the package, dependency, or artifact name.
+	Package string `protobuf:"bytes,1,opt,name=package,proto3" json:"package,omitempty"`
+	// from is the currently installed version.
+	From string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
+	// to is the version selected by the upgrade.
+	To            string `protobuf:"bytes,3,opt,name=to,proto3" json:"to,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2341,10 +2481,13 @@ func (x *UpgradeChange) GetTo() string {
 	return ""
 }
 
+// UpgradeStatus reports the state and message for the upgrade lifecycle phase.
 type UpgradeStatus struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         UpgradeStatus_Status   `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.UpgradeStatus_Status" json:"state,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State UpgradeStatus_Status `protobuf:"varint,1,opt,name=state,proto3,enum=codefly.services.builder.v0.UpgradeStatus_Status" json:"state,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2393,10 +2536,13 @@ func (x *UpgradeStatus) GetMessage() string {
 	return ""
 }
 
+// UpgradeResponse reports dependency changes applied or proposed by the upgrade.
 type UpgradeResponse struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	State   *UpgradeStatus         `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
-	Changes []*UpgradeChange       `protobuf:"bytes,2,rep,name=changes,proto3" json:"changes,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// state is the machine-readable lifecycle state.
+	State *UpgradeStatus `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// changes are dependency updates applied or proposed by the upgrade.
+	Changes []*UpgradeChange `protobuf:"bytes,2,rep,name=changes,proto3" json:"changes,omitempty"`
 	// lockfile_diff is a free-form summary (e.g. truncated `git diff`)
 	// for the human-facing CLI output. Optional.
 	LockfileDiff  string `protobuf:"bytes,3,opt,name=lockfile_diff,json=lockfileDiff,proto3" json:"lockfile_diff,omitempty"`

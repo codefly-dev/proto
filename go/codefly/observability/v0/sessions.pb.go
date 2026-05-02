@@ -22,10 +22,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// WorkspaceSnapshot captures workspace identity at the time a session was recorded.
 type WorkspaceSnapshot struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// uuid is the durable identifier for the snapshot or session.
+	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	// name is the workspace name captured in this snapshot.
+	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -74,11 +77,15 @@ func (x *WorkspaceSnapshot) GetName() string {
 	return ""
 }
 
+// ModuleSnapshot captures module identity and its workspace snapshot.
 type ModuleSnapshot struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Workspace     *WorkspaceSnapshot     `protobuf:"bytes,3,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// uuid is the durable identifier for the snapshot or session.
+	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	// name is the module name captured in this snapshot.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// workspace is the Codefly workspace name that scopes modules and services.
+	Workspace     *WorkspaceSnapshot `protobuf:"bytes,3,opt,name=workspace,proto3" json:"workspace,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -134,12 +141,17 @@ func (x *ModuleSnapshot) GetWorkspace() *WorkspaceSnapshot {
 	return nil
 }
 
+// PartialSnapshot captures a workspace and the modules known for a recorded session.
 type PartialSnapshot struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Workspace     *WorkspaceSnapshot     `protobuf:"bytes,3,opt,name=workspace,proto3" json:"workspace,omitempty"`
-	Modules       []*ModuleSnapshot      `protobuf:"bytes,4,rep,name=modules,proto3" json:"modules,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// uuid is the durable identifier for the snapshot or session.
+	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	// name is the snapshot display name.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// workspace is the Codefly workspace name that scopes modules and services.
+	Workspace *WorkspaceSnapshot `protobuf:"bytes,3,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	// modules are the module snapshots known at this point in time.
+	Modules       []*ModuleSnapshot `protobuf:"bytes,4,rep,name=modules,proto3" json:"modules,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -202,10 +214,15 @@ func (x *PartialSnapshot) GetModules() []*ModuleSnapshot {
 	return nil
 }
 
+// Session records a point-in-time workspace/module snapshot.
 type Session struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Uuid  string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	At    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=at,proto3" json:"at,omitempty"`
+	// uuid is the durable identifier for the snapshot or session.
+	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	// at is the timestamp for the log or session snapshot.
+	At *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=at,proto3" json:"at,omitempty"`
+	// session selects the snapshot granularity recorded for this session.
+	//
 	// Types that are valid to be assigned to Session:
 	//
 	//	*Session_Partial
@@ -289,10 +306,12 @@ type isSession_Session interface {
 }
 
 type Session_Partial struct {
+	// partial carries the PartialSnapshot variant for Session.
 	Partial *PartialSnapshot `protobuf:"bytes,3,opt,name=partial,proto3,oneof"`
 }
 
 type Session_Module struct {
+	// module carries a module-level snapshot.
 	Module *ModuleSnapshot `protobuf:"bytes,4,opt,name=module,proto3,oneof"`
 }
 

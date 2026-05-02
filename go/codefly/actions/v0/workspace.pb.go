@@ -22,9 +22,10 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// NewWorkspace declares a new Codefly workspace root.
 type NewWorkspace struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Kind is the kind of the message.
+	// kind is the action discriminator used when actions are serialized.
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Name is the name of the workspace.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -32,7 +33,7 @@ type NewWorkspace struct {
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Path is where the workspace will be created.
 	Path string `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
-	// layout is how the workspace is structure
+	// layout selects whether services are stored flat, under modules, or both.
 	Layout        string `protobuf:"bytes,5,opt,name=layout,proto3" json:"layout,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

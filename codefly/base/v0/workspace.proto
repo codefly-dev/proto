@@ -15,10 +15,11 @@ message Workspace {
   string description = 2;
   // modules is the list of modules that are part of the workspace.
   repeated Module modules = 3;
-  // layout is how the workspace is structure
+  // layout selects whether services are stored flat, under modules, or both.
   string layout = 4 [(buf.validate.field).string.in = "flat", (buf.validate.field).string.in = "modules", (buf.validate.field).string.in = "hybrid"];
 }
 
+// ManagedWorkspace is the platform-managed representation of a workspace.
 message ManagedWorkspace {
   // organization ID is the unique identifier of the organization that owns the workspace.
   // UUID truncated to 10 characters.

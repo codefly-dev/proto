@@ -3,32 +3,48 @@ package codefly.services.builder.v0;
 
 import "codefly/services/builder/v0/docker.proto";
 
+// DeploymentKind enumerates deployment artifact formats produced by builders.
 enum DeploymentKind {
+  // KUSTOMIZE is a Kubernetes kustomize deployment output.
   KUSTOMIZE = 0;
 }
 
+// Deployment selects the deployment target and input format.
 message Deployment {
+  // kind selects one deployment implementation.
   oneof kind {
+    // kubernetes carries the KubernetesDeployment variant for Deployment.
     KubernetesDeployment kubernetes = 2;
   }
 }
 
+// KubernetesDeployment contains inputs for Kubernetes manifest generation.
 message KubernetesDeployment {
+  // namespace is the Kubernetes namespace used for deployment.
   string namespace = 1;
+  // destination is the deployment destination path or environment.
   string destination = 2;
+  // build_context is the Docker image build context used by the deployment.
   DockerBuildContext build_context = 3;
 }
 
+// DeploymentOutput selects the deployment artifact emitted by the builder.
 message DeploymentOutput {
+  // kind selects one deployment output implementation.
   oneof kind {
+    // kubernetes carries the KubernetesDeploymentOutput variant for DeploymentOutput.
     KubernetesDeploymentOutput kubernetes = 2;
   }
 }
 
 
+// KubernetesDeploymentOutput describes generated Kubernetes deployment artifacts.
 message KubernetesDeploymentOutput {
+  // Kind enumerates Kubernetes deployment artifact formats.
   enum Kind {
-    Kustomize = 0;
+    // KUSTOMIZE means the builder emitted kustomize-compatible manifests.
+    KUSTOMIZE = 0;
   }
+  // kind identifies the generated Kubernetes artifact format.
   Kind kind = 1;
 }

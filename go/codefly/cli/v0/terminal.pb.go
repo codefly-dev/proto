@@ -21,13 +21,19 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// OpenTerminalRequest describes the shell and workspace scope for a new terminal.
 type OpenTerminalRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Module        string                 `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`   // optional: scope to module
-	Service       string                 `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"` // optional: scope to service (cwd = service dir)
-	Shell         string                 `protobuf:"bytes,3,opt,name=shell,proto3" json:"shell,omitempty"`     // optional: override shell (default: $SHELL)
-	Rows          uint32                 `protobuf:"varint,4,opt,name=rows,proto3" json:"rows,omitempty"`      // initial terminal size
-	Cols          uint32                 `protobuf:"varint,5,opt,name=cols,proto3" json:"cols,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// module optionally scopes the terminal working directory to a module.
+	Module string `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"` // optional: scope to module
+	// service optionally scopes the terminal working directory to a service.
+	Service string `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"` // optional: scope to service (cwd = service dir)
+	// shell is the command interpreter used for the terminal session.
+	Shell string `protobuf:"bytes,3,opt,name=shell,proto3" json:"shell,omitempty"` // optional: override shell (default: $SHELL)
+	// rows is the requested terminal height in character cells.
+	Rows uint32 `protobuf:"varint,4,opt,name=rows,proto3" json:"rows,omitempty"` // initial terminal size
+	// cols is the requested terminal width in character cells.
+	Cols          uint32 `protobuf:"varint,5,opt,name=cols,proto3" json:"cols,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -97,11 +103,15 @@ func (x *OpenTerminalRequest) GetCols() uint32 {
 	return 0
 }
 
+// OpenTerminalResponse identifies the created terminal and its resolved working directory.
 type OpenTerminalResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Shell         string                 `protobuf:"bytes,2,opt,name=shell,proto3" json:"shell,omitempty"`
-	WorkingDir    string                 `protobuf:"bytes,3,opt,name=working_dir,json=workingDir,proto3" json:"working_dir,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the terminal session for future Attach/Resize/Close calls.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// shell is the command interpreter used for the terminal session.
+	Shell string `protobuf:"bytes,2,opt,name=shell,proto3" json:"shell,omitempty"`
+	// working_dir is the resolved filesystem directory backing the PTY.
+	WorkingDir    string `protobuf:"bytes,3,opt,name=working_dir,json=workingDir,proto3" json:"working_dir,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -157,10 +167,13 @@ func (x *OpenTerminalResponse) GetWorkingDir() string {
 	return ""
 }
 
+// TerminalInput carries bytes written by the client to a terminal PTY.
 type TerminalInput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"` // raw stdin bytes from client
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the terminal session receiving the input.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// data is the raw terminal, binary, or protocol payload.
+	Data          []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"` // raw stdin bytes from client
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -209,12 +222,17 @@ func (x *TerminalInput) GetData() []byte {
 	return nil
 }
 
+// TerminalOutput carries bytes emitted by a terminal PTY.
 type TerminalOutput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`                          // raw stdout/stderr bytes from PTY
-	Done          bool                   `protobuf:"varint,3,opt,name=done,proto3" json:"done,omitempty"`                         // true when shell process exits
-	ExitCode      int32                  `protobuf:"varint,4,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"` // set when done=true
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the terminal session that produced this output.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// data is the raw terminal, binary, or protocol payload.
+	Data []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"` // raw stdout/stderr bytes from PTY
+	// done is true when the terminal stream has completed.
+	Done bool `protobuf:"varint,3,opt,name=done,proto3" json:"done,omitempty"` // true when shell process exits
+	// exit_code is the process exit status returned by the operating system.
+	ExitCode      int32 `protobuf:"varint,4,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"` // set when done=true
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -277,11 +295,15 @@ func (x *TerminalOutput) GetExitCode() int32 {
 	return 0
 }
 
+// ResizeTerminalRequest changes the dimensions of an active terminal PTY.
 type ResizeTerminalRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Rows          uint32                 `protobuf:"varint,2,opt,name=rows,proto3" json:"rows,omitempty"`
-	Cols          uint32                 `protobuf:"varint,3,opt,name=cols,proto3" json:"cols,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the terminal session to resize.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// rows is the requested terminal height in character cells.
+	Rows uint32 `protobuf:"varint,2,opt,name=rows,proto3" json:"rows,omitempty"`
+	// cols is the requested terminal width in character cells.
+	Cols          uint32 `protobuf:"varint,3,opt,name=cols,proto3" json:"cols,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -337,6 +359,7 @@ func (x *ResizeTerminalRequest) GetCols() uint32 {
 	return 0
 }
 
+// ResizeTerminalResponse acknowledges a terminal resize request.
 type ResizeTerminalResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -373,9 +396,11 @@ func (*ResizeTerminalResponse) Descriptor() ([]byte, []int) {
 	return file_codefly_cli_v0_terminal_proto_rawDescGZIP(), []int{5}
 }
 
+// CloseTerminalRequest identifies the terminal session to close.
 type CloseTerminalRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the terminal session to close.
+	SessionId     string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -417,6 +442,7 @@ func (x *CloseTerminalRequest) GetSessionId() string {
 	return ""
 }
 
+// CloseTerminalResponse acknowledges a terminal close request.
 type CloseTerminalResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -453,6 +479,7 @@ func (*CloseTerminalResponse) Descriptor() ([]byte, []int) {
 	return file_codefly_cli_v0_terminal_proto_rawDescGZIP(), []int{7}
 }
 
+// ListTerminalsRequest carries optional filters for listing terminals.
 type ListTerminalsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -489,9 +516,11 @@ func (*ListTerminalsRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_cli_v0_terminal_proto_rawDescGZIP(), []int{8}
 }
 
+// ListTerminalsResponse returns the active terminal sessions.
 type ListTerminalsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Terminals     []*TerminalInfo        `protobuf:"bytes,1,rep,name=terminals,proto3" json:"terminals,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// terminals are currently active PTY sessions.
+	Terminals     []*TerminalInfo `protobuf:"bytes,1,rep,name=terminals,proto3" json:"terminals,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -533,13 +562,19 @@ func (x *ListTerminalsResponse) GetTerminals() []*TerminalInfo {
 	return nil
 }
 
+// TerminalInfo describes one active terminal session.
 type TerminalInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Shell         string                 `protobuf:"bytes,2,opt,name=shell,proto3" json:"shell,omitempty"`
-	WorkingDir    string                 `protobuf:"bytes,3,opt,name=working_dir,json=workingDir,proto3" json:"working_dir,omitempty"`
-	Module        string                 `protobuf:"bytes,4,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session_id identifies the terminal session.
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	// shell is the command interpreter used for the terminal session.
+	Shell string `protobuf:"bytes,2,opt,name=shell,proto3" json:"shell,omitempty"`
+	// working_dir is an optional service-relative directory for command execution.
+	WorkingDir string `protobuf:"bytes,3,opt,name=working_dir,json=workingDir,proto3" json:"working_dir,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,4,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service       string `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

@@ -22,18 +22,28 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// HTTPMethod enumerates HTTP methods.
 type HTTPMethod int32
 
 const (
-	HTTPMethod_GET     HTTPMethod = 0
-	HTTPMethod_POST    HTTPMethod = 1
-	HTTPMethod_PUT     HTTPMethod = 2
-	HTTPMethod_DELETE  HTTPMethod = 3
-	HTTPMethod_PATCH   HTTPMethod = 4
+	// GET is the HTTP GET method.
+	HTTPMethod_GET HTTPMethod = 0
+	// POST is the HTTP POST method.
+	HTTPMethod_POST HTTPMethod = 1
+	// PUT is the HTTP PUT method.
+	HTTPMethod_PUT HTTPMethod = 2
+	// DELETE is the HTTP DELETE method.
+	HTTPMethod_DELETE HTTPMethod = 3
+	// PATCH is the HTTP PATCH method.
+	HTTPMethod_PATCH HTTPMethod = 4
+	// OPTIONS is the HTTP OPTIONS method.
 	HTTPMethod_OPTIONS HTTPMethod = 5
-	HTTPMethod_HEAD    HTTPMethod = 6
+	// HEAD is the HTTP HEAD method.
+	HTTPMethod_HEAD HTTPMethod = 6
+	// CONNECT is the HTTP CONNECT method.
 	HTTPMethod_CONNECT HTTPMethod = 7
-	HTTPMethod_TRACE   HTTPMethod = 8
+	// TRACE is the HTTP TRACE method.
+	HTTPMethod_TRACE HTTPMethod = 8
 )
 
 // Enum value maps for HTTPMethod.
@@ -89,20 +99,23 @@ func (HTTPMethod) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_base_v0_endpoint_proto_rawDescGZIP(), []int{0}
 }
 
+// Endpoint is a logical API exposed by a service and later resolved into network mappings.
 type Endpoint struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Name of the endpoint: in lots of cases, the name of the endpoint will be the API name (http, grpc, tcp, etc...)
+	// name is the endpoint identifier, often matching the API type such as http, grpc, or tcp.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Service name
+	// service is the service that owns this endpoint.
 	Service string `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
-	// Module name
+	// module is the module that contains the owning service.
 	Module string `protobuf:"bytes,3,opt,name=module,proto3" json:"module,omitempty"`
-	// Description of the endpoint
+	// description explains what this endpoint is used for.
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	// Visibility of the endpoint
-	Visibility    string `protobuf:"bytes,5,opt,name=visibility,proto3" json:"visibility,omitempty"`
-	Api           string `protobuf:"bytes,6,opt,name=api,proto3" json:"api,omitempty"`
-	ApiDetails    *API   `protobuf:"bytes,7,opt,name=api_details,json=apiDetails,proto3" json:"api_details,omitempty"`
+	// visibility controls whether this endpoint is private, module-visible, public, or external.
+	Visibility string `protobuf:"bytes,5,opt,name=visibility,proto3" json:"visibility,omitempty"`
+	// api describes the protocol exposed by the endpoint.
+	Api string `protobuf:"bytes,6,opt,name=api,proto3" json:"api,omitempty"`
+	// api_details contains protocol-specific endpoint metadata.
+	ApiDetails    *API `protobuf:"bytes,7,opt,name=api_details,json=apiDetails,proto3" json:"api_details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -186,8 +199,11 @@ func (x *Endpoint) GetApiDetails() *API {
 	return nil
 }
 
+// API selects protocol-specific endpoint details.
 type API struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// value selects exactly one supported value variant.
+	//
 	// Types that are valid to be assigned to Value:
 	//
 	//	*API_Tcp
@@ -277,18 +293,22 @@ type isAPI_Value interface {
 }
 
 type API_Tcp struct {
+	// tcp carries protocol details for a raw TCP endpoint.
 	Tcp *TcpAPI `protobuf:"bytes,1,opt,name=tcp,proto3,oneof"`
 }
 
 type API_Http struct {
+	// http carries protocol details for a generic HTTP endpoint.
 	Http *HttpAPI `protobuf:"bytes,2,opt,name=http,proto3,oneof"`
 }
 
 type API_Rest struct {
+	// rest carries protocol details for a REST endpoint with routes and OpenAPI metadata.
 	Rest *RestAPI `protobuf:"bytes,3,opt,name=rest,proto3,oneof"`
 }
 
 type API_Grpc struct {
+	// grpc carries protocol details for a gRPC endpoint with protobuf descriptors.
 	Grpc *GrpcAPI `protobuf:"bytes,4,opt,name=grpc,proto3,oneof"`
 }
 
@@ -303,8 +323,9 @@ func (*API_Grpc) isAPI_Value() {}
 // A RestRouteGroup is a collection of routes that share the same path
 type RestRouteGroup struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Path  string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	// TODO [(buf.validate.field).string.pattern = "^/([a-z0-9-/]+)*$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+	// path is the shared route prefix for this group.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// routes are the REST routes mounted under path.
 	Routes        []*RestRoute `protobuf:"bytes,2,rep,name=routes,proto3" json:"routes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -358,8 +379,9 @@ func (x *RestRouteGroup) GetRoutes() []*RestRoute {
 // It is usually found through a Route group
 type RestRoute struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Path  string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	// TODO [(buf.validate.field).string.pattern = "^/([a-z0-9-/]+)*$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+	// path is the route path relative to its route group.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// method is the HTTP method handled by this route.
 	Method        HTTPMethod `protobuf:"varint,2,opt,name=method,proto3,enum=codefly.base.v0.HTTPMethod" json:"method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -409,13 +431,19 @@ func (x *RestRoute) GetMethod() HTTPMethod {
 	return HTTPMethod_GET
 }
 
+// RestAPI describes a REST API endpoint and its route groups.
 type RestAPI struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
-	Groups        []*RestRouteGroup      `protobuf:"bytes,3,rep,name=groups,proto3" json:"groups,omitempty"`
-	Openapi       []byte                 `protobuf:"bytes,4,opt,name=openapi,proto3" json:"openapi,omitempty"`
-	Secured       bool                   `protobuf:"varint,5,opt,name=secured,proto3" json:"secured,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	// groups are route groups discovered from the service API.
+	Groups []*RestRouteGroup `protobuf:"bytes,3,rep,name=groups,proto3" json:"groups,omitempty"`
+	// openapi is the serialized OpenAPI description for REST endpoints.
+	Openapi []byte `protobuf:"bytes,4,opt,name=openapi,proto3" json:"openapi,omitempty"`
+	// secured is true when the endpoint expects TLS or equivalent transport security.
+	Secured       bool `protobuf:"varint,5,opt,name=secured,proto3" json:"secured,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -485,10 +513,13 @@ func (x *RestAPI) GetSecured() bool {
 	return false
 }
 
+// RPC describes one callable method exposed by a gRPC service.
 type RPC struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ServiceName   string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service_name is the protobuf service that owns this RPC.
+	ServiceName string `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	// name is the RPC method name.
+	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -537,14 +568,21 @@ func (x *RPC) GetName() string {
 	return ""
 }
 
+// GrpcAPI describes a gRPC API endpoint and its service descriptors.
 type GrpcAPI struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Service       string                 `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
-	Package       string                 `protobuf:"bytes,3,opt,name=package,proto3" json:"package,omitempty"`
-	Rpcs          []*RPC                 `protobuf:"bytes,4,rep,name=rpcs,proto3" json:"rpcs,omitempty"`
-	Proto         []byte                 `protobuf:"bytes,5,opt,name=proto,proto3" json:"proto,omitempty"`
-	Secured       bool                   `protobuf:"varint,6,opt,name=secured,proto3" json:"secured,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	// package is the package, dependency, or artifact name.
+	Package string `protobuf:"bytes,3,opt,name=package,proto3" json:"package,omitempty"`
+	// rpcs are the callable methods exposed by this gRPC endpoint.
+	Rpcs []*RPC `protobuf:"bytes,4,rep,name=rpcs,proto3" json:"rpcs,omitempty"`
+	// proto is the serialized protobuf descriptor data for gRPC endpoints.
+	Proto []byte `protobuf:"bytes,5,opt,name=proto,proto3" json:"proto,omitempty"`
+	// secured is true when the endpoint expects TLS or equivalent transport security.
+	Secured       bool `protobuf:"varint,6,opt,name=secured,proto3" json:"secured,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -621,9 +659,11 @@ func (x *GrpcAPI) GetSecured() bool {
 	return false
 }
 
+// HttpAPI describes an HTTP endpoint.
 type HttpAPI struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Secured       bool                   `protobuf:"varint,1,opt,name=secured,proto3" json:"secured,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// secured is true when the endpoint expects TLS or equivalent transport security.
+	Secured       bool `protobuf:"varint,1,opt,name=secured,proto3" json:"secured,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -665,6 +705,7 @@ func (x *HttpAPI) GetSecured() bool {
 	return false
 }
 
+// TcpAPI describes a raw TCP endpoint.
 type TcpAPI struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields

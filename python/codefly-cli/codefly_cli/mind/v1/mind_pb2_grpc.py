@@ -302,43 +302,50 @@ class MindServiceServicer(object):
         ║  CODE OPERATIONS (proxied through Gateway)                   ║
         ╚══════════════════════════════════════════════════════════════╝
 
+        ReadFile reads a workspace file through the session's gateway.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def WriteFile(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """WriteFile writes a workspace file through the session's gateway.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SearchCode(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """SearchCode searches indexed or gateway-visible source files.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ListSymbols(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ListSymbols returns code symbols known to the session.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Build(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Build runs the service build through the gateway.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Test(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Test runs service tests through the gateway.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Lint(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Lint runs service linting through the gateway.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -348,79 +355,92 @@ class MindServiceServicer(object):
         ║  OBSERVATION (superset of debug.proto)                       ║
         ╚══════════════════════════════════════════════════════════════╝
 
+        GetDashboard returns the session KPI snapshot.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetContextState(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetContextState returns the prompt/context layers loaded for the session.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetMemory(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetMemory returns Mind's working memory for the session.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetObjectiveGraph(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetObjectiveGraph returns the current objective DAG.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetTrace(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetTrace returns the retained execution trace tree.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetMetrics(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetMetrics returns token, cost, and timing metrics.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetCostBreakdown(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetCostBreakdown returns hierarchical cost attribution.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetSymbolMap(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetSymbolMap returns the symbol map available to Mind.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetFileChanges(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetFileChanges returns file changes retained for the session.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetLastSummary(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetLastSummary returns the latest completed-run summary.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetRules(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetRules returns rules loaded into the current context.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetLLMCalls(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetLLMCalls returns the retained model-call log.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetMiddleware(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetMiddleware returns the middleware pipeline state.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

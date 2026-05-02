@@ -21,12 +21,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// MCP Tool Definition (aligned with Model Context Protocol spec)
+// Tool describes a callable MCP tool exposed by the Codefly MCP server.
 type Tool struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	InputSchema   *InputSchema           `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema,proto3" json:"input_schema,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the MCP tool identifier.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// description tells the model when the tool is useful.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// input_schema is the JSON Schema describing valid tool arguments.
+	InputSchema   *InputSchema `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema,proto3" json:"input_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -82,11 +85,15 @@ func (x *Tool) GetInputSchema() *InputSchema {
 	return nil
 }
 
+// InputSchema is the object-shaped JSON Schema accepted by a tool.
 type InputSchema struct {
-	state         protoimpl.MessageState     `protogen:"open.v1"`
-	Type          string                     `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "object"
-	Properties    map[string]*PropertySchema `protobuf:"bytes,2,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Required      []string                   `protobuf:"bytes,3,rep,name=required,proto3" json:"required,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is normally "object" for MCP tool input schemas.
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "object"
+	// properties maps argument names to their schema descriptions.
+	Properties map[string]*PropertySchema `protobuf:"bytes,2,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// required marks arguments that callers must provide.
+	Required      []string `protobuf:"bytes,3,rep,name=required,proto3" json:"required,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -142,11 +149,15 @@ func (x *InputSchema) GetRequired() []string {
 	return nil
 }
 
+// PropertySchema describes one MCP tool argument.
 type PropertySchema struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	EnumValues    []string               `protobuf:"bytes,3,rep,name=enum_values,json=enumValues,proto3" json:"enum_values,omitempty"` // For enum types
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the JSON Schema scalar or object type for this argument.
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	// description tells the model what value to provide.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// enum_values lists allowed string values for an MCP schema property.
+	EnumValues    []string `protobuf:"bytes,3,rep,name=enum_values,json=enumValues,proto3" json:"enum_values,omitempty"` // For enum types
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -202,13 +213,17 @@ func (x *PropertySchema) GetEnumValues() []string {
 	return nil
 }
 
-// MCP Resource Definition
+// Resource describes read-only context exposed through MCP.
 type Resource struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uri           string                 `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	MimeType      string                 `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
-	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// uri is the stable resource identifier.
+	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+	// name is the display name for this resource.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// mime_type identifies the media type of resource content.
+	MimeType string `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	// description tells the model when the resource is useful.
+	Description   string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -271,11 +286,13 @@ func (x *Resource) GetDescription() string {
 	return ""
 }
 
-// Content types returned by tools and resources
+// TextContent is a text block returned by an MCP tool or resource.
 type TextContent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "text"
-	Text          string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the MCP content type, normally "text".
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "text"
+	// text is the plain-text payload or human-readable description.
+	Text          string `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -324,11 +341,15 @@ func (x *TextContent) GetText() string {
 	return ""
 }
 
+// ImageContent is an image block returned by an MCP tool or resource.
 type ImageContent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "image"
-	Data          string                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	MimeType      string                 `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the MCP content type, normally "image".
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "image"
+	// data is the base64-encoded image payload.
+	Data string `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	// mime_type identifies the media type of resource content.
+	MimeType      string `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -384,12 +405,17 @@ func (x *ImageContent) GetMimeType() string {
 	return ""
 }
 
+// ResourceContent embeds a resource reference or payload in a content response.
 type ResourceContent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "resource"
-	Resource      *Resource              `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
-	Text          string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
-	Blob          string                 `protobuf:"bytes,4,opt,name=blob,proto3" json:"blob,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the MCP content type, normally "resource".
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "resource"
+	// resource is the resource metadata associated with this content.
+	Resource *Resource `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
+	// text is the plain-text payload or human-readable description.
+	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	// blob is binary content encoded by the protocol.
+	Blob          string `protobuf:"bytes,4,opt,name=blob,proto3" json:"blob,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -452,8 +478,11 @@ func (x *ResourceContent) GetBlob() string {
 	return ""
 }
 
+// Content is the typed MCP response envelope for tools and resources.
 type Content struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// content selects exactly one supported content variant.
+	//
 	// Types that are valid to be assigned to Content:
 	//
 	//	*Content_Text
@@ -533,14 +562,17 @@ type isContent_Content interface {
 }
 
 type Content_Text struct {
+	// text carries a plain-text content block.
 	Text *TextContent `protobuf:"bytes,1,opt,name=text,proto3,oneof"`
 }
 
 type Content_Image struct {
+	// image carries the ImageContent variant for Content.
 	Image *ImageContent `protobuf:"bytes,2,opt,name=image,proto3,oneof"`
 }
 
 type Content_Resource struct {
+	// resource carries the ResourceContent variant for Content.
 	Resource *ResourceContent `protobuf:"bytes,3,opt,name=resource,proto3,oneof"`
 }
 
@@ -552,9 +584,11 @@ func (*Content_Resource) isContent_Content() {}
 
 // Tool execution
 type CallToolRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Arguments     map[string]string      `protobuf:"bytes,2,rep,name=arguments,proto3" json:"arguments,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the tool name from the MCP server catalog.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// arguments are JSON-shaped values supplied to a tool or prompt.
+	Arguments     map[string]string `protobuf:"bytes,2,rep,name=arguments,proto3" json:"arguments,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -603,10 +637,13 @@ func (x *CallToolRequest) GetArguments() map[string]string {
 	return nil
 }
 
+// CallToolResponse returns MCP content blocks and an application-level error flag.
 type CallToolResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Content       []*Content             `protobuf:"bytes,1,rep,name=content,proto3" json:"content,omitempty"`
-	IsError       bool                   `protobuf:"varint,2,opt,name=is_error,json=isError,proto3" json:"is_error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// content contains the blocks returned by the tool.
+	Content []*Content `protobuf:"bytes,1,rep,name=content,proto3" json:"content,omitempty"`
+	// is_error is true when the tool result represents an application-level failure.
+	IsError       bool `protobuf:"varint,2,opt,name=is_error,json=isError,proto3" json:"is_error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -657,8 +694,9 @@ func (x *CallToolResponse) GetIsError() bool {
 
 // Resource operations
 type ReadResourceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uri           string                 `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// uri is the stable resource identifier.
+	Uri           string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -700,9 +738,11 @@ func (x *ReadResourceRequest) GetUri() string {
 	return ""
 }
 
+// ReadResourceResponse returns the content blocks for one resource URI.
 type ReadResourceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Contents      []*Content             `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// contents contains the blocks returned by the resource.
+	Contents      []*Content `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -744,6 +784,7 @@ func (x *ReadResourceResponse) GetContents() []*Content {
 	return nil
 }
 
+// ListResourcesRequest carries optional filters for listing resources.
 type ListResourcesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -780,9 +821,11 @@ func (*ListResourcesRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_mcp_v0_mcp_proto_rawDescGZIP(), []int{12}
 }
 
+// ListResourcesResponse returns resources exposed by the MCP server.
 type ListResourcesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Resources     []*Resource            `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// resources are read-only context entries exposed to an AI client or host.
+	Resources     []*Resource `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -861,9 +904,11 @@ func (*ListToolsRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_mcp_v0_mcp_proto_rawDescGZIP(), []int{14}
 }
 
+// ListToolsResponse returns callable tools exposed by the MCP server.
 type ListToolsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tools         []*Tool                `protobuf:"bytes,1,rep,name=tools,proto3" json:"tools,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// tools are callable functions exposed to an AI client or host.
+	Tools         []*Tool `protobuf:"bytes,1,rep,name=tools,proto3" json:"tools,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -905,12 +950,15 @@ func (x *ListToolsResponse) GetTools() []*Tool {
 	return nil
 }
 
-// Server info
+// ServerInfo identifies the MCP server and its advertised capabilities.
 type ServerInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	Capabilities  *ServerCapabilities    `protobuf:"bytes,3,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the MCP server name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	// capabilities describes which optional protocol features are supported.
+	Capabilities  *ServerCapabilities `protobuf:"bytes,3,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -966,11 +1014,15 @@ func (x *ServerInfo) GetCapabilities() *ServerCapabilities {
 	return nil
 }
 
+// ServerCapabilities advertises the MCP feature groups supported by the server.
 type ServerCapabilities struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tools         bool                   `protobuf:"varint,1,opt,name=tools,proto3" json:"tools,omitempty"`
-	Resources     bool                   `protobuf:"varint,2,opt,name=resources,proto3" json:"resources,omitempty"`
-	Prompts       bool                   `protobuf:"varint,3,opt,name=prompts,proto3" json:"prompts,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// tools are callable functions exposed to an AI client or host.
+	Tools bool `protobuf:"varint,1,opt,name=tools,proto3" json:"tools,omitempty"`
+	// resources are read-only context entries exposed to an AI client or host.
+	Resources bool `protobuf:"varint,2,opt,name=resources,proto3" json:"resources,omitempty"`
+	// prompts are reusable prompt templates exposed to an AI client or host.
+	Prompts       bool `protobuf:"varint,3,opt,name=prompts,proto3" json:"prompts,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1026,13 +1078,15 @@ func (x *ServerCapabilities) GetPrompts() bool {
 	return false
 }
 
-// Initialize
+// InitializeRequest is the MCP protocol handshake request.
 type InitializeRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ProtocolVersion string                 `protobuf:"bytes,1,opt,name=protocol_version,json=protocolVersion,proto3" json:"protocol_version,omitempty"`
-	ClientInfo      *ClientInfo            `protobuf:"bytes,2,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// protocol_version is the negotiated MCP or API protocol version.
+	ProtocolVersion string `protobuf:"bytes,1,opt,name=protocol_version,json=protocolVersion,proto3" json:"protocol_version,omitempty"`
+	// client_info describes the MCP client performing initialization.
+	ClientInfo    *ClientInfo `protobuf:"bytes,2,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InitializeRequest) Reset() {
@@ -1079,10 +1133,13 @@ func (x *InitializeRequest) GetClientInfo() *ClientInfo {
 	return nil
 }
 
+// ClientInfo identifies the MCP client during initialization.
 type ClientInfo struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the MCP client name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version       string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1131,12 +1188,15 @@ func (x *ClientInfo) GetVersion() string {
 	return ""
 }
 
+// InitializeResponse confirms the negotiated MCP protocol version and server metadata.
 type InitializeResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	ProtocolVersion string                 `protobuf:"bytes,1,opt,name=protocol_version,json=protocolVersion,proto3" json:"protocol_version,omitempty"`
-	ServerInfo      *ServerInfo            `protobuf:"bytes,2,opt,name=server_info,json=serverInfo,proto3" json:"server_info,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// protocol_version is the negotiated MCP or API protocol version.
+	ProtocolVersion string `protobuf:"bytes,1,opt,name=protocol_version,json=protocolVersion,proto3" json:"protocol_version,omitempty"`
+	// server_info describes the MCP server returned by initialization.
+	ServerInfo    *ServerInfo `protobuf:"bytes,2,opt,name=server_info,json=serverInfo,proto3" json:"server_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InitializeResponse) Reset() {

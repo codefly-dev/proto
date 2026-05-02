@@ -7,7 +7,6 @@
 package v0
 
 import (
-	_ "github.com/codefly-dev/core/generated/go/codefly/base/v0"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -22,9 +21,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// WorkspaceInformationRequest identifies the workspace whose inventory should be inspected.
 type WorkspaceInformationRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Workspace     string                 `protobuf:"bytes,1,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// workspace is the Codefly workspace name that scopes modules and services.
+	Workspace     string `protobuf:"bytes,1,opt,name=workspace,proto3" json:"workspace,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -70,7 +71,7 @@ var File_codefly_observability_v0_inventory_proto protoreflect.FileDescriptor
 
 const file_codefly_observability_v0_inventory_proto_rawDesc = "" +
 	"\n" +
-	"(codefly/observability/v0/inventory.proto\x12\x18codefly.observability.v0\x1a\x1ecodefly/base/v0/endpoint.proto\";\n" +
+	"(codefly/observability/v0/inventory.proto\x12\x18codefly.observability.v0\";\n" +
 	"\x1bWorkspaceInformationRequest\x12\x1c\n" +
 	"\tworkspace\x18\x01 \x01(\tR\tworkspaceB\xf3\x01\n" +
 	"\x1ccom.codefly.observability.v0B\x0eInventoryProtoP\x01ZAgithub.com/codefly-dev/core/generated/go/codefly/observability/v0\xa2\x02\x03COV\xaa\x02\x18Codefly.Observability.V0\xca\x02\x18Codefly\\Observability\\V0\xe2\x02$Codefly\\Observability\\V0\\GPBMetadata\xea\x02\x1aCodefly::Observability::V0b\x06proto3"

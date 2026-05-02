@@ -21,11 +21,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ConfigurationValue is one key/value pair produced by a service or workspace configuration
+// source.
 type ConfigurationValue struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value         string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
-	Secret        bool                   `protobuf:"varint,3,opt,name=secret,proto3" json:"secret,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// key is the configuration or schema property name.
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// value is the configuration or schema value.
+	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	// secret marks configuration values that must not be logged or displayed.
+	Secret        bool `protobuf:"varint,3,opt,name=secret,proto3" json:"secret,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -81,11 +86,15 @@ func (x *ConfigurationValue) GetSecret() bool {
 	return false
 }
 
+// ConfigurationData carries a structured configuration blob alongside key/value configuration.
 type ConfigurationData struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Content       []byte                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
-	Secret        bool                   `protobuf:"varint,3,opt,name=secret,proto3" json:"secret,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind identifies the format or producer-specific type of this configuration blob.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// content is the full file, resource, prompt, or response body.
+	Content []byte `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	// secret marks configuration values that must not be logged or displayed.
+	Secret        bool `protobuf:"varint,3,opt,name=secret,proto3" json:"secret,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -141,13 +150,17 @@ func (x *ConfigurationData) GetSecret() bool {
 	return false
 }
 
+// ConfigurationInformation groups named configuration values produced by a service or workspace.
 type ConfigurationInformation struct {
-	state               protoimpl.MessageState `protogen:"open.v1"`
-	Name                string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	ConfigurationValues []*ConfigurationValue  `protobuf:"bytes,2,rep,name=configuration_values,json=configurationValues,proto3" json:"configuration_values,omitempty"`
-	Data                *ConfigurationData     `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the configuration group name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// configuration_values are key/value pairs exposed by a configuration entry.
+	ConfigurationValues []*ConfigurationValue `protobuf:"bytes,2,rep,name=configuration_values,json=configurationValues,proto3" json:"configuration_values,omitempty"`
+	// data is an optional structured configuration payload for values that do not fit key/value pairs.
+	Data          *ConfigurationData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ConfigurationInformation) Reset() {
@@ -206,12 +219,15 @@ func (x *ConfigurationInformation) GetData() *ConfigurationData {
 // - service: origin is the service unique
 // Information is a grouping of configuration values
 type Configuration struct {
-	state          protoimpl.MessageState      `protogen:"open.v1"`
-	Origin         string                      `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
-	RuntimeContext *RuntimeContext             `protobuf:"bytes,2,opt,name=runtime_context,json=runtimeContext,proto3" json:"runtime_context,omitempty"`
-	Infos          []*ConfigurationInformation `protobuf:"bytes,3,rep,name=infos,proto3" json:"infos,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// origin identifies the service or workspace that produced the configuration.
+	Origin string `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+	// runtime_context describes where the service runs, such as native, nix, container, or free.
+	RuntimeContext *RuntimeContext `protobuf:"bytes,2,opt,name=runtime_context,json=runtimeContext,proto3" json:"runtime_context,omitempty"`
+	// infos are named configuration groups exposed by a producer.
+	Infos         []*ConfigurationInformation `protobuf:"bytes,3,rep,name=infos,proto3" json:"infos,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Configuration) Reset() {

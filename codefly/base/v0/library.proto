@@ -6,47 +6,70 @@ option go_package = "github.com/codefly-dev/core/generated/go/codefly/base/v0";
 
 // Library represents internal shared code that can be used by services
 message Library {
+    // name is the library name.
     string name = 1;
+    // description is the human-readable library description.
     string description = 2;
+    // version is the semantic or service-specific version for this resource.
     string version = 3;
+    // languages describes how this library is exported to each supported language.
     repeated LanguageExport languages = 4;
+    // git is repository or submodule metadata for this library.
     GitConfig git = 5;
+    // library_dependencies are other internal libraries required by this library.
     repeated LibraryReference library_dependencies = 6;
 }
 
 // LanguageExport defines how a library is exported for a specific language
 message LanguageExport {
+    // name is the language name for this export.
     string name = 1;              // Language name: "go", "python", "typescript"
+    // agent is the library agent or generator responsible for this language export.
     string agent = 2;             // Library agent identifier
+    // path is a workspace- or service-relative filesystem path.
     string path = 3;              // Relative path to language-specific code
+    // exports describes language-specific packages exposed by the library.
     repeated string exports = 4;  // Package/module names exported
 }
 
 // GitConfig for libraries that are git repositories (or submodules)
 message GitConfig {
+    // remote is the git remote URL for this library.
     string remote = 1;            // Git remote URL (optional for local libs)
+    // branch is the git branch used for this library.
     string branch = 2;            // Default branch
+    // commit is the pinned git commit for this library.
     string commit = 3;            // Pinned commit hash (optional)
+    // tag is the pinned git tag for this library.
     string tag = 4;               // Version tag (optional)
 }
 
 // LibraryReference is used for dependencies between libraries
 message LibraryReference {
+    // name is the referenced library name.
     string name = 1;
+    // version is the semantic or service-specific version for this resource.
     string version = 2;           // Semver constraint (e.g., ">=1.0.0")
 }
 
 // LibraryDependency is used when a service depends on a library
 message LibraryDependency {
+    // name is the library dependency name.
     string name = 1;
+    // version is the semantic or service-specific version for this resource.
     string version = 2;           // Semver constraint
+    // languages identifies which language exports or generators apply.
     repeated string languages = 3; // Which language exports are needed
 }
 
 // LibraryIdentity uniquely identifies a library
 message LibraryIdentity {
+    // name is the library name.
     string name = 1;
+    // workspace is the Codefly workspace name that scopes modules and services.
     string workspace = 2;
+    // version is the semantic or service-specific version for this resource.
     string version = 3;
+    // path is a workspace- or service-relative filesystem path.
     string path = 4;              // Absolute path to library
 }

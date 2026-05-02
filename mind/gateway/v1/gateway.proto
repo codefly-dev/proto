@@ -10,6 +10,8 @@ option go_package = "github.com/codefly-dev/core/generated/go/mind/gateway/v1;ga
 // definitions, references, dependencies, git state, and command output.
 // Mind never sees: agents, processes, containers, addresses.
 
+// Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
+// agents, processes, or containers.
 service Gateway {
 
   // ─── Topology ───────────────────────────────────────────────
@@ -133,367 +135,604 @@ service Gateway {
 
 // ─── Topology ────────────────────────────────────────────────
 
+// ListServicesRequest carries optional filters for listing services.
 message ListServicesRequest {}
 
+// ServiceInfo describes a service visible through the gateway.
 message ServiceInfo {
+  // name is the Codefly service name.
   string name = 1;
+  // language is the implementation language detected for the service.
   string language = 2;       // "go", "rust", "node", etc.
+  // type distinguishes services, libraries, and other service-like resources.
   string type = 3;           // "library" | "service"
+  // port is the primary local port exposed through the gateway when known.
   int32 port = 7;
 }
 
+// ListServicesResponse returns the services the gateway can route to.
 message ListServicesResponse {
+  // services are known Codefly services and libraries in the workspace.
   repeated ServiceInfo services = 1;
 }
 
 // ─── File Operations ─────────────────────────────────────────
 
+// ReadFileRequest identifies a file to read from one service source tree.
 message ReadFileRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;           // relative to service root
 }
 
+// ReadFileResponse returns file content when the requested path exists.
 message ReadFileResponse {
+  // content is the complete file body; it is empty when exists is false.
   string content = 1;
+  // exists reports whether the requested file or resource was found.
   bool exists = 2;
 }
 
+// WriteFileRequest replaces or creates one file in a service source tree.
 message WriteFileRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;           // relative to service root
+  // content is the complete file body to write.
   string content = 3;
 }
 
+// WriteFileResponse reports whether the gateway completed the write.
 message WriteFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// ListFilesRequest carries optional filters for listing files.
 message ListFilesRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;                // optional: subdirectory (empty = root)
+  // extensions restrict file results to the listed suffixes.
   repeated string extensions = 3; // optional: filter by extension (e.g. ".go", ".py")
+  // recursive includes nested directories when true.
   bool recursive = 4;
 }
 
+// FileInfo describes a file or directory returned by ListFiles.
 message FileInfo {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;       // relative path within the service
+  // size_bytes is the file size in bytes.
   int64 size_bytes = 2;
+  // is_directory is true when the path is a directory.
   bool is_directory = 3;
 }
 
+// ListFilesResponse returns file metadata for paths matching the request filters.
 message ListFilesResponse {
+  // files are files or directories under the requested service path.
   repeated FileInfo files = 1;
 }
 
+// DeleteFileRequest identifies the file resource to delete.
 message DeleteFileRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;           // relative to service root
 }
 
+// DeleteFileResponse reports whether the gateway removed the file.
 message DeleteFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// MoveFileRequest renames or moves a file within one service tree.
 message MoveFileRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // old_path is the current service-relative path before a move.
   string old_path = 2;
+  // new_path is the desired service-relative path after a move.
   string new_path = 3;
+  // update_imports asks the language tooling to rewrite imports after a move.
   bool update_imports = 4;
 }
 
+// MoveFileResponse reports the move and any files rewritten because imports changed.
 message MoveFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
+  // updated_files lists files changed as a side effect of import rewriting.
   repeated string updated_files = 3;
 }
 
+// CreateFileRequest describes the file resource to create.
 message CreateFileRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;
+  // content is the initial file body to write.
   string content = 3;
+  // overwrite allows CreateFile to replace an existing file when true.
   bool overwrite = 4;
 }
 
+// CreateFileResponse reports whether the gateway created the file.
 message CreateFileResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
 // ─── Code Intelligence (LSP) ─────────────────────────────────
 
+// ListSymbolsRequest carries optional filters for listing symbols.
 message ListSymbolsRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;        // optional: omit for cross-service query
+  // file is a workspace- or service-relative source file path.
   string file = 2;           // optional: restrict to one file
+  // filter restricts symbols or list results to matching names.
   string filter = 3;         // optional: symbol name pattern
 }
 
+// Symbol is a gateway-normalized view of a language symbol.
 message Symbol {
+  // name is the symbol name reported by language tooling.
   string name = 1;
+  // kind classifies the language construct, such as function, method, or struct.
   string kind = 2;           // "function", "method", "struct", "interface", "constant", "variable"
+  // signature is the declaration text or callable shape for a symbol.
   string signature = 3;      // declaration line
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 4;        // which service this symbol lives in
+  // file is a workspace- or service-relative source file path.
   string file = 5;           // relative path
+  // line is the 1-based source line number.
   int32 line = 6;
+  // documentation is the doc comment or hover text supplied by language tooling.
   string documentation = 7;  // doc comment if present
+  // parent is the containing type, package, or symbol when known.
   string parent = 8;         // containing symbol (e.g. struct name for a method)
 }
 
+// ListSymbolsResponse returns symbols discovered through the gateway.
 message ListSymbolsResponse {
+  // symbols are code entities returned by language analysis.
   repeated Symbol symbols = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;          // non-fatal error (e.g. LSP not ready yet)
 }
 
 // Diagnostic represents a compiler error, warning, or hint.
 message Diagnostic {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // line is the 1-based source line number.
   int32 line = 2;
+  // column is the 1-based source column number when known.
   int32 column = 3;
+  // end_line is the 1-based ending source line for a range.
   int32 end_line = 4;
+  // end_column is the 1-based ending source column for a range.
   int32 end_column = 5;
+  // message is the diagnostic text returned by the compiler, linter, or language server.
   string message = 6;
+  // severity is the diagnostic or finding level reported by the producer.
   string severity = 7;      // "error", "warning", "information", "hint"
+  // source identifies the compiler, linter, language server, or tool that produced the item.
   string source = 8;        // e.g. "gopls", "pylsp"
+  // code is the diagnostic or rule identifier from the producing tool.
   string code = 9;          // diagnostic code
 }
 
+// GetDiagnosticsRequest identifies the diagnostics data to retrieve.
 message GetDiagnosticsRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;           // optional: restrict to a single file
 }
 
+// GetDiagnosticsResponse returns compiler, linter, or language-server findings.
 message GetDiagnosticsResponse {
+  // diagnostics are compiler, linter, or language-server findings.
   repeated Diagnostic diagnostics = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
 // Location identifies a position in a file.
 message Location {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // line is the 1-based source line number.
   int32 line = 2;
+  // column is the 1-based source column number when known.
   int32 column = 3;
+  // end_line is the 1-based ending source line for a range.
   int32 end_line = 4;
+  // end_column is the 1-based ending source column for a range.
   int32 end_column = 5;
 }
 
+// GoToDefinitionRequest identifies a source position whose declaration should be resolved.
 message GoToDefinitionRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // line is the 1-based source line number.
   int32 line = 3;
+  // column is the 1-based source column number when known.
   int32 column = 4;
 }
 
+// GoToDefinitionResponse returns declaration locations for the selected symbol.
 message GoToDefinitionResponse {
+  // locations are declaration locations returned by the language server.
   repeated Location locations = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// FindReferencesRequest identifies a source position whose usages should be resolved.
 message FindReferencesRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // line is the 1-based source line number.
   int32 line = 3;
+  // column is the 1-based source column number when known.
   int32 column = 4;
 }
 
+// FindReferencesResponse returns usage locations for the selected symbol.
 message FindReferencesResponse {
+  // locations are reference locations returned by the language server.
   repeated Location locations = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
 // TextEdit represents a single text replacement in a file.
 message TextEdit {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // start_line is the 1-based starting line for an edit range.
   int32 start_line = 2;
+  // start_column is the 1-based starting column for an edit range.
   int32 start_column = 3;
+  // end_line is the 1-based ending source line for a range.
   int32 end_line = 4;
+  // end_column is the 1-based ending source column for a range.
   int32 end_column = 5;
+  // new_text is the replacement text inserted by this edit.
   string new_text = 6;
 }
 
+// RenameSymbolRequest asks the gateway to perform a language-aware rename.
 message RenameSymbolRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // line is the 1-based source line number.
   int32 line = 3;
+  // column is the 1-based source column number when known.
   int32 column = 4;
+  // new_name is the replacement symbol name requested by the caller.
   string new_name = 5;
 }
 
+// RenameSymbolResponse reports the edits produced and applied for a rename.
 message RenameSymbolResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
+  // edits contains the source replacements produced by language tooling.
   repeated TextEdit edits = 3;
+  // files lists files modified by the rename.
   repeated string files = 4;
 }
 
+// GetHoverInfoRequest identifies the hover info data to retrieve.
 message GetHoverInfoRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // line is the 1-based source line number.
   int32 line = 3;
+  // column is the 1-based source column number when known.
   int32 column = 4;
 }
 
+// GetHoverInfoResponse returns hover text and language metadata for a source position.
 message GetHoverInfoResponse {
+  // content is hover content, often markdown from the language server.
   string content = 1;
+  // language is the implementation language reported by tooling or project metadata.
   string language = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
 // ─── Code Fix ─────────────────────────────────────────────────
 
+// FixRequest asks the gateway to run language-specific formatters or fixers on a file.
 message FixRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;            // relative to service root
 }
 
+// FixResponse returns the fixed content and the formatter actions that ran.
 message FixResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // content is the fixed file content; it may be empty when no rewrite was needed.
   string content = 2;         // the fixed file content (empty if unchanged)
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;           // non-fatal: fixer not available, etc.
+  // actions are native formatter, fixer, or lifecycle actions performed by the agent.
   repeated string actions = 4; // what was done: "goimports", "gofmt", etc.
 }
 
 // ─── Code Edit ────────────────────────────────────────────────
 
+// ApplyEditRequest asks the gateway to apply a smart find/replace edit.
 message ApplyEditRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;          // relative to service root
+  // find is the text or pattern to locate before applying an edit.
   string find = 3;          // text to find (smart matching at plugin level)
+  // replace is the replacement text used by an edit operation.
   string replace = 4;       // replacement text
+  // auto_fix asks the agent to run language fixers after editing.
   bool auto_fix = 5;        // if true, plugin runs fixers after edit
 }
 
+// ApplyEditResponse reports the selected strategy and post-edit content.
 message ApplyEditResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // content is the file content after the edit and optional fixers.
   string content = 2;              // file content after edit + fix
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;                // why the edit failed
+  // strategy names the edit or execution strategy that produced the result.
   string strategy = 4;             // which matching strategy
+  // fix_actions names formatters or import fixers that ran after the edit.
   repeated string fix_actions = 5; // fixers that ran
 }
 
 // BatchApplyEditsRequest applies multiple edits in one call.
 message BatchApplyEditsRequest {
+  // edits are the requested edits, potentially spanning services.
   repeated ApplyEditRequest edits = 1;
 }
 
+// EditResult captures the outcome of one edit inside a batch.
 message EditResult {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // success is true when the requested operation completed successfully.
   bool success = 3;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 4;
+  // strategy names the edit or execution strategy that produced the result.
   string strategy = 5;
 }
 
+// BatchApplyEditsResponse returns per-edit outcomes for the batch.
 message BatchApplyEditsResponse {
+  // results are per-item outcomes returned by the operation.
   repeated EditResult results = 1;
+  // succeeded is the number of edits that applied successfully.
   int32 succeeded = 2;
+  // failed is the number of edits that failed.
   int32 failed = 3;
 }
 
 // ─── Search ───────────────────────────────────────────────────
 
+// SearchRequest searches service files through the gateway.
 message SearchRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // pattern is the search expression or test filter requested by the caller.
   string pattern = 2;              // regex or literal pattern
+  // literal treats pattern as plain text instead of a regular expression.
   bool literal = 3;                // if true, treat pattern as literal string
+  // case_insensitive makes matching ignore letter case.
   bool case_insensitive = 4;
+  // path is a workspace- or service-relative filesystem path.
   string path = 5;                 // optional: restrict to subdirectory
+  // extensions restrict file results to the listed suffixes.
   repeated string extensions = 6;  // optional: filter by extension (e.g. ".go", ".py")
+  // exclude contains glob patterns to skip during the search.
   repeated string exclude = 7;     // optional: glob patterns to exclude
+  // max_results caps returned matches; zero uses the gateway default.
   int32 max_results = 8;           // 0 = default (100)
+  // context_lines is the number of neighboring lines returned around each match.
   int32 context_lines = 9;         // lines of context around each match
 }
 
+// SearchMatch identifies one matching line and optional surrounding context.
 message SearchMatch {
+  // file is a workspace- or service-relative source file path.
   string file = 1;                 // relative path
+  // line is the 1-based source line number.
   int32 line = 2;                  // 1-based line number
+  // text is the matched source line.
   string text = 3;                 // the matching line
+  // context_before contains lines immediately before the match.
   repeated string context_before = 4;
+  // context_after contains lines immediately after the match.
   repeated string context_after = 5;
 }
 
+// SearchResponse returns matching source lines and truncation metadata.
 message SearchResponse {
+  // matches are the search hits returned by the gateway.
   repeated SearchMatch matches = 1;
+  // truncated is true when the response was capped before all data could be returned.
   bool truncated = 2;
+  // total_matches is the number of hits observed before truncation.
   int32 total_matches = 3;
 }
 
 // ─── Build ───────────────────────────────────────────────────
 
+// BuildRequest asks the gateway to run the service build.
 message BuildRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
 }
 
+// BuildError is a structured build or lint diagnostic.
 message BuildError {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // line is the 1-based source line number.
   int32 line = 2;
+  // column is the 1-based source column number when known.
   int32 column = 3;
+  // message is the diagnostic text returned by the build or lint tool.
   string message = 4;
+  // severity is the diagnostic or finding level reported by the producer.
   string severity = 5;       // "error" | "warning"
 }
 
+// BuildResponse returns build success, structured diagnostics, and raw output.
 message BuildResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // errors are structured build diagnostics.
   repeated BuildError errors = 2;
+  // output is raw command, build, lint, or test output retained for diagnosis.
   string output = 3;         // raw build output
 }
 
 // ─── Lint ─────────────────────────────────────────────────────
 
+// LintRequest asks the gateway to run the service linter.
 message LintRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
 }
 
+// LintResponse returns lint success, structured diagnostics, and raw output.
 message LintResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // errors are structured lint diagnostics.
   repeated BuildError errors = 2; // reuse BuildError for lint diagnostics
+  // output is raw command, build, lint, or test output retained for diagnosis.
   string output = 3;              // raw lint output
 }
 
 // ─── Test ─────────────────────────────────────────────────────
 
+// TestRequest asks the gateway to run the service tests.
 message TestRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
 }
 
+// TestResponse returns service test counts and raw runner output.
 message TestResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // output is raw command, build, lint, or test output retained for diagnosis.
   string output = 2;              // raw test output
+  // tests_run is the total number of tests executed.
   int32 tests_run = 3;
+  // tests_passed is the number of tests that passed.
   int32 tests_passed = 4;
+  // tests_failed is the number of tests that failed.
   int32 tests_failed = 5;
+  // tests_skipped is the number of tests skipped by the runner.
+  int32 tests_skipped = 6;
+  // coverage_pct is the overall coverage percentage when available.
+  float coverage_pct = 7;
+  // failures are concise failing test names or messages.
+  repeated string failures = 8;
 }
 
 // ─── Execution ───────────────────────────────────────────────
 
+// RunCommandRequest asks the gateway to run a command in a service context.
 message RunCommandRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // command is the executable or shell command requested by the caller.
   string command = 2;              // command to execute
+  // args are structured or command-line arguments supplied to the tool or command.
   repeated string args = 3;        // arguments
+  // timeout_seconds caps command execution time; zero uses the default.
   int32 timeout_seconds = 4;       // 0 = default (30s)
+  // working_dir is an optional service-relative directory for command execution.
   string working_dir = 5;          // optional: relative subdirectory
 }
 
+// RunCommandResponse returns process exit status and captured streams.
 message RunCommandResponse {
+  // exit_code is the process exit status returned by the operating system.
   int32 exit_code = 1;
+  // stdout is the process standard output stream.
   string stdout = 2;
+  // stderr is the process standard error stream.
   string stderr = 3;
 }
 
 // ─── Runtime / Checks ────────────────────────────────────────
 
+// RunChecksRequest asks the gateway to run verification checks for one service.
 message RunChecksRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // checks are verification steps requested by the caller.
   repeated Check checks = 2;
 }
 
+// Check describes one verification step the gateway can run.
 message Check {
+  // name is a caller-chosen identifier for this check.
   string name = 1;
+  // check_type selects exactly one supported check type variant.
   oneof check_type {
+    // command runs a shell command and evaluates exit code or output.
     CommandCheck command = 2;
+    // http calls a service endpoint and evaluates the response.
     HttpCheck http = 3;
+    // plugin_build delegates to the service plugin's Build RPC.
     PluginCheck plugin_build = 4;
+    // plugin_test delegates to the service plugin's Test RPC.
     PluginCheck plugin_test = 5;
+    // plugin_lint delegates to the service plugin's Lint RPC.
     PluginCheck plugin_lint = 6;
   }
 }
@@ -502,125 +741,201 @@ message Check {
 message PluginCheck {
 }
 
+// CommandCheck validates a command's exit code and optional output text.
 message CommandCheck {
+  // run is the command line executed by a command check.
   string run = 1;
+  // expected_exit_code is the process status required for success.
   int32 expected_exit_code = 2;
+  // output_contains is text that must appear in command output.
   string output_contains = 3;
 }
 
+// HttpCheck validates an HTTP endpoint response.
 message HttpCheck {
+  // method is the HTTP verb used by the check or API description.
   string method = 1;
+  // path is the HTTP path to request on the service endpoint.
   string path = 2;
+  // body is the request or response payload.
   string body = 3;
+  // expected_status is the HTTP status code required for success.
   int32 expected_status = 4;
+  // body_contains is text that must appear in the HTTP response body.
   string body_contains = 5;
 }
 
+// CheckResult captures the outcome of one verification check.
 message CheckResult {
+  // name matches the requested check name.
   string name = 1;
+  // passed is true when the check met its expected condition.
   bool passed = 2;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 3;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 4;
 }
 
+// RunChecksResponse returns per-check outcomes.
 message RunChecksResponse {
+  // results are per-item outcomes returned by the operation.
   repeated CheckResult results = 1;
 }
 
 // ─── Version Control ─────────────────────────────────────────
 
+// GitStatusRequest asks for git status, optionally scoped to one service directory.
 message GitStatusRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;         // optional: filter to service directory
 }
 
+// GitFileStatus reports the state and message for the git file lifecycle phase.
 message GitFileStatus {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // status is the git, lifecycle, diagnostic, or operation state for this item.
   string status = 2;          // "modified", "added", "deleted", "untracked", "renamed", "copied"
+  // staged selects or reports the git index instead of the worktree.
   bool staged = 3;
 }
 
+// GitStatusResponse returns branch and changed-file status.
 message GitStatusResponse {
+  // files are changed files reported by git status.
   repeated GitFileStatus files = 1;
+  // branch is the current git branch name.
   string branch = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
+// GitDiffRequest asks for a git diff, optionally scoped to a path or index.
 message GitDiffRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;            // optional: restrict to a file
+  // staged selects or reports the git index instead of the worktree.
   bool staged = 3;            // if true, show staged changes
 }
 
+// GitDiffResponse returns unified diff text.
 message GitDiffResponse {
+  // diff is the unified git diff text.
   string diff = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// GitLogRequest asks for recent commit history.
 message GitLogRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // count limits how many records should be returned.
   int32 count = 2;            // number of commits (default 10)
 }
 
+// GitCommitInfo summarizes one commit returned by GitLog.
 message GitCommitInfo {
+  // hash is the full git commit or content hash.
   string hash = 1;
+  // short_hash is the abbreviated git commit hash.
   string short_hash = 2;
+  // author is the commit author identity.
   string author = 3;
+  // message is the first line of the commit message.
   string message = 4;
+  // date is the commit timestamp as reported by git.
   string date = 5;
 }
 
+// GitLogResponse returns commit history ordered newest first.
 message GitLogResponse {
+  // commits are git history entries ordered newest first.
   repeated GitCommitInfo commits = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// GitCommitRequest asks the gateway to commit selected workspace changes.
 message GitCommitRequest {
+  // message is the commit message to use.
   string message = 1;
+  // paths optionally restrict the commit to specific files.
   repeated string paths = 2;  // optional: specific files to commit
 }
 
+// GitCommitResponse reports the commit hash when the commit succeeds.
 message GitCommitResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // hash is the full git commit or content hash.
   string hash = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
 // ─── Dependency Management ───────────────────────────────────
 
+// Dependency represents a package or module dependency.
 message Dependency {
+  // name is the package, module, or dependency identifier.
   string name = 1;
+  // version is the semantic or service-specific version for this resource.
   string version = 2;
+  // direct is true when the dependency is declared directly rather than transitively inferred.
   bool direct = 3;
 }
 
+// ListDependenciesRequest carries optional filters for listing dependencies.
 message ListDependenciesRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
 }
 
+// ListDependenciesResponse returns dependencies discovered by the native package manager.
 message ListDependenciesResponse {
+  // dependencies are packages or services required by this resource.
   repeated Dependency dependencies = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
+// AddDependencyRequest identifies a package to install through the native package manager.
 message AddDependencyRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // package_name is the package or dependency identifier used by the native manager.
   string package_name = 2;
+  // version is the semantic or service-specific version for this resource.
   string version = 3;
 }
 
+// AddDependencyResponse reports the dependency version resolved by the package manager.
 message AddDependencyResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
+  // installed_version is the version resolved by the package manager.
   string installed_version = 3;
 }
 
+// RemoveDependencyRequest identifies a package to remove through the native package manager.
 message RemoveDependencyRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // package_name is the package or dependency identifier used by the native manager.
   string package_name = 2;
 }
 
+// RemoveDependencyResponse reports whether the package manager removed the dependency.
 message RemoveDependencyResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 2;
 }
 
@@ -628,41 +943,67 @@ message RemoveDependencyResponse {
 
 // PackageInfo describes a single package/module within the project.
 message PackageInfo {
+  // name is the language-level package or module name.
   string name = 1;           // e.g. "github.com/codefly-dev/mind/pkg/run"
+  // relative_path is the package directory relative to the service root.
   string relative_path = 2;  // e.g. "pkg/run"
+  // files are source files that belong to this package.
   repeated string files = 3; // files in the package
+  // imports are direct imports used by files in this package.
   repeated string imports = 4; // direct imports
+  // doc is package-level documentation extracted from source comments.
   string doc = 5;            // package doc comment
 }
 
+// GetProjectInfoRequest identifies the project info data to retrieve.
 message GetProjectInfoRequest {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
 }
 
+// GetProjectInfoResponse returns language metadata useful for ingestion and planning.
 message GetProjectInfoResponse {
+  // module is the Codefly module name that groups services.
   string module = 1;                    // e.g. "github.com/codefly-dev/mind"
+  // language is the implementation language detected for this service or project.
   string language = 2;                  // e.g. "go"
+  // language_version is the detected compiler or runtime version.
   string language_version = 3;          // e.g. "1.25"
+  // packages describes the package or module layout within the service.
   repeated PackageInfo packages = 4;    // package structure
+  // dependencies are packages discovered from manifests or lock files.
   repeated Dependency dependencies = 5; // reuse existing Dependency message
+  // file_hashes maps source paths to content hashes for change detection.
   map<string, string> file_hashes = 6;  // path -> SHA-256 for change detection
+  // error explains why the operation failed; empty means success at this layer.
   string error = 7;
 }
 
 // ─── Plugin Commands ────────────────────────────────────────
 
+// AvailableCommand describes a built-in or plugin command exposed through the gateway.
 message AvailableCommand {
+  // name is the command name accepted by the gateway.
   string name = 1;             // e.g. "reset_db"
+  // description tells users and agents when this command is useful.
   string description = 2;     // "Reset the database to a clean state"
+  // usage is the command-line shape shown to users and agents.
   string usage = 3;           // "! reset_db [--seed]"
+  // aliases are alternate command names accepted by the plugin.
   repeated string aliases = 4;
+  // tags are labels used for filtering, grouping, or display.
   repeated string tags = 5;
+  // plugin identifies the plugin that provides this command; empty means built-in.
   string plugin = 6;          // which plugin provides this, empty for built-in
+  // destructive is true when the operation can mutate or delete user state.
   bool destructive = 7;       // if true, requires user confirmation
 }
 
+// ListAllCommandsRequest carries optional filters for listing all commands.
 message ListAllCommandsRequest {}
 
+// ListAllCommandsResponse returns the gateway command catalog.
 message ListAllCommandsResponse {
+  // commands are plugin or built-in commands available to callers.
   repeated AvailableCommand commands = 1;
 }

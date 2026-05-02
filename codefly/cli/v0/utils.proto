@@ -2,12 +2,18 @@ syntax = "proto3";
 
 package codefly.cli.v0;
 
+// FileInfo carries a file or directory entry returned by CLI file helpers.
 message FileInfo {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // content is file content for regular files; empty for directories.
   bytes content = 2;
+  // is_directory is true when the path is a directory.
   bool is_directory = 3;
 }
 
+// Directory contains the entries discovered under one filesystem directory.
 message Directory {
+  // files are files or directories directly represented in this directory result.
   repeated FileInfo files = 1;
 }

@@ -21,9 +21,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// DeploymentKind enumerates deployment artifact formats produced by builders.
 type DeploymentKind int32
 
 const (
+	// KUSTOMIZE is a Kubernetes kustomize deployment output.
 	DeploymentKind_KUSTOMIZE DeploymentKind = 0
 )
 
@@ -64,19 +66,21 @@ func (DeploymentKind) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_deployment_proto_rawDescGZIP(), []int{0}
 }
 
+// Kind enumerates Kubernetes deployment artifact formats.
 type KubernetesDeploymentOutput_Kind int32
 
 const (
-	KubernetesDeploymentOutput_Kustomize KubernetesDeploymentOutput_Kind = 0
+	// KUSTOMIZE means the builder emitted kustomize-compatible manifests.
+	KubernetesDeploymentOutput_KUSTOMIZE KubernetesDeploymentOutput_Kind = 0
 )
 
 // Enum value maps for KubernetesDeploymentOutput_Kind.
 var (
 	KubernetesDeploymentOutput_Kind_name = map[int32]string{
-		0: "Kustomize",
+		0: "KUSTOMIZE",
 	}
 	KubernetesDeploymentOutput_Kind_value = map[string]int32{
-		"Kustomize": 0,
+		"KUSTOMIZE": 0,
 	}
 )
 
@@ -107,8 +111,11 @@ func (KubernetesDeploymentOutput_Kind) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_builder_v0_deployment_proto_rawDescGZIP(), []int{3, 0}
 }
 
+// Deployment selects the deployment target and input format.
 type Deployment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind selects one deployment implementation.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*Deployment_Kubernetes
@@ -168,16 +175,21 @@ type isDeployment_Kind interface {
 }
 
 type Deployment_Kubernetes struct {
+	// kubernetes carries the KubernetesDeployment variant for Deployment.
 	Kubernetes *KubernetesDeployment `protobuf:"bytes,2,opt,name=kubernetes,proto3,oneof"`
 }
 
 func (*Deployment_Kubernetes) isDeployment_Kind() {}
 
+// KubernetesDeployment contains inputs for Kubernetes manifest generation.
 type KubernetesDeployment struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Destination   string                 `protobuf:"bytes,2,opt,name=destination,proto3" json:"destination,omitempty"`
-	BuildContext  *DockerBuildContext    `protobuf:"bytes,3,opt,name=build_context,json=buildContext,proto3" json:"build_context,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// namespace is the Kubernetes namespace used for deployment.
+	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// destination is the deployment destination path or environment.
+	Destination string `protobuf:"bytes,2,opt,name=destination,proto3" json:"destination,omitempty"`
+	// build_context is the Docker image build context used by the deployment.
+	BuildContext  *DockerBuildContext `protobuf:"bytes,3,opt,name=build_context,json=buildContext,proto3" json:"build_context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -233,8 +245,11 @@ func (x *KubernetesDeployment) GetBuildContext() *DockerBuildContext {
 	return nil
 }
 
+// DeploymentOutput selects the deployment artifact emitted by the builder.
 type DeploymentOutput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind selects one deployment output implementation.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*DeploymentOutput_Kubernetes
@@ -294,13 +309,16 @@ type isDeploymentOutput_Kind interface {
 }
 
 type DeploymentOutput_Kubernetes struct {
+	// kubernetes carries the KubernetesDeploymentOutput variant for DeploymentOutput.
 	Kubernetes *KubernetesDeploymentOutput `protobuf:"bytes,2,opt,name=kubernetes,proto3,oneof"`
 }
 
 func (*DeploymentOutput_Kubernetes) isDeploymentOutput_Kind() {}
 
+// KubernetesDeploymentOutput describes generated Kubernetes deployment artifacts.
 type KubernetesDeploymentOutput struct {
-	state         protoimpl.MessageState          `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind identifies the generated Kubernetes artifact format.
 	Kind          KubernetesDeploymentOutput_Kind `protobuf:"varint,1,opt,name=kind,proto3,enum=codefly.services.builder.v0.KubernetesDeploymentOutput_Kind" json:"kind,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -340,7 +358,7 @@ func (x *KubernetesDeploymentOutput) GetKind() KubernetesDeploymentOutput_Kind {
 	if x != nil {
 		return x.Kind
 	}
-	return KubernetesDeploymentOutput_Kustomize
+	return KubernetesDeploymentOutput_KUSTOMIZE
 }
 
 var File_codefly_services_builder_v0_deployment_proto protoreflect.FileDescriptor
@@ -366,7 +384,7 @@ const file_codefly_services_builder_v0_deployment_proto_rawDesc = "" +
 	"\x1aKubernetesDeploymentOutput\x12P\n" +
 	"\x04kind\x18\x01 \x01(\x0e2<.codefly.services.builder.v0.KubernetesDeploymentOutput.KindR\x04kind\"\x15\n" +
 	"\x04Kind\x12\r\n" +
-	"\tKustomize\x10\x00*\x1f\n" +
+	"\tKUSTOMIZE\x10\x00*\x1f\n" +
 	"\x0eDeploymentKind\x12\r\n" +
 	"\tKUSTOMIZE\x10\x00B\x88\x02\n" +
 	"\x1fcom.codefly.services.builder.v0B\x0fDeploymentProtoP\x01ZDgithub.com/codefly-dev/core/generated/go/codefly/services/builder/v0\xa2\x02\x04CSBV\xaa\x02\x1bCodefly.Services.Builder.V0\xca\x02\x1bCodefly\\Services\\Builder\\V0\xe2\x02'Codefly\\Services\\Builder\\V0\\GPBMetadata\xea\x02\x1eCodefly::Services::Builder::V0b\x06proto3"

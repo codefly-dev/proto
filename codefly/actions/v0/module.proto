@@ -4,13 +4,14 @@ package codefly.actions.v0;
 import "buf/validate/validate.proto";
 import "codefly/base/v0/agent.proto";
 
+// NewModule declares a module to add to the current workspace.
 message NewModule {
-    // Kind is the kind of the message.
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
     // name is the name of the module.
     string name = 2 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
     // description provides a brief explanation of the module.
     string description = 3;
-    // (Optional) agent that provides the module template
+    // agent optionally identifies the module-template agent used to scaffold the module.
     codefly.base.v0.Agent agent = 4;
 }

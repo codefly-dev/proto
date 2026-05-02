@@ -22,7 +22,9 @@ const (
 )
 
 // An endpoint to be accessed needs Network Mapping.
-// Network Mappings come with different scopes
+//
+// # Network Mappings come with different scopes
+//
 // - FromContainer: This is the mapping we want to use inside Container
 // - FromHost: This is the mapping we want to use from the Host
 // - Public: This is the mapping we want to use if something is publicly accessible: match to a DNS record
@@ -80,6 +82,7 @@ func (x *NetworkMapping) GetInstances() []*NetworkInstance {
 	return nil
 }
 
+// DNS describes a resolved address for an endpoint in a target environment.
 type DNS struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the DNS record
@@ -94,7 +97,7 @@ type DNS struct {
 	Host string `protobuf:"bytes,5,opt,name=host,proto3" json:"host,omitempty"`
 	// The network instance port
 	Port uint32 `protobuf:"varint,6,opt,name=port,proto3" json:"port,omitempty"`
-	// Secured
+	// secured is true when the endpoint should be reached with TLS.
 	Secured       bool `protobuf:"varint,7,opt,name=secured,proto3" json:"secured,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -179,17 +182,19 @@ func (x *DNS) GetSecured() bool {
 	return false
 }
 
+// NetworkInstance is one reachable address for a logical endpoint in a specific runtime
+// context.
 type NetworkInstance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The scope of the mapping
+	// access is the runtime context from which this address is valid.
 	Access *NetworkAccess `protobuf:"bytes,1,opt,name=access,proto3" json:"access,omitempty"`
-	// The host for the instance
+	// host is the raw host or IP for the instance.
 	Host string `protobuf:"bytes,3,opt,name=host,proto3" json:"host,omitempty"`
-	// The hostname for the instance
+	// hostname is the DNS-safe hostname for the instance.
 	Hostname string `protobuf:"bytes,4,opt,name=hostname,proto3" json:"hostname,omitempty"`
-	// The port for the instance
+	// port is the TCP port assigned to the endpoint.
 	Port uint32 `protobuf:"varint,5,opt,name=port,proto3" json:"port,omitempty"`
-	// The address for the instance
+	// address is the complete host:port or URL callers should use.
 	Address       string `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

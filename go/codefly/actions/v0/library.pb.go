@@ -24,12 +24,17 @@ const (
 
 // AddLibrary creates a new library in the workspace
 type AddLibrary struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Languages     []string               `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"` // Languages to support: ["go", "python"]
-	Git           *v0.GitConfig          `protobuf:"bytes,5,opt,name=git,proto3" json:"git,omitempty"`             // Optional git configuration
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// name is the library name to create.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// description is the human-readable library description.
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// languages identifies which language exports or generators apply.
+	Languages []string `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"` // Languages to support: ["go", "python"]
+	// git carries optional repository metadata for a library.
+	Git           *v0.GitConfig `protobuf:"bytes,5,opt,name=git,proto3" json:"git,omitempty"` // Optional git configuration
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -101,11 +106,15 @@ func (x *AddLibrary) GetGit() *v0.GitConfig {
 
 // UpdateLibrary updates a library's version
 type UpdateLibrary struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`                       // New version to set
-	CreateTag     bool                   `protobuf:"varint,4,opt,name=create_tag,json=createTag,proto3" json:"create_tag,omitempty"` // Whether to create git tag
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// name is the library name to update.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"` // New version to set
+	// create_tag asks Codefly to create a git tag for the new version.
+	CreateTag     bool `protobuf:"varint,4,opt,name=create_tag,json=createTag,proto3" json:"create_tag,omitempty"` // Whether to create git tag
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -170,10 +179,13 @@ func (x *UpdateLibrary) GetCreateTag() bool {
 
 // DeleteLibrary removes a library from the workspace
 type DeleteLibrary struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Kind            string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	RemoveSubmodule bool                   `protobuf:"varint,3,opt,name=remove_submodule,json=removeSubmodule,proto3" json:"remove_submodule,omitempty"` // If true, also remove git submodule
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// name is the library name to delete.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// remove_submodule also removes the git submodule when deleting the library.
+	RemoveSubmodule bool `protobuf:"varint,3,opt,name=remove_submodule,json=removeSubmodule,proto3" json:"remove_submodule,omitempty"` // If true, also remove git submodule
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -231,15 +243,21 @@ func (x *DeleteLibrary) GetRemoveSubmodule() bool {
 
 // AddLibraryDependency adds a library dependency to a service
 type AddLibraryDependency struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Kind              string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	ServiceName       string                 `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	ServiceModule     string                 `protobuf:"bytes,3,opt,name=service_module,json=serviceModule,proto3" json:"service_module,omitempty"`
-	LibraryName       string                 `protobuf:"bytes,4,opt,name=library_name,json=libraryName,proto3" json:"library_name,omitempty"`
-	VersionConstraint string                 `protobuf:"bytes,5,opt,name=version_constraint,json=versionConstraint,proto3" json:"version_constraint,omitempty"` // Semver constraint
-	Languages         []string               `protobuf:"bytes,6,rep,name=languages,proto3" json:"languages,omitempty"`                                          // Which language exports to use
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// service_name is the stable name of the service.
+	ServiceName string `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	// service_module is the module containing the service that will use the library.
+	ServiceModule string `protobuf:"bytes,3,opt,name=service_module,json=serviceModule,proto3" json:"service_module,omitempty"`
+	// library_name is the stable name of the library.
+	LibraryName string `protobuf:"bytes,4,opt,name=library_name,json=libraryName,proto3" json:"library_name,omitempty"`
+	// version_constraint is the semver range accepted by the dependent service.
+	VersionConstraint string `protobuf:"bytes,5,opt,name=version_constraint,json=versionConstraint,proto3" json:"version_constraint,omitempty"` // Semver constraint
+	// languages identifies which language exports or generators apply.
+	Languages     []string `protobuf:"bytes,6,rep,name=languages,proto3" json:"languages,omitempty"` // Which language exports to use
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AddLibraryDependency) Reset() {
@@ -316,11 +334,15 @@ func (x *AddLibraryDependency) GetLanguages() []string {
 
 // RemoveLibraryDependency removes a library dependency from a service
 type RemoveLibraryDependency struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	ServiceName   string                 `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	ServiceModule string                 `protobuf:"bytes,3,opt,name=service_module,json=serviceModule,proto3" json:"service_module,omitempty"`
-	LibraryName   string                 `protobuf:"bytes,4,opt,name=library_name,json=libraryName,proto3" json:"library_name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// service_name is the stable name of the service.
+	ServiceName string `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	// service_module is the module containing the service that currently uses the library.
+	ServiceModule string `protobuf:"bytes,3,opt,name=service_module,json=serviceModule,proto3" json:"service_module,omitempty"`
+	// library_name is the stable name of the library.
+	LibraryName   string `protobuf:"bytes,4,opt,name=library_name,json=libraryName,proto3" json:"library_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -385,9 +407,11 @@ func (x *RemoveLibraryDependency) GetLibraryName() string {
 
 // SyncLibraries synchronizes all library submodules
 type SyncLibraries struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Kind           string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	UpdateToLatest bool                   `protobuf:"varint,2,opt,name=update_to_latest,json=updateToLatest,proto3" json:"update_to_latest,omitempty"` // If true, update to latest matching version
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// kind is the action discriminator used when actions are serialized.
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// update_to_latest asks Codefly to move libraries to the latest allowed version.
+	UpdateToLatest bool `protobuf:"varint,2,opt,name=update_to_latest,json=updateToLatest,proto3" json:"update_to_latest,omitempty"` // If true, update to latest matching version
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }

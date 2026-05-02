@@ -2,10 +2,14 @@ syntax = "proto3";
 package codefly.services.builder.v0;
 
 
+// DockerBuildContext contains Docker-specific image build inputs.
 message DockerBuildContext {
+  // docker_repository is the image repository used for Docker builds.
   string docker_repository = 1;
 }
 
+// DockerBuildResult captures Docker image references produced by a build.
 message DockerBuildResult {
+  // images are image tags or digests produced by the Docker build.
   repeated string images = 1;
 }

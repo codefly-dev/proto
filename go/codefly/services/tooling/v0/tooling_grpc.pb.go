@@ -50,25 +50,37 @@ const (
 type ToolingClient interface {
 	// LSP operations
 	ListSymbols(ctx context.Context, in *ListSymbolsRequest, opts ...grpc.CallOption) (*ListSymbolsResponse, error)
+	// GetDiagnostics returns compiler, linter, or language-server diagnostics.
 	GetDiagnostics(ctx context.Context, in *GetDiagnosticsRequest, opts ...grpc.CallOption) (*GetDiagnosticsResponse, error)
+	// GoToDefinition resolves the declaration for a symbol at a source position.
 	GoToDefinition(ctx context.Context, in *GoToDefinitionRequest, opts ...grpc.CallOption) (*GoToDefinitionResponse, error)
+	// FindReferences resolves usage locations for a symbol at a source position.
 	FindReferences(ctx context.Context, in *FindReferencesRequest, opts ...grpc.CallOption) (*FindReferencesResponse, error)
+	// RenameSymbol applies a language-aware rename across the service.
 	RenameSymbol(ctx context.Context, in *RenameSymbolRequest, opts ...grpc.CallOption) (*RenameSymbolResponse, error)
+	// GetHoverInfo returns hover documentation and type information.
 	GetHoverInfo(ctx context.Context, in *GetHoverInfoRequest, opts ...grpc.CallOption) (*GetHoverInfoResponse, error)
+	// GetCompletions returns completion suggestions at a source position.
 	GetCompletions(ctx context.Context, in *GetCompletionsRequest, opts ...grpc.CallOption) (*GetCompletionsResponse, error)
 	// Code modification
 	Fix(ctx context.Context, in *FixRequest, opts ...grpc.CallOption) (*FixResponse, error)
+	// ApplyEdit applies a smart edit and optional language fixers.
 	ApplyEdit(ctx context.Context, in *ApplyEditRequest, opts ...grpc.CallOption) (*ApplyEditResponse, error)
 	// Dependency management
 	ListDependencies(ctx context.Context, in *ListDependenciesRequest, opts ...grpc.CallOption) (*ListDependenciesResponse, error)
+	// AddDependency installs a package through the native package manager.
 	AddDependency(ctx context.Context, in *AddDependencyRequest, opts ...grpc.CallOption) (*AddDependencyResponse, error)
+	// RemoveDependency removes a package through the native package manager.
 	RemoveDependency(ctx context.Context, in *RemoveDependencyRequest, opts ...grpc.CallOption) (*RemoveDependencyResponse, error)
 	// Analysis
 	GetProjectInfo(ctx context.Context, in *GetProjectInfoRequest, opts ...grpc.CallOption) (*GetProjectInfoResponse, error)
+	// GetCallGraph runs whole-program call graph analysis.
 	GetCallGraph(ctx context.Context, in *GetCallGraphRequest, opts ...grpc.CallOption) (*GetCallGraphResponse, error)
 	// Dev validation
 	Build(ctx context.Context, in *BuildRequest, opts ...grpc.CallOption) (*BuildResponse, error)
+	// Test runs native tests and returns structured counts.
 	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
+	// Lint runs native linting and returns structured diagnostics.
 	Lint(ctx context.Context, in *LintRequest, opts ...grpc.CallOption) (*LintResponse, error)
 }
 
@@ -262,25 +274,37 @@ func (c *toolingClient) Lint(ctx context.Context, in *LintRequest, opts ...grpc.
 type ToolingServer interface {
 	// LSP operations
 	ListSymbols(context.Context, *ListSymbolsRequest) (*ListSymbolsResponse, error)
+	// GetDiagnostics returns compiler, linter, or language-server diagnostics.
 	GetDiagnostics(context.Context, *GetDiagnosticsRequest) (*GetDiagnosticsResponse, error)
+	// GoToDefinition resolves the declaration for a symbol at a source position.
 	GoToDefinition(context.Context, *GoToDefinitionRequest) (*GoToDefinitionResponse, error)
+	// FindReferences resolves usage locations for a symbol at a source position.
 	FindReferences(context.Context, *FindReferencesRequest) (*FindReferencesResponse, error)
+	// RenameSymbol applies a language-aware rename across the service.
 	RenameSymbol(context.Context, *RenameSymbolRequest) (*RenameSymbolResponse, error)
+	// GetHoverInfo returns hover documentation and type information.
 	GetHoverInfo(context.Context, *GetHoverInfoRequest) (*GetHoverInfoResponse, error)
+	// GetCompletions returns completion suggestions at a source position.
 	GetCompletions(context.Context, *GetCompletionsRequest) (*GetCompletionsResponse, error)
 	// Code modification
 	Fix(context.Context, *FixRequest) (*FixResponse, error)
+	// ApplyEdit applies a smart edit and optional language fixers.
 	ApplyEdit(context.Context, *ApplyEditRequest) (*ApplyEditResponse, error)
 	// Dependency management
 	ListDependencies(context.Context, *ListDependenciesRequest) (*ListDependenciesResponse, error)
+	// AddDependency installs a package through the native package manager.
 	AddDependency(context.Context, *AddDependencyRequest) (*AddDependencyResponse, error)
+	// RemoveDependency removes a package through the native package manager.
 	RemoveDependency(context.Context, *RemoveDependencyRequest) (*RemoveDependencyResponse, error)
 	// Analysis
 	GetProjectInfo(context.Context, *GetProjectInfoRequest) (*GetProjectInfoResponse, error)
+	// GetCallGraph runs whole-program call graph analysis.
 	GetCallGraph(context.Context, *GetCallGraphRequest) (*GetCallGraphResponse, error)
 	// Dev validation
 	Build(context.Context, *BuildRequest) (*BuildResponse, error)
+	// Test runs native tests and returns structured counts.
 	Test(context.Context, *TestRequest) (*TestResponse, error)
+	// Lint runs native linting and returns structured diagnostics.
 	Lint(context.Context, *LintRequest) (*LintResponse, error)
 	mustEmbedUnimplementedToolingServer()
 }

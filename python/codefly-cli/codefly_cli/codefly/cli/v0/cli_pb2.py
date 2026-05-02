@@ -22,21 +22,18 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from codefly.base.v0 import endpoint_pb2 as codefly_dot_base_dot_v0_dot_endpoint__pb2
 from codefly.base.v0 import network_pb2 as codefly_dot_base_dot_v0_dot_network__pb2
 from codefly.base.v0 import workspace_pb2 as codefly_dot_base_dot_v0_dot_workspace__pb2
 from codefly.base.v0 import configuration_pb2 as codefly_dot_base_dot_v0_dot_configuration__pb2
 from codefly.services.agent.v0 import agent_pb2 as codefly_dot_services_dot_agent_dot_v0_dot_agent__pb2
-from codefly.services.runtime.v0 import runtime_pb2 as codefly_dot_services_dot_runtime_dot_v0_dot_runtime__pb2
 from codefly.observability.v0 import inventory_pb2 as codefly_dot_observability_dot_v0_dot_inventory__pb2
 from codefly.observability.v0 import dependencies_pb2 as codefly_dot_observability_dot_v0_dot_dependencies__pb2
 from codefly.observability.v0 import logs_pb2 as codefly_dot_observability_dot_v0_dot_logs__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18\x63odefly/cli/v0/cli.proto\x12\x0e\x63odefly.cli.v0\x1a\x1e\x63odefly/base/v0/endpoint.proto\x1a\x1d\x63odefly/base/v0/network.proto\x1a\x1f\x63odefly/base/v0/workspace.proto\x1a#codefly/base/v0/configuration.proto\x1a%codefly/services/agent/v0/agent.proto\x1a)codefly/services/runtime/v0/runtime.proto\x1a(codefly/observability/v0/inventory.proto\x1a+codefly/observability/v0/dependencies.proto\x1a#codefly/observability/v0/logs.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"2\n\x1aGetAgentInformationRequest\x12\x14\n\x05\x61gent\x18\x01 \x01(\tR\x05\x61gent\"U\n\x12MultiGraphResponse\x12?\n\x06graphs\x18\x01 \x03(\x0b\x32\'.codefly.observability.v0.GraphResponseR\x06graphs\"`\n\x0e\x41\x63tiveResponse\x12\x1c\n\tworkspace\x18\x01 \x01(\tR\tworkspace\x12\x16\n\x06module\x18\x02 \x01(\tR\x06module\x12\x18\n\x07service\x18\x03 \x01(\tR\x07service\"c\n\x12RunningInformation\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\x12\x1b\n\tagent_pid\x18\x03 \x01(\x05R\x08\x61gentPid\"a\n\x11GetAddressRequest\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\x12\x1a\n\x08\x65ndpoint\x18\x03 \x01(\tR\x08\x65ndpoint\".\n\x12GetAddressResponse\x12\x18\n\x07\x61\x64\x64ress\x18\x01 \x01(\tR\x07\x61\x64\x64ress\"M\n\x19GetNetworkMappingsRequest\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\"h\n\x1aGetNetworkMappingsResponse\x12J\n\x10network_mappings\x18\x01 \x03(\x0b\x32\x1f.codefly.base.v0.NetworkMappingR\x0fnetworkMappings\"K\n\x17GetConfigurationRequest\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\"`\n\x18GetConfigurationResponse\x12\x44\n\rconfiguration\x18\x01 \x01(\x0b\x32\x1e.codefly.base.v0.ConfigurationR\rconfiguration\"c\n\x19GetConfigurationsResponse\x12\x46\n\x0e\x63onfigurations\x18\x01 \x03(\x0b\x32\x1e.codefly.base.v0.ConfigurationR\x0e\x63onfigurations\"\"\n\nFlowStatus\x12\x14\n\x05ready\x18\x01 \x01(\x08R\x05ready\"\x11\n\x0fStopFlowRequest\"\x12\n\x10StopFlowResponse\"\x14\n\x12\x44\x65stroyFlowRequest\"\x15\n\x13\x44\x65stroyFlowResponse2\xe0\x10\n\x03\x43LI\x12\x45\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\r\x82\xd3\xe4\x93\x02\x07\x12\x05/ping\x12\x92\x01\n\x13GetAgentInformation\x12*.codefly.cli.v0.GetAgentInformationRequest\x1a+.codefly.services.agent.v0.AgentInformation\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/agent/{agent}/information\x12i\n\x15GetWorkspaceInventory\x12\x16.google.protobuf.Empty\x1a\x1a.codefly.base.v0.Workspace\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/workspace/inventory\x12\x92\x01\n\"GetWorkspaceServiceDependencyGraph\x12\x16.google.protobuf.Empty\x1a\'.codefly.observability.v0.GraphResponse\"+\x82\xd3\xe4\x93\x02%\x12#/workspace/service-dependency-graph\x12\x91\x01\n(GetWorkspacePublicModulesDependencyGraph\x12\x16.google.protobuf.Empty\x1a\".codefly.cli.v0.MultiGraphResponse\")\x82\xd3\xe4\x93\x02#\x12!/workspace/public-endpoints-graph\x12\x63\n\tGetActive\x12\x16.google.protobuf.Empty\x1a\x1e.codefly.cli.v0.ActiveResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/workspace/information\x12\x97\x01\n\x0cGetAddresses\x12!.codefly.cli.v0.GetAddressRequest\x1a\".codefly.cli.v0.GetAddressResponse\"@\x82\xd3\xe4\x93\x02:\x12\x38/workspace/network-mapping/{module}/{service}/{endpoint}\x12\x9a\x01\n\x10GetConfiguration\x12\'.codefly.cli.v0.GetConfigurationRequest\x1a(.codefly.cli.v0.GetConfigurationResponse\"3\x82\xd3\xe4\x93\x02-\x12+/workspace/configuration/{module}/{service}\x12\xb6\x01\n\x1dGetDependenciesConfigurations\x12\'.codefly.cli.v0.GetConfigurationRequest\x1a).codefly.cli.v0.GetConfigurationsResponse\"A\x82\xd3\xe4\x93\x02;\x12\x39/workspace/dependencies-configurations/{module}/{service}\x12\xbc\x01\n\x1eGetDependenciesNetworkMappings\x12).codefly.cli.v0.GetNetworkMappingsRequest\x1a*.codefly.cli.v0.GetNetworkMappingsResponse\"C\x82\xd3\xe4\x93\x02=\x12;/workspace/dependencies-network-mappings/{module}/{service}\x12\xac\x01\n\x18GetRuntimeConfigurations\x12\'.codefly.cli.v0.GetConfigurationRequest\x1a).codefly.cli.v0.GetConfigurationsResponse\"<\x82\xd3\xe4\x93\x02\x36\x12\x34/workspace/runtime-configurations/{module}/{service}\x12X\n\x04Logs\x12\x16.google.protobuf.Empty\x1a\x1d.codefly.observability.v0.Log\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/workspace/logs0\x01\x12\x80\x01\n\x10\x41\x63tiveLogHistory\x12$.codefly.observability.v0.LogRequest\x1a%.codefly.observability.v0.LogResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/workspace/logs/history\x12\x63\n\rGetFlowStatus\x12\x16.google.protobuf.Empty\x1a\x1a.codefly.cli.v0.FlowStatus\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/workspace/flow/status\x12k\n\x08StopFlow\x12\x1f.codefly.cli.v0.StopFlowRequest\x1a .codefly.cli.v0.StopFlowResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x14/workspace/flow/stop\x12w\n\x0b\x44\x65stroyFlow\x12\".codefly.cli.v0.DestroyFlowRequest\x1a#.codefly.cli.v0.DestroyFlowResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\"\x17/workspace/flow/destroyB\xb1\x01\n\x12\x63om.codefly.cli.v0B\x08\x43liProtoP\x01Z7github.com/codefly-dev/core/generated/go/codefly/cli/v0\xa2\x02\x03\x43\x43V\xaa\x02\x0e\x43odefly.Cli.V0\xca\x02\x0e\x43odefly\\Cli\\V0\xe2\x02\x1a\x43odefly\\Cli\\V0\\GPBMetadata\xea\x02\x10\x43odefly::Cli::V0b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18\x63odefly/cli/v0/cli.proto\x12\x0e\x63odefly.cli.v0\x1a\x1d\x63odefly/base/v0/network.proto\x1a\x1f\x63odefly/base/v0/workspace.proto\x1a#codefly/base/v0/configuration.proto\x1a%codefly/services/agent/v0/agent.proto\x1a(codefly/observability/v0/inventory.proto\x1a+codefly/observability/v0/dependencies.proto\x1a#codefly/observability/v0/logs.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\"2\n\x1aGetAgentInformationRequest\x12\x14\n\x05\x61gent\x18\x01 \x01(\tR\x05\x61gent\"U\n\x12MultiGraphResponse\x12?\n\x06graphs\x18\x01 \x03(\x0b\x32\'.codefly.observability.v0.GraphResponseR\x06graphs\"`\n\x0e\x41\x63tiveResponse\x12\x1c\n\tworkspace\x18\x01 \x01(\tR\tworkspace\x12\x16\n\x06module\x18\x02 \x01(\tR\x06module\x12\x18\n\x07service\x18\x03 \x01(\tR\x07service\"c\n\x12RunningInformation\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\x12\x1b\n\tagent_pid\x18\x03 \x01(\x05R\x08\x61gentPid\"a\n\x11GetAddressRequest\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\x12\x1a\n\x08\x65ndpoint\x18\x03 \x01(\tR\x08\x65ndpoint\".\n\x12GetAddressResponse\x12\x18\n\x07\x61\x64\x64ress\x18\x01 \x01(\tR\x07\x61\x64\x64ress\"M\n\x19GetNetworkMappingsRequest\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\"h\n\x1aGetNetworkMappingsResponse\x12J\n\x10network_mappings\x18\x01 \x03(\x0b\x32\x1f.codefly.base.v0.NetworkMappingR\x0fnetworkMappings\"K\n\x17GetConfigurationRequest\x12\x16\n\x06module\x18\x01 \x01(\tR\x06module\x12\x18\n\x07service\x18\x02 \x01(\tR\x07service\"`\n\x18GetConfigurationResponse\x12\x44\n\rconfiguration\x18\x01 \x01(\x0b\x32\x1e.codefly.base.v0.ConfigurationR\rconfiguration\"c\n\x19GetConfigurationsResponse\x12\x46\n\x0e\x63onfigurations\x18\x01 \x03(\x0b\x32\x1e.codefly.base.v0.ConfigurationR\x0e\x63onfigurations\"\"\n\nFlowStatus\x12\x14\n\x05ready\x18\x01 \x01(\x08R\x05ready\"\x11\n\x0fStopFlowRequest\"\x12\n\x10StopFlowResponse\"\x14\n\x12\x44\x65stroyFlowRequest\"\x15\n\x13\x44\x65stroyFlowResponse2\xe0\x10\n\x03\x43LI\x12\x45\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\r\x82\xd3\xe4\x93\x02\x07\x12\x05/ping\x12\x92\x01\n\x13GetAgentInformation\x12*.codefly.cli.v0.GetAgentInformationRequest\x1a+.codefly.services.agent.v0.AgentInformation\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/agent/{agent}/information\x12i\n\x15GetWorkspaceInventory\x12\x16.google.protobuf.Empty\x1a\x1a.codefly.base.v0.Workspace\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/workspace/inventory\x12\x92\x01\n\"GetWorkspaceServiceDependencyGraph\x12\x16.google.protobuf.Empty\x1a\'.codefly.observability.v0.GraphResponse\"+\x82\xd3\xe4\x93\x02%\x12#/workspace/service-dependency-graph\x12\x91\x01\n(GetWorkspacePublicModulesDependencyGraph\x12\x16.google.protobuf.Empty\x1a\".codefly.cli.v0.MultiGraphResponse\")\x82\xd3\xe4\x93\x02#\x12!/workspace/public-endpoints-graph\x12\x63\n\tGetActive\x12\x16.google.protobuf.Empty\x1a\x1e.codefly.cli.v0.ActiveResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/workspace/information\x12\x97\x01\n\x0cGetAddresses\x12!.codefly.cli.v0.GetAddressRequest\x1a\".codefly.cli.v0.GetAddressResponse\"@\x82\xd3\xe4\x93\x02:\x12\x38/workspace/network-mapping/{module}/{service}/{endpoint}\x12\x9a\x01\n\x10GetConfiguration\x12\'.codefly.cli.v0.GetConfigurationRequest\x1a(.codefly.cli.v0.GetConfigurationResponse\"3\x82\xd3\xe4\x93\x02-\x12+/workspace/configuration/{module}/{service}\x12\xb6\x01\n\x1dGetDependenciesConfigurations\x12\'.codefly.cli.v0.GetConfigurationRequest\x1a).codefly.cli.v0.GetConfigurationsResponse\"A\x82\xd3\xe4\x93\x02;\x12\x39/workspace/dependencies-configurations/{module}/{service}\x12\xbc\x01\n\x1eGetDependenciesNetworkMappings\x12).codefly.cli.v0.GetNetworkMappingsRequest\x1a*.codefly.cli.v0.GetNetworkMappingsResponse\"C\x82\xd3\xe4\x93\x02=\x12;/workspace/dependencies-network-mappings/{module}/{service}\x12\xac\x01\n\x18GetRuntimeConfigurations\x12\'.codefly.cli.v0.GetConfigurationRequest\x1a).codefly.cli.v0.GetConfigurationsResponse\"<\x82\xd3\xe4\x93\x02\x36\x12\x34/workspace/runtime-configurations/{module}/{service}\x12X\n\x04Logs\x12\x16.google.protobuf.Empty\x1a\x1d.codefly.observability.v0.Log\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/workspace/logs0\x01\x12\x80\x01\n\x10\x41\x63tiveLogHistory\x12$.codefly.observability.v0.LogRequest\x1a%.codefly.observability.v0.LogResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/workspace/logs/history\x12\x63\n\rGetFlowStatus\x12\x16.google.protobuf.Empty\x1a\x1a.codefly.cli.v0.FlowStatus\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/workspace/flow/status\x12k\n\x08StopFlow\x12\x1f.codefly.cli.v0.StopFlowRequest\x1a .codefly.cli.v0.StopFlowResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x14/workspace/flow/stop\x12w\n\x0b\x44\x65stroyFlow\x12\".codefly.cli.v0.DestroyFlowRequest\x1a#.codefly.cli.v0.DestroyFlowResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\"\x17/workspace/flow/destroyB\xb1\x01\n\x12\x63om.codefly.cli.v0B\x08\x43liProtoP\x01Z7github.com/codefly-dev/core/generated/go/codefly/cli/v0\xa2\x02\x03\x43\x43V\xaa\x02\x0e\x43odefly.Cli.V0\xca\x02\x0e\x43odefly\\Cli\\V0\xe2\x02\x1a\x43odefly\\Cli\\V0\\GPBMetadata\xea\x02\x10\x43odefly::Cli::V0b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -76,38 +73,38 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CLI'].methods_by_name['StopFlow']._serialized_options = b'\202\323\344\223\002\026\"\024/workspace/flow/stop'
   _globals['_CLI'].methods_by_name['DestroyFlow']._loaded_options = None
   _globals['_CLI'].methods_by_name['DestroyFlow']._serialized_options = b'\202\323\344\223\002\031\"\027/workspace/flow/destroy'
-  _globals['_GETAGENTINFORMATIONREQUEST']._serialized_start=475
-  _globals['_GETAGENTINFORMATIONREQUEST']._serialized_end=525
-  _globals['_MULTIGRAPHRESPONSE']._serialized_start=527
-  _globals['_MULTIGRAPHRESPONSE']._serialized_end=612
-  _globals['_ACTIVERESPONSE']._serialized_start=614
-  _globals['_ACTIVERESPONSE']._serialized_end=710
-  _globals['_RUNNINGINFORMATION']._serialized_start=712
-  _globals['_RUNNINGINFORMATION']._serialized_end=811
-  _globals['_GETADDRESSREQUEST']._serialized_start=813
-  _globals['_GETADDRESSREQUEST']._serialized_end=910
-  _globals['_GETADDRESSRESPONSE']._serialized_start=912
-  _globals['_GETADDRESSRESPONSE']._serialized_end=958
-  _globals['_GETNETWORKMAPPINGSREQUEST']._serialized_start=960
-  _globals['_GETNETWORKMAPPINGSREQUEST']._serialized_end=1037
-  _globals['_GETNETWORKMAPPINGSRESPONSE']._serialized_start=1039
-  _globals['_GETNETWORKMAPPINGSRESPONSE']._serialized_end=1143
-  _globals['_GETCONFIGURATIONREQUEST']._serialized_start=1145
-  _globals['_GETCONFIGURATIONREQUEST']._serialized_end=1220
-  _globals['_GETCONFIGURATIONRESPONSE']._serialized_start=1222
-  _globals['_GETCONFIGURATIONRESPONSE']._serialized_end=1318
-  _globals['_GETCONFIGURATIONSRESPONSE']._serialized_start=1320
-  _globals['_GETCONFIGURATIONSRESPONSE']._serialized_end=1419
-  _globals['_FLOWSTATUS']._serialized_start=1421
-  _globals['_FLOWSTATUS']._serialized_end=1455
-  _globals['_STOPFLOWREQUEST']._serialized_start=1457
-  _globals['_STOPFLOWREQUEST']._serialized_end=1474
-  _globals['_STOPFLOWRESPONSE']._serialized_start=1476
-  _globals['_STOPFLOWRESPONSE']._serialized_end=1494
-  _globals['_DESTROYFLOWREQUEST']._serialized_start=1496
-  _globals['_DESTROYFLOWREQUEST']._serialized_end=1516
-  _globals['_DESTROYFLOWRESPONSE']._serialized_start=1518
-  _globals['_DESTROYFLOWRESPONSE']._serialized_end=1539
-  _globals['_CLI']._serialized_start=1542
-  _globals['_CLI']._serialized_end=3686
+  _globals['_GETAGENTINFORMATIONREQUEST']._serialized_start=367
+  _globals['_GETAGENTINFORMATIONREQUEST']._serialized_end=417
+  _globals['_MULTIGRAPHRESPONSE']._serialized_start=419
+  _globals['_MULTIGRAPHRESPONSE']._serialized_end=504
+  _globals['_ACTIVERESPONSE']._serialized_start=506
+  _globals['_ACTIVERESPONSE']._serialized_end=602
+  _globals['_RUNNINGINFORMATION']._serialized_start=604
+  _globals['_RUNNINGINFORMATION']._serialized_end=703
+  _globals['_GETADDRESSREQUEST']._serialized_start=705
+  _globals['_GETADDRESSREQUEST']._serialized_end=802
+  _globals['_GETADDRESSRESPONSE']._serialized_start=804
+  _globals['_GETADDRESSRESPONSE']._serialized_end=850
+  _globals['_GETNETWORKMAPPINGSREQUEST']._serialized_start=852
+  _globals['_GETNETWORKMAPPINGSREQUEST']._serialized_end=929
+  _globals['_GETNETWORKMAPPINGSRESPONSE']._serialized_start=931
+  _globals['_GETNETWORKMAPPINGSRESPONSE']._serialized_end=1035
+  _globals['_GETCONFIGURATIONREQUEST']._serialized_start=1037
+  _globals['_GETCONFIGURATIONREQUEST']._serialized_end=1112
+  _globals['_GETCONFIGURATIONRESPONSE']._serialized_start=1114
+  _globals['_GETCONFIGURATIONRESPONSE']._serialized_end=1210
+  _globals['_GETCONFIGURATIONSRESPONSE']._serialized_start=1212
+  _globals['_GETCONFIGURATIONSRESPONSE']._serialized_end=1311
+  _globals['_FLOWSTATUS']._serialized_start=1313
+  _globals['_FLOWSTATUS']._serialized_end=1347
+  _globals['_STOPFLOWREQUEST']._serialized_start=1349
+  _globals['_STOPFLOWREQUEST']._serialized_end=1366
+  _globals['_STOPFLOWRESPONSE']._serialized_start=1368
+  _globals['_STOPFLOWRESPONSE']._serialized_end=1386
+  _globals['_DESTROYFLOWREQUEST']._serialized_start=1388
+  _globals['_DESTROYFLOWREQUEST']._serialized_end=1408
+  _globals['_DESTROYFLOWRESPONSE']._serialized_start=1410
+  _globals['_DESTROYFLOWRESPONSE']._serialized_end=1431
+  _globals['_CLI']._serialized_start=1434
+  _globals['_CLI']._serialized_end=3578
 # @@protoc_insertion_point(module_scope)

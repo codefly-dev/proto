@@ -21,11 +21,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Type enumerates supported types.
 type GraphNode_Type int32
 
 const (
-	GraphNode_MODULE   GraphNode_Type = 0
-	GraphNode_SERVICE  GraphNode_Type = 1
+	// MODULE nodes represent Codefly modules.
+	GraphNode_MODULE GraphNode_Type = 0
+	// SERVICE nodes represent Codefly services.
+	GraphNode_SERVICE GraphNode_Type = 1
+	// ENDPOINT nodes represent service endpoints.
 	GraphNode_ENDPOINT GraphNode_Type = 2
 )
 
@@ -73,9 +77,11 @@ func (GraphNode_Type) EnumDescriptor() ([]byte, []int) {
 // GraphNode represents a node in an architecture graph
 // Type can be "module", "service" or "endpoint"
 type GraphNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type          GraphNode_Type         `protobuf:"varint,2,opt,name=type,proto3,enum=codefly.observability.v0.GraphNode_Type" json:"type,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// type identifies whether this graph node is a module, service, or endpoint.
+	Type          GraphNode_Type `protobuf:"varint,2,opt,name=type,proto3,enum=codefly.observability.v0.GraphNode_Type" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -124,10 +130,13 @@ func (x *GraphNode) GetType() GraphNode_Type {
 	return GraphNode_MODULE
 }
 
+// GraphEdge connects two nodes in a workspace architecture graph.
 type GraphEdge struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	From          string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To            string                 `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// from is the source node id.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// to is the target node id.
+	To            string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -176,10 +185,13 @@ func (x *GraphEdge) GetTo() string {
 	return ""
 }
 
+// GraphResponse contains a workspace or module dependency graph.
 type GraphResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*GraphNode           `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	Edges         []*GraphEdge           `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// nodes are graph vertices representing modules, services, or endpoints.
+	Nodes []*GraphNode `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// edges are graph relationships between returned nodes.
+	Edges         []*GraphEdge `protobuf:"bytes,2,rep,name=edges,proto3" json:"edges,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

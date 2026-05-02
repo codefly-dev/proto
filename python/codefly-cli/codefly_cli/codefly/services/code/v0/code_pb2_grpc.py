@@ -8,6 +8,7 @@ from codefly.services.code.v0 import code_pb2 as codefly_dot_services_dot_code_d
 class CodeStub(object):
     """--- Service definition ---
 
+    Code exposes language-aware analysis and editing operations backed by a service agent.
     """
 
     def __init__(self, channel):
@@ -66,6 +67,7 @@ class CodeStub(object):
 class CodeServicer(object):
     """--- Service definition ---
 
+    Code exposes language-aware analysis and editing operations backed by a service agent.
     """
 
     def Execute(self, request, context):
@@ -85,43 +87,50 @@ class CodeServicer(object):
         delete each RPC here the same way we deleted the file/git/dep
         operations in this cleanup.
 
+        ListSymbols directly exposes symbol listing for older CLI callers.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetDiagnostics(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetDiagnostics directly exposes language diagnostics for older CLI callers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GoToDefinition(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GoToDefinition directly exposes definition lookup for older CLI callers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def FindReferences(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """FindReferences directly exposes reference lookup for older CLI callers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetHoverInfo(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetHoverInfo directly exposes hover information for older CLI callers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ApplyEdit(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ApplyEdit directly exposes smart edits for older CLI callers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetCallGraph(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetCallGraph directly exposes call graph analysis for older CLI callers.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -194,6 +203,7 @@ def add_CodeServicer_to_server(servicer, server):
 class Code(object):
     """--- Service definition ---
 
+    Code exposes language-aware analysis and editing operations backed by a service agent.
     """
 
     @staticmethod

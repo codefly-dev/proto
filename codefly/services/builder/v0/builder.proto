@@ -12,50 +12,65 @@ import "codefly/services/builder/v0/docker.proto";
 import "codefly/services/builder/v0/deployment.proto";
 
 
+// LoadStatus reports the state and message for the load lifecycle phase.
 message LoadStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // READY means the phase completed and the agent can continue.
     READY = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// LoadRequest starts a builder agent and asks it to read service metadata.
 message LoadRequest {
-  // Developer debug
+  // developer_debug enables agent-side debug behavior.
   bool developer_debug = 1;
-  // Disable catch
+  // disable_catch disables agent panic/error catching for debugging.
   bool disable_catch = 2;
 
   // Identity of the service
   codefly.base.v0.ServiceIdentity identity = 3;
 
-  // Details for creation
+  // creation_mode configures interactive scaffolding behavior.
   CreationMode creation_mode = 4;
 
-  // Details for sync
+  // sync_mode configures interactive synchronization behavior.
   SyncMode sync_mode = 5;
 
 }
 
+// CreationMode configures Builder.Create behavior.
 message CreationMode {
+  // communicate enables interactive agent questions during this mode.
   bool communicate = 1;
 }
 
+// SyncMode configures Builder.Sync behavior.
 message SyncMode {
+  // communicate enables interactive agent questions during this mode.
   bool communicate = 1;
 }
 
 
+// LoadResponse returns builder metadata discovered during Load.
 message LoadResponse {
+  // state is the machine-readable lifecycle state.
   LoadStatus state = 1;
+  // version is the semantic or service-specific version for this resource.
   codefly.base.v0.Version version = 2;
 
-  // Endpoints exposed by the service
+  // endpoints are logical endpoints the builder knows the service will expose.
   repeated codefly.base.v0.Endpoint endpoints = 3;
 
-  // For logging to console
+  // getting_started is human-facing guidance printed after scaffolding or loading.
   string getting_started = 4;
 
 }
@@ -66,22 +81,33 @@ Creation
 
  */
 
+// CreateRequest asks the builder to scaffold service code.
 message CreateRequest {
 }
 
 
+// CreateStatus reports the state and message for the create lifecycle phase.
 message CreateStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // CREATED means the builder generated the requested service files.
     CREATED = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// CreateResponse reports generated endpoints and creation status.
 message CreateResponse {
+  // state is the machine-readable lifecycle state.
   CreateStatus state = 1;
+  // endpoints are logical APIs created by the scaffolded service.
   repeated codefly.base.v0.Endpoint endpoints = 2; // The endpoints of the created service
 }
 
@@ -91,21 +117,30 @@ Init
 
 */
 message InitStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// InitRequest provides dependency metadata needed before build/deploy operations.
 message InitRequest {
-  // Endpoints of the dependencies
+  // dependencies_endpoints are logical endpoints exposed by upstream services.
   repeated codefly.base.v0.Endpoint dependencies_endpoints = 1;
 }
 
+// InitResponse reports whether builder initialization succeeded.
 message InitResponse {
+  // state is the machine-readable lifecycle state.
   InitStatus state = 1;
 }
 
@@ -116,20 +151,30 @@ Update
 
 */
 
+// UpdateStatus reports the state and message for the update lifecycle phase.
 message UpdateStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// UpdateRequest asks the builder to update an existing service from its template or agent rules.
 message UpdateRequest {
 }
 
+// UpdateResponse reports whether the update completed.
 message UpdateResponse {
+  // state is the machine-readable lifecycle state.
   UpdateStatus state = 1;
 }
 
@@ -140,20 +185,30 @@ Sync re-generate what needs to be re-generated
 
  */
 
+// SyncRequest asks the builder to resynchronize generated or configuration-derived files.
 message SyncRequest {
 }
 
+// SyncStatus reports the state and message for the sync lifecycle phase.
 message SyncStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// SyncResponse reports whether synchronization completed.
 message SyncResponse {
+  // state is the machine-readable lifecycle state.
   SyncStatus state = 1;
 }
 
@@ -163,39 +218,61 @@ Build is the first stage of Deployment
 
 */
 
+// BuildContext selects the concrete packaging/build system for this service.
 message BuildContext {
+  // kind selects one build-context implementation.
   oneof kind {
+    // docker_build_context carries the DockerBuildContext variant for BuildContext.
     DockerBuildContext docker_build_context = 1;
   }
 }
 
+// BuildRequest provides the container/package build context for a service.
 message BuildRequest {
+  // build_context is the container build context supplied to the builder.
   BuildContext build_context = 1;
 }
 
+// BuildResult captures the outcome of build.
 message BuildResult {
+  // version is the semantic or service-specific version for this resource.
   string version = 1;
+  // running_hash identifies the runtime artifact built for execution.
   string running_hash = 2;
+  // api_hash identifies the API surface used to detect contract changes.
   string api_hash = 3;
+  // kind selects one build-result implementation.
   oneof kind {
+    // docker_build_result carries the DockerBuildResult variant for BuildResult.
     DockerBuildResult docker_build_result = 4;
   }
 }
 
 
+// BuildStatus reports the state and message for the build lifecycle phase.
 message BuildStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
+    // NOOP means no lifecycle transition is currently requested.
     NOOP = 3;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// BuildResponse returns the structured build outcome.
 message BuildResponse {
+  // state is the machine-readable lifecycle state.
   BuildStatus state = 1;
+  // result is the structured operation outcome.
   BuildResult result = 2;
 }
 
@@ -203,29 +280,48 @@ message BuildResponse {
 Deployment
 */
 
+// DeploymentRequest provides target environment, build output, and dependency data for deploy.
 message DeploymentRequest {
+  // environment is the target Codefly environment such as local, staging, or production.
   codefly.base.v0.Environment environment = 1;
+  // deployment is the deployment target and payload handled by the builder.
   codefly.services.builder.v0.Deployment deployment = 2;
+  // configuration is the service or workspace configuration payload.
   codefly.base.v0.Configuration configuration = 3;
+  // dependencies_configurations are configuration values exposed by upstream services.
   repeated codefly.base.v0.Configuration dependencies_configurations = 4;
+  // network_mappings map logical endpoints to concrete network instances.
   repeated codefly.base.v0.NetworkMapping network_mappings = 5;
+  // dependencies_network_mappings are reachable addresses for upstream services.
   repeated codefly.base.v0.NetworkMapping dependencies_network_mappings = 6;
 }
 
+// DeploymentStatus reports the state and message for the deployment lifecycle phase.
 message DeploymentStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 2;
+    // NOOP means no lifecycle transition is currently requested.
     NOOP = 3;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// DeploymentResponse returns deployment status and any configuration produced by deployment.
 message DeploymentResponse {
+  // state is the machine-readable lifecycle state.
   DeploymentStatus state = 1;
+  // configuration is the service or workspace configuration payload.
   codefly.base.v0.Configuration configuration = 2;
+  // deployment is the deployment target and payload handled by the builder.
   DeploymentOutput deployment = 3;
 }
 
@@ -238,6 +334,7 @@ pip-audit for Python, trivy for Docker images). Pure read-only.
 
 */
 
+// AuditRequest asks the builder agent to scan dependencies and artifacts for risk.
 message AuditRequest {
   // include_outdated reports patch+minor "available" upgrades alongside
   // CVEs. Default true. Set false for a vuln-only scan.
@@ -247,44 +344,75 @@ message AuditRequest {
   bool fail_on_vuln = 2;
 }
 
+// AuditFinding is one vulnerability or security finding produced by an audit tool.
 message AuditFinding {
+  // Severity enumerates diagnostic severity levels.
   enum Severity {
+    // UNKNOWN is the default value when severity is not specified.
     UNKNOWN = 0;
+    // LOW is an informational or low-impact finding.
     LOW = 1;
+    // MEDIUM is a moderate-impact finding.
     MEDIUM = 2;
+    // HIGH is a high-impact finding.
     HIGH = 3;
+    // CRITICAL is an urgent finding that should normally fail release gates.
     CRITICAL = 4;
   }
+  // severity is the diagnostic level such as error, warning, information, or hint.
   Severity severity = 1;
+  // id is the stable identifier for this record.
   string id = 2;              // CVE-2025-xxxx, GHSA-xxxx-xxxx, OSV id
+  // package is the package, dependency, or artifact name.
   string package = 3;
+  // current_version is the vulnerable or outdated version currently installed.
   string current_version = 4;
+  // fixed_version is the version that resolves the reported finding.
   string fixed_version = 5;
+  // summary is the compact natural-language result or state description.
   string summary = 6;
+  // url links to advisory, package, or documentation details for the item.
   string url = 7;
 }
 
+// OutdatedDep reports an installed dependency with newer versions available.
 message OutdatedDep {
+  // package is the package, dependency, or artifact name.
   string package = 1;
+  // current is the currently installed dependency version.
   string current = 2;
+  // latest_safe is the newest compatible version that should not require a breaking upgrade.
   string latest_safe = 3;     // newest patch+minor without crossing major
+  // latest_major is the newest major version discovered by the audit.
   string latest_major = 4;    // newest including major bump
 }
 
+// AuditStatus reports the state and message for the audit lifecycle phase.
 message AuditStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // CLEAN means the audit found no actionable issues.
     CLEAN = 1;     // no findings
+    // FINDINGS means the audit completed and returned issues to review.
     FINDINGS = 2;  // findings present (still a successful scan)
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 3;     // tool failed or fail_on_vuln tripped
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// AuditResponse returns vulnerability findings, outdated dependencies, and tool metadata.
 message AuditResponse {
+  // state is the machine-readable lifecycle state.
   AuditStatus state = 1;
+  // findings are vulnerability or security findings returned by the audit.
   repeated AuditFinding findings = 2;
+  // outdated are dependency update opportunities returned by the audit.
   repeated OutdatedDep outdated = 3;
   // tool identifies what produced the report, e.g. "govulncheck+go-list-u",
   // "npm-audit+outdated", "pip-audit", "trivy", or "missing" when the
@@ -303,6 +431,7 @@ without writing the lockfile.
 
 */
 
+// UpgradeRequest asks the builder agent to apply or preview dependency upgrades.
 message UpgradeRequest {
   // include_major also bumps across major-version boundaries. Default false.
   bool include_major = 1;
@@ -313,25 +442,40 @@ message UpgradeRequest {
   repeated string only = 3;
 }
 
+// UpgradeChange describes one dependency version change.
 message UpgradeChange {
+  // package is the package, dependency, or artifact name.
   string package = 1;
+  // from is the currently installed version.
   string from = 2;
+  // to is the version selected by the upgrade.
   string to = 3;
 }
 
+// UpgradeStatus reports the state and message for the upgrade lifecycle phase.
 message UpgradeStatus {
+  // Status enumerates lifecycle status values.
   enum Status {
+    // UNKNOWN is the default value when status is not specified.
     UNKNOWN = 0;
+    // SUCCESS means the operation completed successfully.
     SUCCESS = 1;  // changes applied (or would be, in dry_run)
+    // NOOP means no action was required.
     NOOP = 2;     // nothing to upgrade
+    // ERROR means the phase failed and message carries diagnostics.
     ERROR = 3;
   }
+  // state is the machine-readable lifecycle state.
   Status state = 1;
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
 }
 
+// UpgradeResponse reports dependency changes applied or proposed by the upgrade.
 message UpgradeResponse {
+  // state is the machine-readable lifecycle state.
   UpgradeStatus state = 1;
+  // changes are dependency updates applied or proposed by the upgrade.
   repeated UpgradeChange changes = 2;
   // lockfile_diff is a free-form summary (e.g. truncated `git diff`)
   // for the human-facing CLI output. Optional.
@@ -345,25 +489,28 @@ message UpgradeResponse {
 // - Dependency audit / upgrade
 service Builder {
 
-  // Load the service
+  // Load reads service metadata and prepares the builder agent.
   rpc Load (LoadRequest) returns (LoadResponse) {}
 
-  // Init
+  // Init prepares dependency metadata and builder state.
   rpc Init (InitRequest) returns (InitResponse) {}
 
-  // Affect Code
+  // Create scaffolds service source code.
   rpc Create (CreateRequest) returns (CreateResponse) {}
+  // Update refreshes an existing service from agent rules or templates.
   rpc Update (UpdateRequest) returns (UpdateResponse) {}
 
-  // Affect Data
+  // Sync regenerates configuration-derived or template-derived service files.
   rpc Sync (SyncRequest) returns (SyncResponse) {}
 
-  // Deployment/Build only on init data
+  // Build compiles or packages the service artifact.
   rpc Build (BuildRequest) returns (BuildResponse) {}
+  // Deploy emits or applies deployment artifacts for the target environment.
   rpc Deploy (DeploymentRequest) returns (DeploymentResponse) {}
 
-  // Dependency hygiene
+  // Audit runs dependency and image vulnerability checks.
   rpc Audit (AuditRequest) returns (AuditResponse) {}
+  // Upgrade applies or previews dependency version bumps.
   rpc Upgrade (UpgradeRequest) returns (UpgradeResponse) {}
 
   // Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).

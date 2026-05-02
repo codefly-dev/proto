@@ -27,7 +27,10 @@ const (
 // AgentClient is the client API for Agent service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Agent exposes plugin identity, metadata, and plugin-defined commands.
 type AgentClient interface {
+	// GetAgentInformation returns the agent manifest, capabilities, and configuration docs.
 	GetAgentInformation(ctx context.Context, in *AgentInformationRequest, opts ...grpc.CallOption) (*AgentInformation, error)
 	// ListCommands returns the commands this plugin agent provides.
 	ListCommands(ctx context.Context, in *ListCommandsRequest, opts ...grpc.CallOption) (*ListCommandsResponse, error)
@@ -76,7 +79,10 @@ func (c *agentClient) RunPluginCommand(ctx context.Context, in *RunPluginCommand
 // AgentServer is the server API for Agent service.
 // All implementations must embed UnimplementedAgentServer
 // for forward compatibility.
+//
+// Agent exposes plugin identity, metadata, and plugin-defined commands.
 type AgentServer interface {
+	// GetAgentInformation returns the agent manifest, capabilities, and configuration docs.
 	GetAgentInformation(context.Context, *AgentInformationRequest) (*AgentInformation, error)
 	// ListCommands returns the commands this plugin agent provides.
 	ListCommands(context.Context, *ListCommandsRequest) (*ListCommandsResponse, error)

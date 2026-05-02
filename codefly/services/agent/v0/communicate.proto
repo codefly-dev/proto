@@ -2,80 +2,118 @@ syntax = "proto3";
 
 package codefly.services.agent.v0;
 
+// Message is the human-readable label and help text attached to an interactive question.
 message Message {
+  // name is the stable option or field name.
   string name = 1;
+  // message is the primary text shown to the user.
   string message = 2;
+  // description provides optional help text for the prompt.
   string description = 3;
 }
 
 // Simple message NoOp
 
+// Display is a non-interactive message shown during agent communication.
 message Display {
+  // data contains structured key/value details to display.
   map<string, string> data = 1;
 }
 
 // Yes/No
 
+// Confirm asks the user a yes/no question.
 message Confirm {
+  // default is the preselected answer shown to the user.
   bool default = 1;
 }
 
+// ConfirmAnswer returns the user's yes/no choice.
 message ConfirmAnswer {
+  // confirmed is the boolean answer returned by a confirmation prompt.
   bool confirmed = 1;
 }
 
 // Input
 
+// Input asks the user for a typed scalar value.
 message Input {
+  // default is the optional prompt prefill.
   oneof default {
+    // string_default carries the string variant for Input.
     string string_default = 1;
+    // int_default carries the int32 variant for Input.
     int32 int_default = 2;
   }
 }
 
+// InputAnswer returns the typed scalar value supplied by the user.
 message InputAnswer {
+  // answer selects exactly one supported answer variant.
   oneof answer {
+    // string_value carries the string variant for InputAnswer.
     string string_value = 1;
+    // int_value carries the int32 variant for InputAnswer.
     int32 int_value = 2;
   }
 }
 
 
+// Choice asks the user to select exactly one option.
 message Choice {
+  // options are the choices shown to the user.
   repeated Message options = 1;
 }
 
+// ChoiceAnswer returns the selected option name.
 message ChoiceAnswer {
+  // option is the selected choice value.
   string option = 1;
 }
 
 
+// Selection asks the user to select zero or more options.
 message Selection {
+  // options are the choices shown to the user.
   repeated Message options = 1;
 }
 
+// SelectionAnswer returns all selected option names.
 message SelectionAnswer {
+  // selected contains the option names chosen by the user.
   repeated string selected = 1;
 }
 
 // Question is sent by the plugin to the CLI during Communicate streaming.
 message Question {
+  // message is a human-readable status or diagnostic summary.
   Message message = 3;
+  // value is the concrete question payload the plugin wants answered.
   oneof value {
+    // display carries the Display variant for Question.
     Display display = 4;
+    // confirm carries the Confirm variant for Question.
     Confirm confirm = 5;
+    // input carries a scalar input prompt.
     Input input = 6;
+    // choice carries the Choice variant for Question.
     Choice choice = 7;
+    // selection carries the Selection variant for Question.
     Selection selection = 8;
   }
 }
 
 // Answer is sent by the CLI back to the plugin.
 message Answer {
+  // value is the concrete answer payload returned by the CLI.
   oneof value {
+    // confirm carries the ConfirmAnswer variant for Answer.
     ConfirmAnswer confirm = 5;
+    // input carries a scalar input answer.
     InputAnswer input = 6;
+    // choice carries the ChoiceAnswer variant for Answer.
     ChoiceAnswer choice = 7;
+    // selection carries the SelectionAnswer variant for Answer.
     SelectionAnswer selection = 8;
   }
 }

@@ -4,7 +4,9 @@ package codefly.actions.v0;
 import "buf/validate/validate.proto";
 import "codefly/base/v0/agent.proto";
 
+// AddApplication declares an application to add to the current workspace.
 message AddApplication {
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
     // name is the name of the application.
     string name = 2  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
@@ -14,6 +16,7 @@ message AddApplication {
     codefly.base.v0.Agent agent = 4;
 }
 
+// AddApplicationDependency declares that one application depends on another application.
 message AddApplicationDependency {
     // kind is the type of the action.
     string kind = 1;
@@ -21,8 +24,8 @@ message AddApplicationDependency {
     string name = 2  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
     // module is the name of the module that the application belongs to.
     string module = 3  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
-    // dependency_name is the name of the dependency (another application).
+    // dependency_name is the application dependency to attach.
     string dependency_name = 4  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
-    // dependency_module is the name of the module that the dependency belongs to.
+    // dependency_module is the module containing dependency_name.
     string dependency_module = 5  [(buf.validate.field).string.min_len = 2, (buf.validate.field).string.max_len = 50];
 }

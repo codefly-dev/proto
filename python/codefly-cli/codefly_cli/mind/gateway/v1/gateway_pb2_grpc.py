@@ -13,6 +13,8 @@ class GatewayStub(object):
     definitions, references, dependencies, git state, and command output.
     Mind never sees: agents, processes, containers, addresses.
 
+    Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
+    agents, processes, or containers.
     """
 
     def __init__(self, channel):
@@ -186,6 +188,8 @@ class GatewayServicer(object):
     definitions, references, dependencies, git state, and command output.
     Mind never sees: agents, processes, containers, addresses.
 
+    Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
+    agents, processes, or containers.
     """
 
     def ListServices(self, request, context):
@@ -604,6 +608,8 @@ class Gateway(object):
     definitions, references, dependencies, git state, and command output.
     Mind never sees: agents, processes, containers, addresses.
 
+    Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
+    agents, processes, or containers.
     """
 
     @staticmethod

@@ -6,7 +6,6 @@ option go_package = "github.com/codefly-dev/core/generated/go/mind/v1;mindv1";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
-import "google/protobuf/struct.proto";
 
 // MindService is the complete API for Mind — the AI coding agent.
 //
@@ -104,30 +103,37 @@ service MindService {
   // ║  CODE OPERATIONS (proxied through Gateway)                   ║
   // ╚══════════════════════════════════════════════════════════════╝
 
+  // ReadFile reads a workspace file through the session's gateway.
   rpc ReadFile(ReadFileRequest) returns (ReadFileResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/files/{path=**}" };
   }
 
+  // WriteFile writes a workspace file through the session's gateway.
   rpc WriteFile(WriteFileRequest) returns (WriteFileResponse) {
     option (google.api.http) = { put: "/v1/sessions/{session_id}/files/{path=**}" body: "*" };
   }
 
+  // SearchCode searches indexed or gateway-visible source files.
   rpc SearchCode(SearchCodeRequest) returns (SearchCodeResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/search" };
   }
 
+  // ListSymbols returns code symbols known to the session.
   rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/symbols" };
   }
 
+  // Build runs the service build through the gateway.
   rpc Build(BuildRequest) returns (BuildResponse) {
     option (google.api.http) = { post: "/v1/sessions/{session_id}/build" };
   }
 
+  // Test runs service tests through the gateway.
   rpc Test(TestRequest) returns (TestResponse) {
     option (google.api.http) = { post: "/v1/sessions/{session_id}/test" };
   }
 
+  // Lint runs service linting through the gateway.
   rpc Lint(LintRequest) returns (LintResponse) {
     option (google.api.http) = { post: "/v1/sessions/{session_id}/lint" };
   }
@@ -136,54 +142,67 @@ service MindService {
   // ║  OBSERVATION (superset of debug.proto)                       ║
   // ╚══════════════════════════════════════════════════════════════╝
 
+  // GetDashboard returns the session KPI snapshot.
   rpc GetDashboard(GetDashboardRequest) returns (GetDashboardResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/dashboard" };
   }
 
+  // GetContextState returns the prompt/context layers loaded for the session.
   rpc GetContextState(GetContextStateRequest) returns (GetContextStateResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/context" };
   }
 
+  // GetMemory returns Mind's working memory for the session.
   rpc GetMemory(GetMemoryRequest) returns (GetMemoryResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/memory" };
   }
 
+  // GetObjectiveGraph returns the current objective DAG.
   rpc GetObjectiveGraph(GetObjectiveGraphRequest) returns (GetObjectiveGraphResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/objectives" };
   }
 
+  // GetTrace returns the retained execution trace tree.
   rpc GetTrace(GetTraceRequest) returns (GetTraceResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/trace" };
   }
 
+  // GetMetrics returns token, cost, and timing metrics.
   rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/metrics" };
   }
 
+  // GetCostBreakdown returns hierarchical cost attribution.
   rpc GetCostBreakdown(GetCostBreakdownRequest) returns (GetCostBreakdownResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/cost" };
   }
 
+  // GetSymbolMap returns the symbol map available to Mind.
   rpc GetSymbolMap(GetSymbolMapRequest) returns (GetSymbolMapResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/symbols" };
   }
 
+  // GetFileChanges returns file changes retained for the session.
   rpc GetFileChanges(GetFileChangesRequest) returns (GetFileChangesResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/files" };
   }
 
+  // GetLastSummary returns the latest completed-run summary.
   rpc GetLastSummary(GetLastSummaryRequest) returns (GetLastSummaryResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/summary" };
   }
 
+  // GetRules returns rules loaded into the current context.
   rpc GetRules(GetRulesRequest) returns (GetRulesResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/rules" };
   }
 
+  // GetLLMCalls returns the retained model-call log.
   rpc GetLLMCalls(GetLLMCallsRequest) returns (GetLLMCallsResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/llm-calls" };
   }
 
+  // GetMiddleware returns the middleware pipeline state.
   rpc GetMiddleware(GetMiddlewareRequest) returns (GetMiddlewareResponse) {
     option (google.api.http) = { get: "/v1/sessions/{session_id}/observe/middleware" };
   }
@@ -201,44 +220,71 @@ service MindService {
 // SESSION MESSAGES
 // ═══════════════════════════════════════════════════════════════════
 
+// CreateSessionRequest describes the session resource to create.
 message CreateSessionRequest {
+  // work_dir is the workspace directory that scopes the Mind session.
   string work_dir = 1;                // absolute path to project root
+  // codefly_bin optionally overrides the Codefly CLI binary used by the session.
   string codefly_bin = 2;             // path to codefly binary (optional)
+  // objective_path is a workspace- or service-relative path for objective.
   string objective_path = 3;          // default objective.yaml (optional)
+  // env contains environment variables passed to the session process.
   map<string, string> env = 4;        // extra env vars (LLM keys, etc.)
 }
 
+// CreateSessionResponse returns the new session id and detected project metadata.
 message CreateSessionResponse {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // project_name is the display name of the loaded workspace or project.
   string project_name = 2;            // auto-detected from mind.yaml
+  // plugin is the detected primary plugin for the workspace.
   string plugin = 3;                  // detected plugin (e.g. "go-generic")
 }
 
+// ListSessionsRequest carries optional filters for listing sessions.
 message ListSessionsRequest {
+  // limit caps the number of sessions returned; zero uses the server default.
   int32 limit = 1;                    // max sessions to return (default 20)
 }
 
+// ListSessionsResponse returns recent Mind sessions.
 message ListSessionsResponse {
+  // sessions are summaries ordered by most recent activity.
   repeated SessionSummary sessions = 1;
 }
 
+// SessionSummary summarizes a Mind session for listing and lookup.
 message SessionSummary {
+  // id is the stable identifier for this record.
   string id = 1;
+  // project is the workspace or project name associated with the session.
   string project = 2;
+  // created_at is when the session or record was created.
   google.protobuf.Timestamp created_at = 3;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 4;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 5;
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 6;
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 7;
+  // last_objective is the most recent objective summary for the session.
   string last_objective = 8;
 }
 
+// GetSessionDetailRequest identifies the session detail data to retrieve.
 message GetSessionDetailRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
 }
 
+// GetSessionDetailResponse returns session metadata and retained event history.
 message GetSessionDetailResponse {
+  // session is the session metadata returned by the lookup.
   SessionSummary session = 1;
+  // events are chronological history entries for the session.
   repeated EventEntry events = 2;
 }
 
@@ -247,58 +293,89 @@ message GetSessionDetailResponse {
 // CHAT MESSAGES
 // ═══════════════════════════════════════════════════════════════════
 
+// SendMessageRequest sends one user turn to a Mind session.
 message SendMessageRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // text is the user input, including slash/bang/ask/plan prefixes.
   string text = 2;                    // user input (plain, /slash, !bang, ?ask, ~plan)
 }
 
 // ChatEvent is a streaming response chunk from SendMessage.
 // Exactly one of the oneof fields is set per event.
 message ChatEvent {
+  // event selects exactly one supported event variant.
   oneof event {
+    // token carries the ChatTokenChunk variant for ChatEvent.
     ChatTokenChunk token = 1;         // incremental token for live typing
+    // tool_call carries the ChatToolCall variant for ChatEvent.
     ChatToolCall tool_call = 2;       // tool invocation (read_file, search, etc.)
+    // tool_result carries the ChatToolResult variant for ChatEvent.
     ChatToolResult tool_result = 3;   // tool result
+    // command carries the ChatCommandOutput variant for ChatEvent.
     ChatCommandOutput command = 4;    // slash/bang command output
+    // complete carries the ChatComplete variant for ChatEvent.
     ChatComplete complete = 5;        // final response with full text
+    // error explains why the operation failed; empty means success at this layer.
     ChatError error = 6;              // error
   }
 }
 
+// ChatTokenChunk carries an incremental assistant text fragment.
 message ChatTokenChunk {
+  // text is the next response fragment for live typing.
   string text = 1;                    // token text fragment
 }
 
+// ChatToolCall announces a tool invocation during chat.
 message ChatToolCall {
+  // tool is the tool name involved in this chat or execution event.
   string tool = 1;                    // tool name (read_file, search, etc.)
+  // args are structured or command-line arguments supplied to the tool or command.
   map<string, string> args = 2;       // tool arguments
 }
 
+// ChatToolResult captures the outcome of chat tool.
 message ChatToolResult {
+  // tool is the tool name involved in this chat or execution event.
   string tool = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
+  // is_error is true when the tool result represents an application-level failure.
   bool is_error = 3;
 }
 
+// ChatCommandOutput carries output from a slash or bang command.
 message ChatCommandOutput {
+  // command is the executable or shell command requested by the caller.
   string command = 1;                 // command name
+  // output is raw command, build, lint, or test output retained for diagnosis.
   string output = 2;                  // formatted output
 }
 
+// ChatComplete terminates a SendMessage stream with final text and metrics.
 message ChatComplete {
+  // text is the complete assistant response.
   string text = 1;                    // full response text
+  // metrics is token usage for this chat turn.
   ContextMetrics metrics = 2;         // token usage for this turn
 }
 
+// ChatError terminates or annotates a chat stream with a failure.
 message ChatError {
+  // message explains the chat failure.
   string message = 1;
+  // cancelled is true when the operation was stopped before normal completion.
   bool cancelled = 2;                 // true if cancelled by user
 }
 
+// CancelOperationRequest stops the active operation for a session.
 message CancelOperationRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
 }
 
+// CancelOperationResponse acknowledges the cancellation request.
 message CancelOperationResponse {}
 
 
@@ -306,113 +383,180 @@ message CancelOperationResponse {}
 // EXECUTION MESSAGES
 // ═══════════════════════════════════════════════════════════════════
 
+// InitContextRequest starts codebase ingestion and context initialization for a session.
 message InitContextRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
 }
 
+// InitEvent is a streamable event emitted during init.
 message InitEvent {
+  // phase names the current initialization, planning, or execution phase.
   string phase = 1;                   // "gateway", "services", "symbols", "conventions", "embeddings", "rules"
+  // message is a human-readable status or diagnostic summary.
   string message = 2;
+  // progress is a fractional progress value from 0 to 1 when known.
   double progress = 3;                // 0.0 - 1.0
+  // done is true when the stream or phase has completed.
   bool done = 4;
 }
 
+// RunObjectiveRequest executes an objective from a file or inline spec.
 message RunObjectiveRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // source selects exactly one supported source variant.
   oneof source {
+    // objective_path is the workspace-relative objective YAML path.
     string objective_path = 2;        // path to objective.yaml
+    // inline embeds the objective spec directly in the request.
     ObjectiveSpec inline = 3;         // inline objective spec
   }
+  // max_iterations caps the number of execution loops Mind may run.
   int32 max_iterations = 4;           // override default (0 = use default)
+  // dry_run asks Mind to plan without applying changes.
   bool dry_run = 5;                   // show changes without applying
 }
 
+// PlanAndExecuteRequest asks Mind to plan from natural language and execute the plan.
 message PlanAndExecuteRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // request is the nested objective execution request.
   string request = 2;                 // free-text feature request
+  // max_iterations caps the number of execution loops Mind may run.
   int32 max_iterations = 3;
+  // dry_run asks Mind to plan without applying changes.
   bool dry_run = 4;
 }
 
 // ObjectiveSpec is the proto representation of objective.yaml.
 message ObjectiveSpec {
+  // id is the stable identifier for this record.
   string id = 1;
+  // do is the imperative objective text Mind should satisfy.
   string do = 2;                      // what to accomplish
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 3;
+  // scope describes where a rule applies.
   ObjectiveScope scope = 4;
+  // checks are verification steps requested by the caller.
   repeated CheckSpec checks = 5;
+  // policy contains execution limits and approval behavior for the objective.
   ObjectivePolicy policy = 6;
 }
 
+// ObjectiveScope constrains the files Mind should read or may modify.
 message ObjectiveScope {
+  // write lists file globs or paths Mind may modify.
   repeated string write = 1;          // files the agent may modify
+  // read lists file globs or paths Mind should inspect for context.
   repeated string read = 2;           // files the agent should read for context
 }
 
+// CheckSpec describes one verification check from an objective spec.
 message CheckSpec {
+  // type identifies the check mechanism, such as build, test, lint, command, or http.
   string type = 1;                    // "build", "test", "lint", "command", "http"
+  // name is a caller-chosen check name.
   string name = 2;
+  // run is the command line for command checks.
   string run = 3;                     // for "command" type
+  // method is the HTTP verb for HTTP checks.
   string method = 4;                  // for "http" type
+  // path is the HTTP path or workspace path used by the check.
   string path = 5;
+  // body is the request or response payload.
   string body = 6;
+  // expect describes the expected outcome for a check.
   string expect = 7;
 }
 
+// ObjectivePolicy controls execution limits and decomposition behavior.
 message ObjectivePolicy {
+  // max_iterations caps the number of execution loops Mind may run.
   int32 max_iterations = 1;
+  // max_cost_usd caps model spend for the objective.
   double max_cost_usd = 2;
+  // allow_decompose permits Mind to split the objective into sub-objectives.
   bool allow_decompose = 3;
 }
 
 // ExecutionEvent is the unified stream for objective execution.
 // This maps to agent.ProgressEvent + planning phases.
 message ExecutionEvent {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // kind categorizes the execution event for stream consumers.
   ExecutionEventKind kind = 2;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // message is the human-readable event text.
   string message = 4;
+  // data is the raw bytes or JSON-shaped payload.
   map<string, string> data = 5;
 
   // Phase-specific payloads (at most one set per event).
   PlanPhaseEvent plan = 10;
+  // iteration carries iteration lifecycle details when this is an iteration event.
   IterationEvent iteration = 11;
+  // check carries a verification event emitted during execution.
   CheckResultEvent check = 12;
+  // file_op carries a file operation event emitted during execution.
   FileOpEvent file_op = 13;
+  // strategy carries the reasoning behind a strategy decision.
   StrategyEvent strategy = 14;
+  // llm carries model-call metadata emitted during execution.
   LLMEvent llm = 15;
+  // tool carries a tool call or tool result event.
   ToolEvent tool = 16;
+  // completion carries the final execution summary.
   CompletionEvent completion = 17;
 }
 
+// ExecutionEventKind enumerates supported execution event kinds.
 enum ExecutionEventKind {
+  // EXECUTION_EVENT_KIND_UNSPECIFIED is the default value when execution event kind is not
+  // specified.
   EXECUTION_EVENT_KIND_UNSPECIFIED = 0;
 
   // Planning phases
   PLAN_UNDERSTAND_START = 1;
+  // PLAN_UNDERSTAND_DONE marks completion of the understand phase.
   PLAN_UNDERSTAND_DONE = 2;
+  // PLAN_PLAN_START marks the start of graph planning.
   PLAN_PLAN_START = 3;
+  // PLAN_PLAN_DONE marks completion of graph planning.
   PLAN_PLAN_DONE = 4;
+  // PLAN_DETAIL_START marks the start of detailed objective expansion.
   PLAN_DETAIL_START = 5;
+  // PLAN_DETAIL_DONE marks completion of detailed objective expansion.
   PLAN_DETAIL_DONE = 6;
+  // PLAN_REVIEW marks a planning review event.
   PLAN_REVIEW = 7;
 
   // Execution lifecycle
   OBJECTIVE_START = 10;
+  // OBJECTIVE_DONE marks completion of one objective.
   OBJECTIVE_DONE = 11;
+  // ITERATION_START marks the start of an execution iteration.
   ITERATION_START = 12;
+  // ITERATION_DONE marks completion of an execution iteration.
   ITERATION_DONE = 13;
 
   // Agent lifecycle
   AGENT_START = 20;
+  // AGENT_DONE marks completion of an agent step.
   AGENT_DONE = 21;
 
   // LLM
   LLM_START = 30;
+  // LLM_DONE marks completion of a model call.
   LLM_DONE = 31;
 
   // Tools
   TOOL_CALL = 40;
+  // TOOL_RESULT carries a completed tool call.
   TOOL_RESULT = 41;
 
   // File operations
@@ -420,6 +564,7 @@ enum ExecutionEventKind {
 
   // Checks
   CHECK_START = 60;
+  // CHECK_RESULT carries the result of a verification check.
   CHECK_RESULT = 61;
 
   // Strategy
@@ -427,89 +572,147 @@ enum ExecutionEventKind {
 
   // Terminal
   ERROR = 80;
+  // INFO carries an informational event.
   INFO = 81;
+  // COMPLETE marks the end of the execution stream.
   COMPLETE = 90;
 }
 
+// PlanPhaseEvent is a streamable event emitted during plan phase.
 message PlanPhaseEvent {
+  // phase names the current initialization, planning, or execution phase.
   string phase = 1;                   // "understand", "plan", "detail", "review"
+  // graph is the objective graph produced by planning.
   ObjectiveGraphSnapshot graph = 2;   // current objective graph state
 }
 
+// ObjectiveGraphSnapshot captures the objective DAG at a planning moment.
 message ObjectiveGraphSnapshot {
+  // nodes are graph vertices returned by the objective or dependency graph.
   repeated ObjectiveNode nodes = 1;
+  // edges are graph relationships between returned nodes.
   repeated ObjectiveEdge edges = 2;
 }
 
+// IterationEvent is a streamable event emitted during iteration.
 message IterationEvent {
+  // number is the 1-based iteration or sequence number.
   int32 number = 1;
+  // objective_id identifies a planned or running objective node.
   string objective_id = 2;
+  // objective_do is the objective text active during this iteration.
   string objective_do = 3;
+  // outcome summarizes the result of an iteration or memory entry.
   string outcome = 4;                 // "achieved", "failed", "decomposed"
+  // checks_passed is the number of verification checks that passed.
   int32 checks_passed = 5;
+  // checks_total is the number of verification checks that ran.
   int32 checks_total = 6;
 }
 
+// CheckResultEvent reports one verification check result.
 message CheckResultEvent {
+  // name is the check name.
   string name = 1;
+  // type identifies the check mechanism, such as command, test, build, or lint.
   string type = 2;
+  // passed is true when the check met its expected condition.
   bool passed = 3;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 4;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 5;
 }
 
+// FileOpEvent is a streamable event emitted during file op.
 message FileOpEvent {
+  // op is the file operation such as create, update, delete, or rename.
   string op = 1;                      // "create", "edit", "delete"
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;
+  // diff is the unified diff for the file or git change.
   string diff = 3;                    // unified diff (optional, may be large)
 }
 
+// StrategyEvent is a streamable event emitted during strategy.
 message StrategyEvent {
+  // action is the strategy, file, or debug action that occurred.
   string action = 1;                  // "pivot", "widen", "decompose", "escalate"
+  // reasoning explains why Mind selected this strategy.
   string reasoning = 2;
 }
 
+// LLMEvent records token, model, cost, and timing data for one model call.
 message LLMEvent {
+  // model is the provider model identifier used for the call.
   string model = 1;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 2;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 3;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 4;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 5;
+  // duration_ms is wall-clock time in milliseconds.
   int64 duration_ms = 6;
 }
 
+// ToolEvent is a streamable event emitted during tool.
 message ToolEvent {
+  // tool is the tool name involved in this chat or execution event.
   string tool = 1;
+  // args are command-line arguments passed to the executable.
   map<string, string> args = 2;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 3;
+  // is_error is true when the tool result represents an application-level failure.
   bool is_error = 4;
+  // cached is true when the tool or model result came from a cache.
   bool cached = 5;
 }
 
+// CompletionEvent is a streamable event emitted during completion.
 message CompletionEvent {
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 1;
+  // iterations is the number of execution loops completed.
   int32 iterations = 2;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 3;
+  // files_changed is the number of files modified by the operation.
   repeated FileChange files_changed = 4;
+  // checks are verification steps requested by the caller.
   repeated CheckResult checks = 5;
+  // pending_approval is true when execution stopped for human approval.
   bool pending_approval = 6;          // true if changes need ApproveChanges
 }
 
+// ApproveChangesRequest commits pending overlay changes for a session or objective.
 message ApproveChangesRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // objective_id identifies the objective being approved, reverted, or reported.
   string objective_id = 2;            // optional: approve specific objective
 }
 
+// ApproveChangesResponse lists files committed from the overlay.
 message ApproveChangesResponse {
+  // files_committed are paths written to the real workspace.
   repeated string files_committed = 1;
 }
 
+// RevertChangesRequest discards pending overlay changes for a session or objective.
 message RevertChangesRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // objective_id identifies a planned or running objective node.
   string objective_id = 2;
 }
 
+// RevertChangesResponse lists pending files discarded from the overlay.
 message RevertChangesResponse {
+  // files_reverted are paths whose pending overlay changes were discarded.
   repeated string files_reverted = 1;
 }
 
@@ -518,89 +721,144 @@ message RevertChangesResponse {
 // CODE OPERATION MESSAGES
 // ═══════════════════════════════════════════════════════════════════
 
+// ReadFileRequest identifies a workspace file to read.
 message ReadFileRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;
 }
 
+// ReadFileResponse returns a file body and detected language hint.
 message ReadFileResponse {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // content is the complete file body.
   string content = 2;
+  // language is the implementation language reported by tooling or project metadata.
   string language = 3;
 }
 
+// WriteFileRequest writes a complete file body through Mind's overlay or gateway path.
 message WriteFileRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // path is a workspace- or service-relative filesystem path.
   string path = 2;
+  // content is the complete file body to write.
   string content = 3;
 }
 
+// WriteFileResponse acknowledges that the write request was accepted.
 message WriteFileResponse {}
 
+// SearchCodeRequest searches source files visible to the session.
 message SearchCodeRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // pattern is the search expression or literal text to match.
   string pattern = 2;
+  // case_insensitive makes matching ignore letter case.
   bool case_insensitive = 3;
+  // file_pattern restricts search to paths matching the pattern.
   string file_pattern = 4;            // glob filter (e.g. "*.go")
+  // limit caps the number of records returned.
   int32 limit = 5;
 }
 
+// SearchCodeResponse returns matching source lines and total hit count.
 message SearchCodeResponse {
+  // matches are the search hits returned by the gateway.
   repeated SearchMatch matches = 1;
+  // total is the total number of matching lines before limiting.
   int32 total = 2;
 }
 
+// SearchMatch identifies one matching source line.
 message SearchMatch {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // line is the 1-based source line number.
   int32 line = 2;
+  // text is the matched source line.
   string text = 3;
 }
 
+// ListSymbolsRequest carries optional filters for listing symbols.
 message ListSymbolsRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // filter restricts results to matching names or patterns.
   string filter = 2;
 }
 
+// ListSymbolsResponse returns symbols discovered for the session.
 message ListSymbolsResponse {
+  // symbols are code entities returned by language analysis.
   repeated SymbolInfo symbols = 1;
 }
 
+// SymbolInfo is a compact symbol record for code search and navigation.
 message SymbolInfo {
+  // name is the symbol name.
   string name = 1;
+  // kind classifies the language construct.
   string kind = 2;
+  // file is a workspace- or service-relative source file path.
   string file = 3;
+  // line is the 1-based source line number.
   int32 line = 4;
+  // signature is the declaration text or callable shape for a symbol.
   string signature = 5;
 }
 
+// BuildRequest asks Mind to run the session build through the gateway.
 message BuildRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
 }
 
+// BuildResponse returns build success and raw output.
 message BuildResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
 }
 
+// TestRequest asks Mind to run session tests through the gateway.
 message TestRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // pattern is the search expression or test filter requested by the caller.
   string pattern = 2;                 // optional: test name filter
 }
 
+// TestResponse returns test success, raw output, and simple counts.
 message TestResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
+  // passed is the number of cases that passed.
   int32 passed = 3;
+  // failed is the number of cases that failed assertions.
   int32 failed = 4;
 }
 
+// LintRequest asks Mind to run session linting through the gateway.
 message LintRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
 }
 
+// LintResponse returns lint success, raw output, and issue count.
 message LintResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
+  // issues are lint or diagnostic findings returned by the operation.
   int32 issues = 3;
 }
 
@@ -609,348 +867,611 @@ message LintResponse {
 // OBSERVATION MESSAGES (superset of debug.proto)
 // ═══════════════════════════════════════════════════════════════════
 
+// ContextMetrics aggregates token counts and cacheability for context segments.
 message ContextMetrics {
+  // system_tokens is the number of tokens used by system context.
   int32 system_tokens = 1;
+  // state_tokens is the number of tokens used by state context.
   int32 state_tokens = 2;
+  // turn_tokens is the number of tokens used by the current turn.
   int32 turn_tokens = 3;
+  // total_tokens is the total token count for the measured context.
   int32 total_tokens = 4;
+  // saved_tokens is the estimated token reduction from compaction or caching.
   int32 saved_tokens = 5;
+  // cacheable_ratio is the fraction of context that can be provider-cached.
   double cacheable_ratio = 6;
 }
 
 // ── Dashboard ──
 
-message GetDashboardRequest { string session_id = 1; }
+// GetDashboardRequest identifies the dashboard data to retrieve.
+message GetDashboardRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetDashboardResponse is the top-level KPI snapshot for the Mind session.
 message GetDashboardResponse {
+  // active_objective is the objective currently being planned or executed.
   string active_objective = 1;
+  // iteration is the execution loop number for this event.
   int32 iteration = 2;
+  // phase names the current initialization, planning, or execution phase.
   string phase = 3;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 4;
+  // tokens_used is the total model token count consumed by the session.
   int32 tokens_used = 5;
+  // context_window is the maximum model context size currently available.
   int32 context_window = 6;
+  // budget_remaining is the remaining cost or token budget.
   double budget_remaining = 7;
+  // uptime is how long the session or server has been running.
   google.protobuf.Duration uptime = 8;
+  // checks_passed is the number of verification checks that passed.
   int32 checks_passed = 9;
+  // checks_total is the number of verification checks that ran.
   int32 checks_total = 10;
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 11;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 12;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 13;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 14;
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 15;
 }
 
 // ── Context State ──
 
-message GetContextStateRequest { string session_id = 1; }
+// GetContextStateRequest identifies the context state data to retrieve.
+message GetContextStateRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetContextStateResponse shows the prompt context layers currently available to Mind.
 message GetContextStateResponse {
+  // project_name is the stable name of the project.
   string project_name = 1;
+  // service_name is the stable name of the service.
   string service_name = 2;
+  // has_conventions is true when convention context is loaded.
   bool has_conventions = 3;
+  // has_rules is true when rule context is loaded.
   bool has_rules = 4;
+  // has_symbol_map is true when symbol context is loaded.
   bool has_symbol_map = 5;
+  // has_memory is true when session memory is loaded.
   bool has_memory = 6;
+  // has_session is true when persistent session state is loaded.
   bool has_session = 7;
+  // system_preview is a bounded excerpt of system context.
   string system_preview = 8;
+  // state_preview is a bounded excerpt of state context.
   string state_preview = 9;
+  // turn_preview is a bounded excerpt of current turn context.
   string turn_preview = 10;
+  // metrics summarizes token usage for the context layers.
   ContextMetrics metrics = 11;
+  // conventions are conventions loaded into context for the current project.
   repeated ConventionEntry conventions = 12;
 }
 
+// ConventionEntry describes a detected project convention available to Mind.
 message ConventionEntry {
+  // category groups a convention, rule, or finding.
   string category = 1;
+  // package is the package, dependency, or artifact name.
   string package = 2;
+  // pattern is the search expression or literal text to match.
   string pattern = 3;
+  // usage is the command-line shape shown to users and agents.
   string usage = 4;
 }
 
 // ── Memory ──
 
-message GetMemoryRequest { string session_id = 1; }
+// GetMemoryRequest identifies the memory data to retrieve.
+message GetMemoryRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetMemoryResponse exposes Mind's working memory for the current objective.
 message GetMemoryResponse {
+  // objective is the user goal or execution target.
   string objective = 1;
+  // approach summarizes the strategy used in prior work.
   string approach = 2;
+  // files_modified lists files changed in prior work.
   map<string, string> files_modified = 3;
+  // files_read lists files inspected in prior work.
   map<string, string> files_read = 4;
+  // symbols are code entities returned by language analysis.
   repeated SymbolRef symbols = 5;
+  // hypotheses are candidate explanations or plans Mind is tracking.
   repeated string hypotheses = 6;
+  // blockers are unresolved issues that may prevent completion.
   repeated string blockers = 7;
+  // next_steps are the next actions Mind has identified.
   repeated string next_steps = 8;
+  // iterations is the number of execution loops completed.
   repeated IterationRecord iterations = 9;
+  // thread_summary is a compact summary of the conversation so far.
   string thread_summary = 10;
 }
 
+// SymbolRef records a code symbol Mind considered relevant.
 message SymbolRef {
+  // name is the symbol name.
   string name = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // relevance is a score or explanation for why the item matters.
   string relevance = 3;
 }
 
+// IterationRecord summarizes one reasoning or execution loop.
 message IterationRecord {
+  // number is the 1-based iteration or sequence number.
   int32 number = 1;
+  // outcome summarizes the result of an iteration or memory entry.
   string outcome = 2;
+  // insight captures what Mind learned during the iteration.
   string insight = 3;
+  // files are workspace files touched or inspected during the iteration.
   repeated string files = 4;
 }
 
 // ── Objective Graph ──
 
-message GetObjectiveGraphRequest { string session_id = 1; }
+// GetObjectiveGraphRequest identifies the objective graph data to retrieve.
+message GetObjectiveGraphRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetObjectiveGraphResponse returns the current objective DAG.
 message GetObjectiveGraphResponse {
+  // nodes are graph vertices returned by the objective or dependency graph.
   repeated ObjectiveNode nodes = 1;
+  // edges are graph relationships between returned nodes.
   repeated ObjectiveEdge edges = 2;
 }
 
+// ObjectiveNode represents one objective, subtask, or plan node.
 message ObjectiveNode {
+  // id is the stable identifier for this record.
   string id = 1;
+  // description is the human-readable objective or subtask text.
   string description = 2;
+  // status reports the lifecycle or operation status.
   string status = 3;
+  // checks are verification steps requested by the caller.
   repeated CheckEntry checks = 4;
+  // changes are file or behavior changes associated with this node.
   repeated ChangeEntry changes = 5;
+  // children are nested objectives under this node.
   repeated ObjectiveNode children = 6;
+  // wall_clock_s is elapsed wall-clock time in seconds.
   double wall_clock_s = 7;
+  // work_time_s is active work time in seconds.
   double work_time_s = 8;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 9;
 }
 
+// ObjectiveEdge connects related objective graph nodes.
 message ObjectiveEdge {
+  // from is the beginning timestamp or source endpoint of a relationship.
   string from = 1;
+  // to is the ending timestamp or destination endpoint of a relationship.
   string to = 2;
+  // kind describes the graph relationship, such as dependency or decomposition.
   string kind = 3;
 }
 
+// CheckEntry summarizes one verification check attached to an objective.
 message CheckEntry {
+  // name is the check name.
   string name = 1;
+  // type identifies the check mechanism, such as command, test, build, or lint.
   string type = 2;
+  // passed is true when the check met its expected condition.
   bool passed = 3;
+  // has_result is true when a check produced a retained result payload.
   bool has_result = 4;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 5;
 }
 
+// ChangeEntry summarizes a file or behavior change linked to an objective.
 message ChangeEntry {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // action is the strategy, file, or debug action that occurred.
   string action = 2;
+  // what describes the changed artifact or behavior.
   string what = 3;
 }
 
 // ── Trace ──
 
-message GetTraceRequest { string session_id = 1; }
+// GetTraceRequest identifies the trace data to retrieve.
+message GetTraceRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetTraceResponse returns the root of the retained execution trace tree.
 message GetTraceResponse {
+  // root is the root trace node for the returned tree.
   TraceNode root = 1;
 }
 
+// TraceNode represents one agent, tool, or execution span in the trace tree.
 message TraceNode {
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 1;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 2;
+  // events are trace events emitted within this node.
   repeated TraceEvent events = 3;
+  // children are nested trace spans.
   repeated TraceNode children = 4;
+  // stats aggregates trace node counts, timings, and error totals.
   TraceStats stats = 5;
 }
 
+// TraceEvent is a streamable event emitted during trace.
 message TraceEvent {
+  // kind categorizes the trace event for filtering and rendering.
   string kind = 1;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 2;
+  // message is the event text shown in the trace view.
   string message = 3;
+  // data is the raw bytes or JSON-shaped payload.
   map<string, string> data = 4;
 }
 
+// TraceStats aggregates counts for one trace node.
 message TraceStats {
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 1;
+  // tool_calls is the number of tool calls made in this turn or iteration.
   int32 tool_calls = 2;
+  // errors is the number of failed trace nodes or operations.
   int32 errors = 3;
 }
 
 // ── Metrics ──
 
-message GetMetricsRequest { string session_id = 1; }
+// GetMetricsRequest identifies the metrics data to retrieve.
+message GetMetricsRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetMetricsResponse returns session-level model, token, and timing metrics.
 message GetMetricsResponse {
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 1;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 2;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 3;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 4;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 5;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 6;
+  // iterations is the number of execution loops completed.
   int32 iterations = 7;
+  // context is the measured context segment or prompt state.
   ContextMetrics context = 8;
 }
 
 // ── Cost Breakdown ──
 
-message GetCostBreakdownRequest { string session_id = 1; }
+// GetCostBreakdownRequest identifies the cost breakdown data to retrieve.
+message GetCostBreakdownRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetCostBreakdownResponse returns hierarchical cost attribution for a session.
 message GetCostBreakdownResponse {
+  // title is the display label for a cost breakdown row.
   string title = 1;
+  // total is the aggregate cost row for this breakdown.
   CostEntry total = 2;
+  // entries are child rows contributing to the total.
   repeated CostEntry entries = 3;
 }
 
+// CostEntry is one row in the cost breakdown table.
 message CostEntry {
+  // name labels the model, agent, objective, or phase being charged.
   string name = 1;
+  // calls is the number of model calls attributed to this row.
   int32 calls = 2;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 3;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 4;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 5;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 6;
 }
 
 // ── Symbol Map ──
 
-message GetSymbolMapRequest { string session_id = 1; }
+// GetSymbolMapRequest identifies the symbol map data to retrieve.
+message GetSymbolMapRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetSymbolMapResponse returns the symbol map currently available to Mind.
 message GetSymbolMapResponse {
+  // total_symbols is the number of symbols available in the symbol map.
   int32 total_symbols = 1;
+  // total_files is the number of files included in the response.
   int32 total_files = 2;
+  // overlay_active is true when Mind has uncommitted overlay edits.
   bool overlay_active = 3;
+  // files are source files included in the symbol map.
   repeated FileSymbols files = 4;
 }
 
+// FileSymbols groups symbols discovered in one source file.
 message FileSymbols {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // symbols are code entities returned by language analysis.
   repeated SymbolNode symbols = 2;
 }
 
+// SymbolNode is a compact symbol entry for the symbol map view.
 message SymbolNode {
+  // name is the symbol name.
   string name = 1;
+  // kind classifies the language construct.
   string kind = 2;
+  // signature is the declaration text or callable shape for a symbol.
   string signature = 3;
+  // overlay is true when the symbol or file comes from the active edit overlay.
   bool overlay = 4;
 }
 
 // ── File Changes ──
 
-message GetFileChangesRequest { string session_id = 1; }
+// GetFileChangesRequest identifies the file changes data to retrieve.
+message GetFileChangesRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetFileChangesResponse returns file changes retained for the current session.
 message GetFileChangesResponse {
+  // files are changed files and their diffs.
   repeated FileChange files = 1;
 }
 
+// FileChange records one file operation and optional diff.
 message FileChange {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // op is the file operation such as create, update, delete, or rename.
   string op = 2;
+  // reason explains why this change, state, or decision occurred.
   string reason = 3;
+  // diff is the unified git diff text.
   string diff = 4;
 }
 
 // ── Last Summary ──
 
-message GetLastSummaryRequest { string session_id = 1; }
+// GetLastSummaryRequest identifies the last summary data to retrieve.
+message GetLastSummaryRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetLastSummaryResponse returns the most recent completed-run summary.
 message GetLastSummaryResponse {
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 1;
+  // iterations is the number of execution loops completed.
   int32 iterations = 2;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 3;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 4;
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 5;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 6;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 7;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 8;
+  // files are file changes included in the summary.
   repeated FileChange files = 9;
+  // checks are verification results included in the summary.
   repeated CheckResult checks = 10;
+  // trace_compact is a bounded trace summary suitable for UI display or prompts.
   string trace_compact = 11;
 }
 
+// CheckResult captures the outcome of one summary verification check.
 message CheckResult {
+  // name is the check name.
   string name = 1;
+  // passed is true when the check met its expected condition.
   bool passed = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
 // ── Rules ──
 
-message GetRulesRequest { string session_id = 1; }
+// GetRulesRequest identifies the rules data to retrieve.
+message GetRulesRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetRulesResponse returns rules loaded into the current Mind context.
 message GetRulesResponse {
+  // rules are loaded rules and their current match state.
   repeated RuleEntry rules = 1;
 }
 
+// RuleEntry describes one rule available to Mind.
 message RuleEntry {
+  // id is the stable identifier for this record.
   string id = 1;
+  // scope describes where a rule applies.
   RuleScope scope = 2;
+  // text is the plain-text payload or human-readable description.
   string text = 3;
+  // matched_current is true when the rule applies to the current request.
   bool matched_current = 4;
 }
 
+// RuleScope describes where a rule applies.
 message RuleScope {
+  // agents are Codefly plugin identities or filters relevant to this operation.
   repeated string agents = 1;
+  // objectives are objective filters or graph nodes.
   repeated string objectives = 2;
+  // code is the diagnostic or rule identifier from the producing tool.
   string code = 3;
 }
 
 // ── LLM Calls ──
 
+// GetLLMCallsRequest identifies retained model-call records to retrieve.
 message GetLLMCallsRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // limit caps the number of records returned.
   int32 limit = 2;
+  // offset skips records before returning a paged result.
   int32 offset = 3;
 }
 
+// GetLLMCallsResponse returns a paged list of retained model calls.
 message GetLLMCallsResponse {
+  // calls are model calls retained in the session log.
   repeated LLMCallEntry calls = 1;
+  // total is the total number of model calls available before paging.
   int32 total = 2;
 }
 
+// LLMCallEntry records one model call and retained prompt/response previews.
 message LLMCallEntry {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // model is the provider model identifier used for the call.
   string model = 2;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // prompt_hash is a stable hash of the prompt payload.
   string prompt_hash = 4;
+  // prompt_preview is a bounded prompt excerpt for debugging.
   string prompt_preview = 5;
+  // response_preview is a bounded response excerpt for debugging.
   string response_preview = 6;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 7;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 8;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 9;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 10;
+  // duration_ms is wall-clock time in milliseconds.
   int64 duration_ms = 11;
+  // cache_hit is true when the provider reported a cache hit.
   bool cache_hit = 12;
+  // tool_call_count is the number of tool calls associated with the model call.
   int32 tool_call_count = 13;
+  // full_prompt is the complete prompt text when trace retention permits it.
   string full_prompt = 14;
+  // full_response is the complete model response when trace retention permits it.
   string full_response = 15;
 }
 
 // ── Middleware ──
 
-message GetMiddlewareRequest { string session_id = 1; }
+// GetMiddlewareRequest identifies the middleware data to retrieve.
+message GetMiddlewareRequest {
+  // session_id identifies the Mind session that owns this request or event.
+  string session_id = 1;
+}
 
+// GetMiddlewareResponse returns the current middleware pipeline state.
 message GetMiddlewareResponse {
+  // chain is the ordered middleware stack and its status.
   repeated MiddlewareEntry chain = 1;
 }
 
+// MiddlewareEntry describes one middleware stage.
 message MiddlewareEntry {
+  // name is the middleware stage name.
   string name = 1;
+  // status reports the lifecycle or operation status.
   string status = 2;
+  // details contains expanded middleware or diagnostic metadata.
   map<string, string> details = 3;
 }
 
 // ── Event Stream ──
 
+// StreamEventsRequest filters the live Mind event stream.
 message StreamEventsRequest {
+  // session_id identifies the Mind session that owns this request or event.
   string session_id = 1;
+  // kinds filters events by event kind; empty means all kinds.
   repeated string kinds = 2;          // filter by event kind (empty = all)
+  // agent_filter restricts events to a single agent name.
   string agent_filter = 3;            // filter by agent name
 }
 
 // MindEvent is the unified event type for all real-time streaming.
 // Superset of the debug.proto DebugEvent — includes execution progress.
 message MindEvent {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // kind categorizes the event for filtering and rendering.
   string kind = 2;                    // "llm_call", "tool_call", "file_op", "check", "iteration", "strategy", "error", "info"
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // message is the event text shown to clients.
   string message = 4;
+  // data is the raw bytes or JSON-shaped payload.
   map<string, string> data = 5;
 }
 
 // ── Event Entry (for session history) ──
 
+// EventEntry is one retained history entry for a session.
 message EventEntry {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // kind categorizes the event for filtering and rendering.
   string kind = 2;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // message is the event text shown in session history.
   string message = 4;
 }

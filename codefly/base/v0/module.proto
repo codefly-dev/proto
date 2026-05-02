@@ -18,9 +18,11 @@ message InterfaceEndpoint {
 
 // ModuleInterface is the formal contract of what a module exposes.
 message ModuleInterface {
+  // endpoints are service endpoints that form the module's public contract.
   repeated InterfaceEndpoint endpoints = 1;
 }
 
+// Module is a core Codefly resource in the workspace hierarchy.
 message Module {
   // The name of the module
   string name = 1;
@@ -36,7 +38,10 @@ message Module {
   Agent agent = 7;
 }
 
+// ManagedModule is the platform-managed representation of a module.
 message ManagedModule {
+  // id is the stable identifier for this record.
   string id = 1 [(buf.validate.field).string.pattern = "^[a-z]{10}$"];
+  // module is the full module resource.
   Module module = 2;
 }

@@ -3,8 +3,10 @@ package codefly.actions.v0;
 
 import "buf/validate/validate.proto";
 
+// AddOrganization declares an organization that owns one or more workspaces.
 message AddOrganization {
-    // Kind is the kind of the message.
+    // kind is the action discriminator used when actions are serialized.
     string kind = 1;
+    // name is the organization name.
     string name = 2 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 50];
 }

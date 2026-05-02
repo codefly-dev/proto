@@ -1,35 +1,47 @@
 syntax = "proto3";
 package codefly.observability.v0;
 
-
-import "codefly/base/v0/endpoint.proto";
 import "codefly/observability/v0/sessions.proto";
 
 import "google/protobuf/timestamp.proto";
 
 
 
+// Log is a timestamped workspace event emitted by a Codefly flow or agent.
 message Log {
+  // at is the timestamp for the log or session snapshot.
   google.protobuf.Timestamp at = 1;
+  // module is the Codefly module name that groups services.
   string module = 2;
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 3;
+  // kind classifies the log event, such as lifecycle, output, or diagnostic.
   string kind = 4;
+  // message is a human-readable status or diagnostic summary.
   string message = 5;
 }
 
 
+// LogSessionGroup groups log events under one recorded workspace session.
 message LogSessionGroup {
+  // session identifies the workspace snapshot these logs belong to.
   observability.v0.Session session = 1;
+  // logs are events recorded for this session.
   repeated Log logs = 2;
 }
 
 
+// LogRequest selects a time range for log history.
 message LogRequest {
+  // from is the beginning of the requested time range.
   google.protobuf.Timestamp from = 1;
+  // to is the end of the requested time range.
   google.protobuf.Timestamp to = 2;
 }
 
 
+// LogResponse returns log groups for the requested time range.
 message LogResponse {
+  // groups are log events grouped by workspace session.
   repeated LogSessionGroup groups = 1;
 }

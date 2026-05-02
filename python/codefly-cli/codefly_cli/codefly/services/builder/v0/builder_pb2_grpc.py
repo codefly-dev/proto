@@ -81,61 +81,64 @@ class BuilderServicer(object):
     """
 
     def Load(self, request, context):
-        """Load the service
+        """Load reads service metadata and prepares the builder agent.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Init(self, request, context):
-        """Init
+        """Init prepares dependency metadata and builder state.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Create(self, request, context):
-        """Affect Code
+        """Create scaffolds service source code.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Update(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Update refreshes an existing service from agent rules or templates.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Sync(self, request, context):
-        """Affect Data
+        """Sync regenerates configuration-derived or template-derived service files.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Build(self, request, context):
-        """Deployment/Build only on init data
+        """Build compiles or packages the service artifact.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Deploy(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Deploy emits or applies deployment artifacts for the target environment.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Audit(self, request, context):
-        """Dependency hygiene
+        """Audit runs dependency and image vulnerability checks.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Upgrade(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Upgrade applies or previews dependency version bumps.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

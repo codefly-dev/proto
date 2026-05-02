@@ -105,25 +105,45 @@ type MindServiceClient interface {
 	ApproveChanges(ctx context.Context, in *ApproveChangesRequest, opts ...grpc.CallOption) (*ApproveChangesResponse, error)
 	// RevertChanges discards pending overlay changes.
 	RevertChanges(ctx context.Context, in *RevertChangesRequest, opts ...grpc.CallOption) (*RevertChangesResponse, error)
+	// ReadFile reads a workspace file through the session's gateway.
 	ReadFile(ctx context.Context, in *ReadFileRequest, opts ...grpc.CallOption) (*ReadFileResponse, error)
+	// WriteFile writes a workspace file through the session's gateway.
 	WriteFile(ctx context.Context, in *WriteFileRequest, opts ...grpc.CallOption) (*WriteFileResponse, error)
+	// SearchCode searches indexed or gateway-visible source files.
 	SearchCode(ctx context.Context, in *SearchCodeRequest, opts ...grpc.CallOption) (*SearchCodeResponse, error)
+	// ListSymbols returns code symbols known to the session.
 	ListSymbols(ctx context.Context, in *ListSymbolsRequest, opts ...grpc.CallOption) (*ListSymbolsResponse, error)
+	// Build runs the service build through the gateway.
 	Build(ctx context.Context, in *BuildRequest, opts ...grpc.CallOption) (*BuildResponse, error)
+	// Test runs service tests through the gateway.
 	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
+	// Lint runs service linting through the gateway.
 	Lint(ctx context.Context, in *LintRequest, opts ...grpc.CallOption) (*LintResponse, error)
+	// GetDashboard returns the session KPI snapshot.
 	GetDashboard(ctx context.Context, in *GetDashboardRequest, opts ...grpc.CallOption) (*GetDashboardResponse, error)
+	// GetContextState returns the prompt/context layers loaded for the session.
 	GetContextState(ctx context.Context, in *GetContextStateRequest, opts ...grpc.CallOption) (*GetContextStateResponse, error)
+	// GetMemory returns Mind's working memory for the session.
 	GetMemory(ctx context.Context, in *GetMemoryRequest, opts ...grpc.CallOption) (*GetMemoryResponse, error)
+	// GetObjectiveGraph returns the current objective DAG.
 	GetObjectiveGraph(ctx context.Context, in *GetObjectiveGraphRequest, opts ...grpc.CallOption) (*GetObjectiveGraphResponse, error)
+	// GetTrace returns the retained execution trace tree.
 	GetTrace(ctx context.Context, in *GetTraceRequest, opts ...grpc.CallOption) (*GetTraceResponse, error)
+	// GetMetrics returns token, cost, and timing metrics.
 	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
+	// GetCostBreakdown returns hierarchical cost attribution.
 	GetCostBreakdown(ctx context.Context, in *GetCostBreakdownRequest, opts ...grpc.CallOption) (*GetCostBreakdownResponse, error)
+	// GetSymbolMap returns the symbol map available to Mind.
 	GetSymbolMap(ctx context.Context, in *GetSymbolMapRequest, opts ...grpc.CallOption) (*GetSymbolMapResponse, error)
+	// GetFileChanges returns file changes retained for the session.
 	GetFileChanges(ctx context.Context, in *GetFileChangesRequest, opts ...grpc.CallOption) (*GetFileChangesResponse, error)
+	// GetLastSummary returns the latest completed-run summary.
 	GetLastSummary(ctx context.Context, in *GetLastSummaryRequest, opts ...grpc.CallOption) (*GetLastSummaryResponse, error)
+	// GetRules returns rules loaded into the current context.
 	GetRules(ctx context.Context, in *GetRulesRequest, opts ...grpc.CallOption) (*GetRulesResponse, error)
+	// GetLLMCalls returns the retained model-call log.
 	GetLLMCalls(ctx context.Context, in *GetLLMCallsRequest, opts ...grpc.CallOption) (*GetLLMCallsResponse, error)
+	// GetMiddleware returns the middleware pipeline state.
 	GetMiddleware(ctx context.Context, in *GetMiddlewareRequest, opts ...grpc.CallOption) (*GetMiddlewareResponse, error)
 	// StreamEvents pushes all real-time events: LLM calls, tool calls,
 	// file ops, check results, agent lifecycle, errors. Filterable by
@@ -547,25 +567,45 @@ type MindServiceServer interface {
 	ApproveChanges(context.Context, *ApproveChangesRequest) (*ApproveChangesResponse, error)
 	// RevertChanges discards pending overlay changes.
 	RevertChanges(context.Context, *RevertChangesRequest) (*RevertChangesResponse, error)
+	// ReadFile reads a workspace file through the session's gateway.
 	ReadFile(context.Context, *ReadFileRequest) (*ReadFileResponse, error)
+	// WriteFile writes a workspace file through the session's gateway.
 	WriteFile(context.Context, *WriteFileRequest) (*WriteFileResponse, error)
+	// SearchCode searches indexed or gateway-visible source files.
 	SearchCode(context.Context, *SearchCodeRequest) (*SearchCodeResponse, error)
+	// ListSymbols returns code symbols known to the session.
 	ListSymbols(context.Context, *ListSymbolsRequest) (*ListSymbolsResponse, error)
+	// Build runs the service build through the gateway.
 	Build(context.Context, *BuildRequest) (*BuildResponse, error)
+	// Test runs service tests through the gateway.
 	Test(context.Context, *TestRequest) (*TestResponse, error)
+	// Lint runs service linting through the gateway.
 	Lint(context.Context, *LintRequest) (*LintResponse, error)
+	// GetDashboard returns the session KPI snapshot.
 	GetDashboard(context.Context, *GetDashboardRequest) (*GetDashboardResponse, error)
+	// GetContextState returns the prompt/context layers loaded for the session.
 	GetContextState(context.Context, *GetContextStateRequest) (*GetContextStateResponse, error)
+	// GetMemory returns Mind's working memory for the session.
 	GetMemory(context.Context, *GetMemoryRequest) (*GetMemoryResponse, error)
+	// GetObjectiveGraph returns the current objective DAG.
 	GetObjectiveGraph(context.Context, *GetObjectiveGraphRequest) (*GetObjectiveGraphResponse, error)
+	// GetTrace returns the retained execution trace tree.
 	GetTrace(context.Context, *GetTraceRequest) (*GetTraceResponse, error)
+	// GetMetrics returns token, cost, and timing metrics.
 	GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error)
+	// GetCostBreakdown returns hierarchical cost attribution.
 	GetCostBreakdown(context.Context, *GetCostBreakdownRequest) (*GetCostBreakdownResponse, error)
+	// GetSymbolMap returns the symbol map available to Mind.
 	GetSymbolMap(context.Context, *GetSymbolMapRequest) (*GetSymbolMapResponse, error)
+	// GetFileChanges returns file changes retained for the session.
 	GetFileChanges(context.Context, *GetFileChangesRequest) (*GetFileChangesResponse, error)
+	// GetLastSummary returns the latest completed-run summary.
 	GetLastSummary(context.Context, *GetLastSummaryRequest) (*GetLastSummaryResponse, error)
+	// GetRules returns rules loaded into the current context.
 	GetRules(context.Context, *GetRulesRequest) (*GetRulesResponse, error)
+	// GetLLMCalls returns the retained model-call log.
 	GetLLMCalls(context.Context, *GetLLMCallsRequest) (*GetLLMCallsResponse, error)
+	// GetMiddleware returns the middleware pipeline state.
 	GetMiddleware(context.Context, *GetMiddlewareRequest) (*GetMiddlewareResponse, error)
 	// StreamEvents pushes all real-time events: LLM calls, tool calls,
 	// file ops, check results, agent lifecycle, errors. Filterable by

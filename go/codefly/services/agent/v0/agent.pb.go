@@ -21,14 +21,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Type enumerates implementation languages an agent can generate or analyze.
 type Language_Type int32
 
 const (
-	Language_GO         Language_Type = 0
-	Language_PYTHON     Language_Type = 1
+	// GO is the Go language.
+	Language_GO Language_Type = 0
+	// PYTHON is the Python language.
+	Language_PYTHON Language_Type = 1
+	// JAVASCRIPT is the JavaScript language.
 	Language_JAVASCRIPT Language_Type = 2
+	// TYPESCRIPT is the TypeScript language.
 	Language_TYPESCRIPT Language_Type = 3
-	Language_RUBY       Language_Type = 4
+	// RUBY is the Ruby language.
+	Language_RUBY Language_Type = 4
 )
 
 // Enum value maps for Language_Type.
@@ -76,10 +82,13 @@ func (Language_Type) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_agent_v0_agent_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Type enumerates endpoint protocols an agent can expose.
 type Protocol_Type int32
 
 const (
+	// HTTP is a generic HTTP endpoint.
 	Protocol_HTTP Protocol_Type = 0
+	// GRPC is a gRPC endpoint.
 	Protocol_GRPC Protocol_Type = 1
 )
 
@@ -122,11 +131,15 @@ func (Protocol_Type) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_agent_v0_agent_proto_rawDescGZIP(), []int{1, 0}
 }
 
+// Type enumerates agent capabilities advertised to the CLI.
 type Capability_Type int32
 
 const (
+	// UNKNOWN is the default value when type is not specified.
 	Capability_UNKNOWN Capability_Type = 0
+	// BUILDER means the agent implements the Builder service.
 	Capability_BUILDER Capability_Type = 1
+	// RUNTIME means the agent implements the Runtime service.
 	Capability_RUNTIME Capability_Type = 2
 	// Hot Reload is a runtime where a running process will NOT be restarted
 	Capability_HOT_RELOAD Capability_Type = 3
@@ -175,18 +188,28 @@ func (Capability_Type) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_agent_v0_agent_proto_rawDescGZIP(), []int{2, 0}
 }
 
+// Type enumerates runtime toolchains agents may require.
 type Runtime_Type int32
 
 const (
-	Runtime_UNKNOWN       Runtime_Type = 0
-	Runtime_GO            Runtime_Type = 1
-	Runtime_NPM           Runtime_Type = 2
-	Runtime_PYTHON        Runtime_Type = 3
+	// UNKNOWN is the default value when type is not specified.
+	Runtime_UNKNOWN Runtime_Type = 0
+	// GO is the Go toolchain.
+	Runtime_GO Runtime_Type = 1
+	// NPM is the Node/npm toolchain.
+	Runtime_NPM Runtime_Type = 2
+	// PYTHON is the Python interpreter/toolchain.
+	Runtime_PYTHON Runtime_Type = 3
+	// PYTHON_POETRY is the Python Poetry toolchain.
 	Runtime_PYTHON_POETRY Runtime_Type = 4
-	Runtime_RUBY          Runtime_Type = 5
-	Runtime_RUBY_GEM      Runtime_Type = 6
-	Runtime_RUBY_BUNDLE   Runtime_Type = 7
-	Runtime_NIX           Runtime_Type = 8
+	// RUBY is the Ruby interpreter/toolchain.
+	Runtime_RUBY Runtime_Type = 5
+	// RUBY_GEM is the RubyGems toolchain.
+	Runtime_RUBY_GEM Runtime_Type = 6
+	// RUBY_BUNDLE is the Bundler toolchain.
+	Runtime_RUBY_BUNDLE Runtime_Type = 7
+	// NIX is the Nix runtime/toolchain.
+	Runtime_NIX Runtime_Type = 8
 )
 
 // Enum value maps for Runtime_Type.
@@ -242,9 +265,11 @@ func (Runtime_Type) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_agent_v0_agent_proto_rawDescGZIP(), []int{3, 0}
 }
 
+// Language identifies an implementation language supported by an agent.
 type Language struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          Language_Type          `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Language_Type" json:"type,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the language represented by this entry.
+	Type          Language_Type `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Language_Type" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -286,9 +311,11 @@ func (x *Language) GetType() Language_Type {
 	return Language_GO
 }
 
+// Protocol identifies an API protocol supported by an agent.
 type Protocol struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          Protocol_Type          `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Protocol_Type" json:"type,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the protocol represented by this entry.
+	Type          Protocol_Type `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Protocol_Type" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -330,9 +357,11 @@ func (x *Protocol) GetType() Protocol_Type {
 	return Protocol_HTTP
 }
 
+// Capability identifies one agent interface or lifecycle feature.
 type Capability struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          Capability_Type        `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Capability_Type" json:"type,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the advertised capability.
+	Type          Capability_Type `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Capability_Type" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -374,10 +403,13 @@ func (x *Capability) GetType() Capability_Type {
 	return Capability_UNKNOWN
 }
 
+// Runtime describes a toolchain/runtime required by an agent.
 type Runtime struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          Runtime_Type           `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Runtime_Type" json:"type,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// type is the required runtime toolchain.
+	Type Runtime_Type `protobuf:"varint,1,opt,name=type,proto3,enum=codefly.services.agent.v0.Runtime_Type" json:"type,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version       string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -426,10 +458,13 @@ func (x *Runtime) GetVersion() string {
 	return ""
 }
 
+// ConfigurationValueInformation documents one configuration field accepted by an agent.
 type ConfigurationValueInformation struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the configuration field name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// description explains how to fill this configuration field.
+	Description   string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -478,10 +513,14 @@ func (x *ConfigurationValueInformation) GetDescription() string {
 	return ""
 }
 
+// ConfigurationValueDetail groups related configuration fields for an agent.
 type ConfigurationValueDetail struct {
-	state         protoimpl.MessageState           `protogen:"open.v1"`
-	Name          string                           `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                           `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the configuration detail group name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// description explains the configuration group shown in generated docs.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// fields are agent-specific structured settings from service YAML.
 	Fields        []*ConfigurationValueInformation `protobuf:"bytes,3,rep,name=fields,proto3" json:"fields,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -538,13 +577,19 @@ func (x *ConfigurationValueDetail) GetFields() []*ConfigurationValueInformation 
 	return nil
 }
 
+// AgentTechnique documents an agent-supported workflow or prompt technique.
 type AgentTechnique struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Tags          []string               `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty"`
-	Prompt        string                 `protobuf:"bytes,5,opt,name=prompt,proto3" json:"prompt,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// id is the stable identifier for this record.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// name is the technique display name.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// description explains when the technique should be used.
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// tags are labels used for filtering, grouping, or display.
+	Tags []string `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty"`
+	// prompt is the reusable instruction text for this technique.
+	Prompt        string `protobuf:"bytes,5,opt,name=prompt,proto3" json:"prompt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -614,17 +659,25 @@ func (x *AgentTechnique) GetPrompt() string {
 	return ""
 }
 
+// AgentInformation is the manifest and documentation surface returned by an agent.
 type AgentInformation struct {
-	state                protoimpl.MessageState      `protogen:"open.v1"`
-	RuntimeRequirements  []*Runtime                  `protobuf:"bytes,1,rep,name=runtime_requirements,json=runtimeRequirements,proto3" json:"runtime_requirements,omitempty"`
-	Capabilities         []*Capability               `protobuf:"bytes,2,rep,name=capabilities,proto3" json:"capabilities,omitempty"`
-	Protocols            []*Protocol                 `protobuf:"bytes,3,rep,name=protocols,proto3" json:"protocols,omitempty"`
-	Languages            []*Language                 `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"`
-	ReadMe               string                      `protobuf:"bytes,5,opt,name=read_me,json=readMe,proto3" json:"read_me,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// runtime_requirements are toolchains the user must have available.
+	RuntimeRequirements []*Runtime `protobuf:"bytes,1,rep,name=runtime_requirements,json=runtimeRequirements,proto3" json:"runtime_requirements,omitempty"`
+	// capabilities describes which optional protocol features are supported.
+	Capabilities []*Capability `protobuf:"bytes,2,rep,name=capabilities,proto3" json:"capabilities,omitempty"`
+	// protocols are endpoint protocols the agent can expose.
+	Protocols []*Protocol `protobuf:"bytes,3,rep,name=protocols,proto3" json:"protocols,omitempty"`
+	// languages are source languages the agent can create, run, or analyze.
+	Languages []*Language `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"`
+	// read_me is the agent README or equivalent human-facing documentation.
+	ReadMe string `protobuf:"bytes,5,opt,name=read_me,json=readMe,proto3" json:"read_me,omitempty"`
+	// configuration_details documents service YAML fields understood by the agent.
 	ConfigurationDetails []*ConfigurationValueDetail `protobuf:"bytes,6,rep,name=configuration_details,json=configurationDetails,proto3" json:"configuration_details,omitempty"`
-	Techniques           []*AgentTechnique           `protobuf:"bytes,7,rep,name=techniques,proto3" json:"techniques,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// techniques are reusable workflows or prompts the agent can apply.
+	Techniques    []*AgentTechnique `protobuf:"bytes,7,rep,name=techniques,proto3" json:"techniques,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AgentInformation) Reset() {
@@ -706,6 +759,7 @@ func (x *AgentInformation) GetTechniques() []*AgentTechnique {
 	return nil
 }
 
+// AgentInformationRequest asks an agent to describe its capabilities and settings.
 type AgentInformationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -745,15 +799,23 @@ func (*AgentInformationRequest) Descriptor() ([]byte, []int) {
 // CommandDefinition describes a command that a plugin agent provides.
 // Commands are registered at startup and routed through the Gateway.
 type CommandDefinition struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                                      // e.g. "reset_db", "deploy", "migrate"
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`                        // "Reset the database to a clean state"
-	Usage         string                 `protobuf:"bytes,3,opt,name=usage,proto3" json:"usage,omitempty"`                                    // "! reset_db [--seed]"
-	Aliases       []string               `protobuf:"bytes,4,rep,name=aliases,proto3" json:"aliases,omitempty"`                                // ["reset-db", "db-reset"]
-	Tags          []string               `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`                                      // ["database", "destructive"]
-	Plugin        string                 `protobuf:"bytes,6,opt,name=plugin,proto3" json:"plugin,omitempty"`                                  // which plugin provides this command
-	Destructive   bool                   `protobuf:"varint,7,opt,name=destructive,proto3" json:"destructive,omitempty"`                       // if true, requires confirmation before execution
-	NeedsGateway  bool                   `protobuf:"varint,8,opt,name=needs_gateway,json=needsGateway,proto3" json:"needs_gateway,omitempty"` // if true, requires a gateway connection
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the command name exposed by the plugin.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // e.g. "reset_db", "deploy", "migrate"
+	// description tells users and agents when to run this command.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"` // "Reset the database to a clean state"
+	// usage is the command-line shape shown to users and agents.
+	Usage string `protobuf:"bytes,3,opt,name=usage,proto3" json:"usage,omitempty"` // "! reset_db [--seed]"
+	// aliases are alternate command names accepted by the plugin.
+	Aliases []string `protobuf:"bytes,4,rep,name=aliases,proto3" json:"aliases,omitempty"` // ["reset-db", "db-reset"]
+	// tags are labels used for filtering, grouping, or display.
+	Tags []string `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"` // ["database", "destructive"]
+	// plugin identifies the plugin that provides this command; empty means built-in.
+	Plugin string `protobuf:"bytes,6,opt,name=plugin,proto3" json:"plugin,omitempty"` // which plugin provides this command
+	// destructive is true when the operation can mutate or delete user state.
+	Destructive bool `protobuf:"varint,7,opt,name=destructive,proto3" json:"destructive,omitempty"` // if true, requires confirmation before execution
+	// needs_gateway is true when the command must call through the Mind gateway.
+	NeedsGateway  bool `protobuf:"varint,8,opt,name=needs_gateway,json=needsGateway,proto3" json:"needs_gateway,omitempty"` // if true, requires a gateway connection
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -844,6 +906,7 @@ func (x *CommandDefinition) GetNeedsGateway() bool {
 	return false
 }
 
+// ListCommandsRequest carries optional filters for listing commands.
 type ListCommandsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -880,9 +943,11 @@ func (*ListCommandsRequest) Descriptor() ([]byte, []int) {
 	return file_codefly_services_agent_v0_agent_proto_rawDescGZIP(), []int{10}
 }
 
+// ListCommandsResponse returns plugin and built-in commands available to callers.
 type ListCommandsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Commands      []*CommandDefinition   `protobuf:"bytes,1,rep,name=commands,proto3" json:"commands,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// commands are plugin or built-in commands available to callers.
+	Commands      []*CommandDefinition `protobuf:"bytes,1,rep,name=commands,proto3" json:"commands,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -924,10 +989,13 @@ func (x *ListCommandsResponse) GetCommands() []*CommandDefinition {
 	return nil
 }
 
+// RunPluginCommandRequest invokes one plugin-provided command by name.
 type RunPluginCommandRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Command       string                 `protobuf:"bytes,1,opt,name=command,proto3" json:"command,omitempty"`
-	Args          []string               `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// command is the plugin command name to run.
+	Command string `protobuf:"bytes,1,opt,name=command,proto3" json:"command,omitempty"`
+	// args are command arguments passed to the plugin command handler.
+	Args          []string `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -976,11 +1044,15 @@ func (x *RunPluginCommandRequest) GetArgs() []string {
 	return nil
 }
 
+// RunPluginCommandResponse reports command output and command-level failure details.
 type RunPluginCommandResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
-	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success is true when the requested operation completed successfully.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// output is raw command, build, lint, or test output preserved for diagnostics.
+	Output string `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	// error explains why the operation failed; empty means success at this layer.
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

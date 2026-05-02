@@ -22,6 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// RuntimeContext identifies the execution environment a service should use.
 type RuntimeContext struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// RuntimeContext is used to define the scope of a runtime resource
@@ -79,6 +80,7 @@ func (x *RuntimeContext) GetName() string {
 	return ""
 }
 
+// NetworkAccess selects which network instance a caller should use.
 type NetworkAccess struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// NetworkContext is used to define

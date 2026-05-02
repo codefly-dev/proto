@@ -35,25 +35,27 @@ const (
 // RuntimeClient is the client API for Runtime service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Runtime exposes the agent lifecycle used to load, initialize, start, validate, stop, and
+// destroy a running service.
 type RuntimeClient interface {
-	// Load the Service Agent: this should be a NoOp and never fails
+	// Load discovers service metadata before any runtime resources are allocated.
 	Load(ctx context.Context, in *LoadRequest, opts ...grpc.CallOption) (*LoadResponse, error)
-	// Init the Service Agent: could include steps like compilation, configuration, etc.
-	// An important step of Initialization is to get the list of network mappings
+	// Init resolves configuration, dependency endpoints, and concrete network mappings.
 	Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitResponse, error)
-	// Start the underlying service
+	// Start launches the service process and returns once it is ready or failed.
 	Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*StartResponse, error)
-	// Stop the underlying service
+	// Stop terminates the running service process.
 	Stop(ctx context.Context, in *StopRequest, opts ...grpc.CallOption) (*StopResponse, error)
-	// Destroy the underlying service
+	// Destroy releases runtime resources such as containers, sockets, or temp state.
 	Destroy(ctx context.Context, in *DestroyRequest, opts ...grpc.CallOption) (*DestroyResponse, error)
-	// Dev compile check
+	// Build runs the service's native build or compile check.
 	Build(ctx context.Context, in *BuildRequest, opts ...grpc.CallOption) (*BuildResponse, error)
-	// Test the service
+	// Test runs the service's native test command and returns structured results.
 	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
-	// Lint the service
+	// Lint runs the service's native linter.
 	Lint(ctx context.Context, in *LintRequest, opts ...grpc.CallOption) (*LintResponse, error)
-	// Information about the state of the service
+	// Information returns the latest lifecycle statuses known by the agent.
 	Information(ctx context.Context, in *InformationRequest, opts ...grpc.CallOption) (*InformationResponse, error)
 	// Bidirectional streaming for interactive Q&A.
 	// Plugin streams Questions, CLI streams Answers.
@@ -174,25 +176,27 @@ type Runtime_CommunicateClient = grpc.BidiStreamingClient[v0.Answer, v0.Question
 // RuntimeServer is the server API for Runtime service.
 // All implementations must embed UnimplementedRuntimeServer
 // for forward compatibility.
+//
+// Runtime exposes the agent lifecycle used to load, initialize, start, validate, stop, and
+// destroy a running service.
 type RuntimeServer interface {
-	// Load the Service Agent: this should be a NoOp and never fails
+	// Load discovers service metadata before any runtime resources are allocated.
 	Load(context.Context, *LoadRequest) (*LoadResponse, error)
-	// Init the Service Agent: could include steps like compilation, configuration, etc.
-	// An important step of Initialization is to get the list of network mappings
+	// Init resolves configuration, dependency endpoints, and concrete network mappings.
 	Init(context.Context, *InitRequest) (*InitResponse, error)
-	// Start the underlying service
+	// Start launches the service process and returns once it is ready or failed.
 	Start(context.Context, *StartRequest) (*StartResponse, error)
-	// Stop the underlying service
+	// Stop terminates the running service process.
 	Stop(context.Context, *StopRequest) (*StopResponse, error)
-	// Destroy the underlying service
+	// Destroy releases runtime resources such as containers, sockets, or temp state.
 	Destroy(context.Context, *DestroyRequest) (*DestroyResponse, error)
-	// Dev compile check
+	// Build runs the service's native build or compile check.
 	Build(context.Context, *BuildRequest) (*BuildResponse, error)
-	// Test the service
+	// Test runs the service's native test command and returns structured results.
 	Test(context.Context, *TestRequest) (*TestResponse, error)
-	// Lint the service
+	// Lint runs the service's native linter.
 	Lint(context.Context, *LintRequest) (*LintResponse, error)
-	// Information about the state of the service
+	// Information returns the latest lifecycle statuses known by the agent.
 	Information(context.Context, *InformationRequest) (*InformationResponse, error)
 	// Bidirectional streaming for interactive Q&A.
 	// Plugin streams Questions, CLI streams Answers.

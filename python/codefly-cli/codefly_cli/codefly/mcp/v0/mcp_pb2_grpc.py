@@ -47,31 +47,36 @@ class MCPServicer(object):
     """
 
     def Initialize(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Initialize performs the MCP protocol handshake.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ListTools(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ListTools returns callable Codefly tools.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CallTool(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """CallTool invokes a named Codefly tool.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ListResources(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ListResources returns read-only Codefly resources.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ReadResource(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ReadResource returns content for one Codefly resource URI.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

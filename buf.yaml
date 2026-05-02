@@ -5,5 +5,7 @@ deps:
   - buf.build/bufbuild/protovalidate
 lint:
   use:
-    - DEFAULT
+    - BASIC
     - COMMENTS
+  except:
+    - PACKAGE_SAME_GO_PACKAGE

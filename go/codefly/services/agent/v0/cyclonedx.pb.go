@@ -21,12 +21,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ComponentType enumerates the CycloneDX component categories Codefly currently emits.
 type ComponentType int32
 
 const (
-	ComponentType_LIBRARY   ComponentType = 0
+	// LIBRARY is a software library dependency.
+	ComponentType_LIBRARY ComponentType = 0
+	// FRAMEWORK is an application framework dependency.
 	ComponentType_FRAMEWORK ComponentType = 1
-	ComponentType_MODULE    ComponentType = 2
+	// MODULE is a Codefly or language module component.
+	ComponentType_MODULE ComponentType = 2
+	// CONTAINER is a container image component.
 	ComponentType_CONTAINER ComponentType = 3 // Add other component types
 )
 
@@ -73,14 +78,19 @@ func (ComponentType) EnumDescriptor() ([]byte, []int) {
 	return file_codefly_services_agent_v0_cyclonedx_proto_rawDescGZIP(), []int{0}
 }
 
-// Represents a component in the SBOM
+// Component is one software component in a CycloneDX SBOM.
 type Component struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	Type          ComponentType          `protobuf:"varint,3,opt,name=type,proto3,enum=codefly.services.agent.v0.ComponentType" json:"type,omitempty"`
-	Group         string                 `protobuf:"bytes,4,opt,name=group,proto3" json:"group,omitempty"` // Optional
-	Purl          string                 `protobuf:"bytes,5,opt,name=purl,proto3" json:"purl,omitempty"`   // Package URL
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the component name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the component version.
+	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	// type is the CycloneDX component category.
+	Type ComponentType `protobuf:"varint,3,opt,name=type,proto3,enum=codefly.services.agent.v0.ComponentType" json:"type,omitempty"`
+	// group is the CycloneDX component group or package namespace.
+	Group string `protobuf:"bytes,4,opt,name=group,proto3" json:"group,omitempty"` // Optional
+	// purl is the package URL identifying a software component.
+	Purl          string `protobuf:"bytes,5,opt,name=purl,proto3" json:"purl,omitempty"` // Package URL
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -150,14 +160,19 @@ func (x *Component) GetPurl() string {
 	return ""
 }
 
-// Represents the entire SBOM
+// Bom is the CycloneDX software bill of materials emitted by an agent.
 type Bom struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BomFormat     string                 `protobuf:"bytes,1,opt,name=bomFormat,proto3" json:"bomFormat,omitempty"` // Always "CycloneDX"
-	SpecVersion   string                 `protobuf:"bytes,2,opt,name=specVersion,proto3" json:"specVersion,omitempty"`
-	SerialNumber  string                 `protobuf:"bytes,3,opt,name=serialNumber,proto3" json:"serialNumber,omitempty"`
-	Version       int32                  `protobuf:"varint,4,opt,name=version,proto3" json:"version,omitempty"`
-	Components    []*Component           `protobuf:"bytes,5,rep,name=components,proto3" json:"components,omitempty"` // Add other fields like metadata, dependencies, vulnerabilities, etc.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// bom_format is the SBOM format name, normally CycloneDX.
+	BomFormat string `protobuf:"bytes,1,opt,name=bom_format,json=bomFormat,proto3" json:"bom_format,omitempty"` // Always "CycloneDX"
+	// spec_version is the CycloneDX specification version.
+	SpecVersion string `protobuf:"bytes,2,opt,name=spec_version,json=specVersion,proto3" json:"spec_version,omitempty"`
+	// serial_number is the unique SBOM serial number.
+	SerialNumber string `protobuf:"bytes,3,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
+	// version is the SBOM document version.
+	Version int32 `protobuf:"varint,4,opt,name=version,proto3" json:"version,omitempty"`
+	// components are software components included in the SBOM.
+	Components    []*Component `protobuf:"bytes,5,rep,name=components,proto3" json:"components,omitempty"` // Add other fields like metadata, dependencies, vulnerabilities, etc.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -237,11 +252,12 @@ const file_codefly_services_agent_v0_cyclonedx_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12<\n" +
 	"\x04type\x18\x03 \x01(\x0e2(.codefly.services.agent.v0.ComponentTypeR\x04type\x12\x14\n" +
 	"\x05group\x18\x04 \x01(\tR\x05group\x12\x12\n" +
-	"\x04purl\x18\x05 \x01(\tR\x04purl\"\xc9\x01\n" +
-	"\x03Bom\x12\x1c\n" +
-	"\tbomFormat\x18\x01 \x01(\tR\tbomFormat\x12 \n" +
-	"\vspecVersion\x18\x02 \x01(\tR\vspecVersion\x12\"\n" +
-	"\fserialNumber\x18\x03 \x01(\tR\fserialNumber\x12\x18\n" +
+	"\x04purl\x18\x05 \x01(\tR\x04purl\"\xcc\x01\n" +
+	"\x03Bom\x12\x1d\n" +
+	"\n" +
+	"bom_format\x18\x01 \x01(\tR\tbomFormat\x12!\n" +
+	"\fspec_version\x18\x02 \x01(\tR\vspecVersion\x12#\n" +
+	"\rserial_number\x18\x03 \x01(\tR\fserialNumber\x12\x18\n" +
 	"\aversion\x18\x04 \x01(\x05R\aversion\x12D\n" +
 	"\n" +
 	"components\x18\x05 \x03(\v2$.codefly.services.agent.v0.ComponentR\n" +

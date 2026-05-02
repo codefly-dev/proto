@@ -6,81 +6,135 @@ package codefly.services.agent.v0;
 Agent
 */
 
+// Language identifies an implementation language supported by an agent.
 message Language {
+  // Type enumerates implementation languages an agent can generate or analyze.
   enum Type {
+    // GO is the Go language.
     GO = 0;
+    // PYTHON is the Python language.
     PYTHON = 1;
+    // JAVASCRIPT is the JavaScript language.
     JAVASCRIPT = 2;
+    // TYPESCRIPT is the TypeScript language.
     TYPESCRIPT = 3;
+    // RUBY is the Ruby language.
     RUBY = 4;
   }
-Type type = 1;
-}
-
-message Protocol {
-  enum Type {
-    HTTP = 0;
-    GRPC = 1;
-  }
+  // type is the language represented by this entry.
   Type type = 1;
 }
 
-message Capability {
+// Protocol identifies an API protocol supported by an agent.
+message Protocol {
+  // Type enumerates endpoint protocols an agent can expose.
   enum Type {
+    // HTTP is a generic HTTP endpoint.
+    HTTP = 0;
+    // GRPC is a gRPC endpoint.
+    GRPC = 1;
+  }
+  // type is the protocol represented by this entry.
+  Type type = 1;
+}
+
+// Capability identifies one agent interface or lifecycle feature.
+message Capability {
+  // Type enumerates agent capabilities advertised to the CLI.
+  enum Type {
+    // UNKNOWN is the default value when type is not specified.
     UNKNOWN = 0;
+    // BUILDER means the agent implements the Builder service.
     BUILDER = 1;
+    // RUNTIME means the agent implements the Runtime service.
     RUNTIME = 2;
     // Hot Reload is a runtime where a running process will NOT be restarted
     HOT_RELOAD = 3;
   }
+  // type is the advertised capability.
   Type type = 1;
 }
 
+// Runtime describes a toolchain/runtime required by an agent.
 message Runtime {
+  // Type enumerates runtime toolchains agents may require.
   enum Type {
+    // UNKNOWN is the default value when type is not specified.
     UNKNOWN = 0;
+    // GO is the Go toolchain.
     GO = 1;
+    // NPM is the Node/npm toolchain.
     NPM = 2;
+    // PYTHON is the Python interpreter/toolchain.
     PYTHON = 3;
+    // PYTHON_POETRY is the Python Poetry toolchain.
     PYTHON_POETRY = 4;
+    // RUBY is the Ruby interpreter/toolchain.
     RUBY = 5;
+    // RUBY_GEM is the RubyGems toolchain.
     RUBY_GEM = 6;
+    // RUBY_BUNDLE is the Bundler toolchain.
     RUBY_BUNDLE = 7;
+    // NIX is the Nix runtime/toolchain.
     NIX = 8;
   }
+  // type is the required runtime toolchain.
   Type type = 1;
+  // version is the semantic or service-specific version for this resource.
   string version = 2;
 }
 
+// ConfigurationValueInformation documents one configuration field accepted by an agent.
 message ConfigurationValueInformation {
+  // name is the configuration field name.
   string name = 1;
+  // description explains how to fill this configuration field.
   string description = 2;
 }
 
+// ConfigurationValueDetail groups related configuration fields for an agent.
 message ConfigurationValueDetail {
+  // name is the configuration detail group name.
   string name = 1;
+  // description explains the configuration group shown in generated docs.
   string description = 2;
+  // fields are agent-specific structured settings from service YAML.
   repeated ConfigurationValueInformation fields = 3;
 }
 
+// AgentTechnique documents an agent-supported workflow or prompt technique.
 message AgentTechnique {
+  // id is the stable identifier for this record.
   string id = 1;
+  // name is the technique display name.
   string name = 2;
+  // description explains when the technique should be used.
   string description = 3;
+  // tags are labels used for filtering, grouping, or display.
   repeated string tags = 4;
+  // prompt is the reusable instruction text for this technique.
   string prompt = 5;
 }
 
+// AgentInformation is the manifest and documentation surface returned by an agent.
 message AgentInformation {
+  // runtime_requirements are toolchains the user must have available.
   repeated Runtime runtime_requirements = 1;
+  // capabilities describes which optional protocol features are supported.
   repeated Capability capabilities = 2;
+  // protocols are endpoint protocols the agent can expose.
   repeated Protocol protocols = 3;
+  // languages are source languages the agent can create, run, or analyze.
   repeated Language languages = 4;
+  // read_me is the agent README or equivalent human-facing documentation.
   string read_me = 5;
+  // configuration_details documents service YAML fields understood by the agent.
   repeated ConfigurationValueDetail configuration_details = 6;
+  // techniques are reusable workflows or prompts the agent can apply.
   repeated AgentTechnique techniques = 7;
 }
 
+// AgentInformationRequest asks an agent to describe its capabilities and settings.
 message AgentInformationRequest {
 
 }
@@ -91,34 +145,54 @@ message AgentInformationRequest {
 // CommandDefinition describes a command that a plugin agent provides.
 // Commands are registered at startup and routed through the Gateway.
 message CommandDefinition {
+  // name is the command name exposed by the plugin.
   string name = 1;             // e.g. "reset_db", "deploy", "migrate"
+  // description tells users and agents when to run this command.
   string description = 2;     // "Reset the database to a clean state"
+  // usage is the command-line shape shown to users and agents.
   string usage = 3;           // "! reset_db [--seed]"
+  // aliases are alternate command names accepted by the plugin.
   repeated string aliases = 4; // ["reset-db", "db-reset"]
+  // tags are labels used for filtering, grouping, or display.
   repeated string tags = 5;   // ["database", "destructive"]
+  // plugin identifies the plugin that provides this command; empty means built-in.
   string plugin = 6;          // which plugin provides this command
+  // destructive is true when the operation can mutate or delete user state.
   bool destructive = 7;       // if true, requires confirmation before execution
+  // needs_gateway is true when the command must call through the Mind gateway.
   bool needs_gateway = 8;     // if true, requires a gateway connection
 }
 
+// ListCommandsRequest carries optional filters for listing commands.
 message ListCommandsRequest {}
 
+// ListCommandsResponse returns plugin and built-in commands available to callers.
 message ListCommandsResponse {
+  // commands are plugin or built-in commands available to callers.
   repeated CommandDefinition commands = 1;
 }
 
+// RunPluginCommandRequest invokes one plugin-provided command by name.
 message RunPluginCommandRequest {
+  // command is the plugin command name to run.
   string command = 1;
+  // args are command arguments passed to the plugin command handler.
   repeated string args = 2;
 }
 
+// RunPluginCommandResponse reports command output and command-level failure details.
 message RunPluginCommandResponse {
+  // success is true when the requested operation completed successfully.
   bool success = 1;
+  // output is raw command, build, lint, or test output preserved for diagnostics.
   string output = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
+// Agent exposes plugin identity, metadata, and plugin-defined commands.
 service Agent {
+  // GetAgentInformation returns the agent manifest, capabilities, and configuration docs.
   rpc GetAgentInformation(AgentInformationRequest) returns (AgentInformation) {}
 
   // ListCommands returns the commands this plugin agent provides.

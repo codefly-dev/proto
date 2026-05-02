@@ -11,7 +11,8 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class CLIStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """CLI exposes the local Codefly command bridge used by companion UIs and integrations.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -102,10 +103,12 @@ class CLIStub(object):
 
 
 class CLIServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """CLI exposes the local Codefly command bridge used by companion UIs and integrations.
+    """
 
     def Ping(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Ping checks that the CLI bridge is reachable.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -113,91 +116,106 @@ class CLIServicer(object):
     def GetAgentInformation(self, request, context):
         """Overall information
 
+        GetAgentInformation returns metadata and documentation for an installed agent.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetWorkspaceInventory(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetWorkspaceInventory returns the loaded workspace resource tree.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetWorkspaceServiceDependencyGraph(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetWorkspaceServiceDependencyGraph returns the service dependency DAG for the workspace.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetWorkspacePublicModulesDependencyGraph(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetWorkspacePublicModulesDependencyGraph returns graphs of public module-facing endpoints.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetActive(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetActive returns the CLI's current workspace/module/service selection.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetAddresses(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetAddresses returns the concrete address for a service endpoint.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetConfiguration(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetConfiguration returns configuration declared by the target service.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetDependenciesConfigurations(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetDependenciesConfigurations returns configuration exposed by upstream services.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetDependenciesNetworkMappings(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetDependenciesNetworkMappings returns network mappings exposed by upstream services.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetRuntimeConfigurations(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetRuntimeConfigurations returns configuration produced by a running service.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Logs(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Logs streams live workspace log events.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ActiveLogHistory(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ActiveLogHistory returns persisted log events for the active workspace session.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetFlowStatus(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GetFlowStatus reports readiness for the active orchestration flow.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def StopFlow(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """StopFlow stops the active orchestration flow.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def DestroyFlow(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """DestroyFlow tears down resources owned by the active orchestration flow.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -294,7 +312,8 @@ def add_CLIServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class CLI(object):
-    """Missing associated documentation comment in .proto file."""
+    """CLI exposes the local Codefly command bridge used by companion UIs and integrations.
+    """
 
     @staticmethod
     def Ping(request,

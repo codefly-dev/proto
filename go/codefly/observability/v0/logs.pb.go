@@ -7,7 +7,6 @@
 package v0
 
 import (
-	_ "github.com/codefly-dev/core/generated/go/codefly/base/v0"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -23,13 +22,19 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Log is a timestamped workspace event emitted by a Codefly flow or agent.
 type Log struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	At            *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=at,proto3" json:"at,omitempty"`
-	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
-	Service       string                 `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
-	Kind          string                 `protobuf:"bytes,4,opt,name=kind,proto3" json:"kind,omitempty"`
-	Message       string                 `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// at is the timestamp for the log or session snapshot.
+	At *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=at,proto3" json:"at,omitempty"`
+	// module is the Codefly module name that groups services.
+	Module string `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	// service is the Codefly service name, optionally scoped by module in callers.
+	Service string `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
+	// kind classifies the log event, such as lifecycle, output, or diagnostic.
+	Kind string `protobuf:"bytes,4,opt,name=kind,proto3" json:"kind,omitempty"`
+	// message is a human-readable status or diagnostic summary.
+	Message       string `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -99,10 +104,13 @@ func (x *Log) GetMessage() string {
 	return ""
 }
 
+// LogSessionGroup groups log events under one recorded workspace session.
 type LogSessionGroup struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	Logs          []*Log                 `protobuf:"bytes,2,rep,name=logs,proto3" json:"logs,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// session identifies the workspace snapshot these logs belong to.
+	Session *Session `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	// logs are events recorded for this session.
+	Logs          []*Log `protobuf:"bytes,2,rep,name=logs,proto3" json:"logs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -151,9 +159,12 @@ func (x *LogSessionGroup) GetLogs() []*Log {
 	return nil
 }
 
+// LogRequest selects a time range for log history.
 type LogRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	From          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// from is the beginning of the requested time range.
+	From *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// to is the end of the requested time range.
 	To            *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -203,9 +214,11 @@ func (x *LogRequest) GetTo() *timestamppb.Timestamp {
 	return nil
 }
 
+// LogResponse returns log groups for the requested time range.
 type LogResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Groups        []*LogSessionGroup     `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// groups are log events grouped by workspace session.
+	Groups        []*LogSessionGroup `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -251,7 +264,7 @@ var File_codefly_observability_v0_logs_proto protoreflect.FileDescriptor
 
 const file_codefly_observability_v0_logs_proto_rawDesc = "" +
 	"\n" +
-	"#codefly/observability/v0/logs.proto\x12\x18codefly.observability.v0\x1a\x1ecodefly/base/v0/endpoint.proto\x1a'codefly/observability/v0/sessions.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x01\n" +
+	"#codefly/observability/v0/logs.proto\x12\x18codefly.observability.v0\x1a'codefly/observability/v0/sessions.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x01\n" +
 	"\x03Log\x12*\n" +
 	"\x02at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12\x16\n" +
 	"\x06module\x18\x02 \x01(\tR\x06module\x12\x18\n" +

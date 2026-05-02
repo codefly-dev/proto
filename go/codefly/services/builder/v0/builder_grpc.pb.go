@@ -42,20 +42,23 @@ const (
 // - Deployment manifests
 // - Dependency audit / upgrade
 type BuilderClient interface {
-	// Load the service
+	// Load reads service metadata and prepares the builder agent.
 	Load(ctx context.Context, in *LoadRequest, opts ...grpc.CallOption) (*LoadResponse, error)
-	// Init
+	// Init prepares dependency metadata and builder state.
 	Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitResponse, error)
-	// Affect Code
+	// Create scaffolds service source code.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	// Update refreshes an existing service from agent rules or templates.
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
-	// Affect Data
+	// Sync regenerates configuration-derived or template-derived service files.
 	Sync(ctx context.Context, in *SyncRequest, opts ...grpc.CallOption) (*SyncResponse, error)
-	// Deployment/Build only on init data
+	// Build compiles or packages the service artifact.
 	Build(ctx context.Context, in *BuildRequest, opts ...grpc.CallOption) (*BuildResponse, error)
+	// Deploy emits or applies deployment artifacts for the target environment.
 	Deploy(ctx context.Context, in *DeploymentRequest, opts ...grpc.CallOption) (*DeploymentResponse, error)
-	// Dependency hygiene
+	// Audit runs dependency and image vulnerability checks.
 	Audit(ctx context.Context, in *AuditRequest, opts ...grpc.CallOption) (*AuditResponse, error)
+	// Upgrade applies or previews dependency version bumps.
 	Upgrade(ctx context.Context, in *UpgradeRequest, opts ...grpc.CallOption) (*UpgradeResponse, error)
 	// Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).
 	// Plugin streams Questions, CLI streams Answers.
@@ -183,20 +186,23 @@ type Builder_CommunicateClient = grpc.BidiStreamingClient[v0.Answer, v0.Question
 // - Deployment manifests
 // - Dependency audit / upgrade
 type BuilderServer interface {
-	// Load the service
+	// Load reads service metadata and prepares the builder agent.
 	Load(context.Context, *LoadRequest) (*LoadResponse, error)
-	// Init
+	// Init prepares dependency metadata and builder state.
 	Init(context.Context, *InitRequest) (*InitResponse, error)
-	// Affect Code
+	// Create scaffolds service source code.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	// Update refreshes an existing service from agent rules or templates.
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
-	// Affect Data
+	// Sync regenerates configuration-derived or template-derived service files.
 	Sync(context.Context, *SyncRequest) (*SyncResponse, error)
-	// Deployment/Build only on init data
+	// Build compiles or packages the service artifact.
 	Build(context.Context, *BuildRequest) (*BuildResponse, error)
+	// Deploy emits or applies deployment artifacts for the target environment.
 	Deploy(context.Context, *DeploymentRequest) (*DeploymentResponse, error)
-	// Dependency hygiene
+	// Audit runs dependency and image vulnerability checks.
 	Audit(context.Context, *AuditRequest) (*AuditResponse, error)
+	// Upgrade applies or previews dependency version bumps.
 	Upgrade(context.Context, *UpgradeRequest) (*UpgradeResponse, error)
 	// Bidirectional streaming for interactive Q&A (e.g. during Create/Sync).
 	// Plugin streams Questions, CLI streams Answers.

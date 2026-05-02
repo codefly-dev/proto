@@ -89,354 +89,589 @@ service DebugService {
 
 // ─── Dashboard ─────────────────────────────────────────────────
 
+// GetDashboardRequest identifies the dashboard data to retrieve.
 message GetDashboardRequest {}
 
+// GetDashboardResponse is the top-level debug KPI snapshot for the active Mind session.
 message GetDashboardResponse {
+  // active_objective is the objective currently being planned or executed.
   string active_objective = 1;
+  // iteration is the execution loop number for this event.
   int32 iteration = 2;
+  // phase names the current initialization, planning, or execution phase.
   string phase = 3;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 4;
+  // tokens_used is the total model token count consumed by the session.
   int32 tokens_used = 5;
+  // context_window is the maximum model context size currently available.
   int32 context_window = 6;
+  // budget_remaining is the remaining cost or token budget.
   double budget_remaining = 7;
+  // uptime is how long the session or server has been running.
   google.protobuf.Duration uptime = 8;
+  // checks_passed is the number of verification checks that passed.
   int32 checks_passed = 9;
+  // checks_total is the number of verification checks that ran.
   int32 checks_total = 10;
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 11;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 12;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 13;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 14;
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 15;
 }
 
 // ─── Context ───────────────────────────────────────────────────
 
+// GetContextRequest identifies the context data to retrieve.
 message GetContextRequest {}
 
+// GetContextResponse shows the prompt context layers currently available to Mind.
 message GetContextResponse {
+  // project_name is the stable name of the project.
   string project_name = 1;
+  // service_name is the stable name of the service.
   string service_name = 2;
+  // has_conventions is true when convention context is loaded.
   bool has_conventions = 3;
+  // has_rules is true when rule context is loaded.
   bool has_rules = 4;
+  // has_symbol_map is true when symbol context is loaded.
   bool has_symbol_map = 5;
+  // has_memory is true when session memory is loaded.
   bool has_memory = 6;
+  // has_session is true when persistent session state is loaded.
   bool has_session = 7;
+  // system_preview is a bounded excerpt of system context.
   string system_preview = 8;
+  // state_preview is a bounded excerpt of state context.
   string state_preview = 9;
+  // turn_preview is a bounded excerpt of current turn context.
   string turn_preview = 10;
+  // metrics summarizes token usage for the context layers.
   MetricsSummary metrics = 11;
+  // conventions are conventions loaded into context for the current project.
   repeated ConventionEntry conventions = 12;
 }
 
+// MetricsSummary aggregates token counts and cacheability for context segments.
 message MetricsSummary {
+  // system_tokens is the number of tokens used by system context.
   int32 system_tokens = 1;
+  // state_tokens is the number of tokens used by state context.
   int32 state_tokens = 2;
+  // turn_tokens is the number of tokens used by the current turn.
   int32 turn_tokens = 3;
+  // total_tokens is the total token count for the measured context.
   int32 total_tokens = 4;
+  // saved_tokens is the estimated token reduction from compaction or caching.
   int32 saved_tokens = 5;
+  // cacheable_ratio is the fraction of context that can be provider-cached.
   double cacheable_ratio = 6;
 }
 
+// ConventionEntry describes a detected project convention available to Mind.
 message ConventionEntry {
+  // category groups a convention, rule, or finding.
   string category = 1;
+  // package is the package, dependency, or artifact name.
   string package = 2;
+  // pattern is the search expression or literal text to match.
   string pattern = 3;
+  // usage is the command-line shape shown to users and agents.
   string usage = 4;
 }
 
 // ─── Memory ────────────────────────────────────────────────────
 
+// GetMemoryRequest identifies the memory data to retrieve.
 message GetMemoryRequest {}
 
+// GetMemoryResponse exposes Mind's working memory for the current objective.
 message GetMemoryResponse {
+  // objective is the user goal or execution target.
   string objective = 1;
+  // approach summarizes the strategy used in prior work.
   string approach = 2;
+  // files_modified lists files changed in prior work.
   map<string, string> files_modified = 3;
+  // files_read lists files inspected in prior work.
   map<string, string> files_read = 4;
+  // symbols are code entities returned by language analysis.
   repeated SymbolEntry symbols = 5;
+  // hypotheses are candidate explanations or plans Mind is tracking.
   repeated string hypotheses = 6;
+  // blockers are unresolved issues that may prevent completion.
   repeated string blockers = 7;
+  // next_steps are the next actions Mind has identified.
   repeated string next_steps = 8;
+  // iterations is the number of execution loops completed.
   repeated IterationEntry iterations = 9;
+  // thread_summary is a compact summary of the conversation so far.
   string thread_summary = 10;
 }
 
+// SymbolEntry records a code symbol Mind considered relevant.
 message SymbolEntry {
+  // name is the symbol name.
   string name = 1;
+  // file is a workspace- or service-relative source file path.
   string file = 2;
+  // relevance is a score or explanation for why the item matters.
   string relevance = 3;
 }
 
+// IterationEntry summarizes one reasoning or execution loop.
 message IterationEntry {
+  // number is the 1-based iteration or sequence number.
   int32 number = 1;
+  // outcome summarizes the result of an iteration or memory entry.
   string outcome = 2;
+  // insight captures what Mind learned during the iteration.
   string insight = 3;
+  // files are workspace files touched or inspected during the iteration.
   repeated string files = 4;
 }
 
 // ─── Session ───────────────────────────────────────────────────
 
+// GetSessionRequest identifies the session data to retrieve.
 message GetSessionRequest {}
 
+// GetSessionResponse returns the current debug session and its event timeline.
 message GetSessionResponse {
+  // id is the stable identifier for this record.
   string id = 1;
+  // objective is the user goal or execution target.
   string objective = 2;
+  // created_at is when the session or record was created.
   google.protobuf.Timestamp created_at = 3;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 4;
+  // iteration is the execution loop number for this event.
   int32 iteration = 5;
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 6;
+  // events are chronological debug events for this session.
   repeated EventEntry events = 7;
 }
 
+// EventEntry is one timeline entry for a debug session.
 message EventEntry {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // kind categorizes the event for filtering and rendering.
   string kind = 2;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // message is the event text shown in the debug timeline.
   string message = 4;
 }
 
 // ─── Objective Graph ───────────────────────────────────────────
 
+// GetObjectiveGraphRequest identifies the objective graph data to retrieve.
 message GetObjectiveGraphRequest {}
 
+// GetObjectiveGraphResponse returns the current objective DAG.
 message GetObjectiveGraphResponse {
+  // nodes are graph vertices returned by the objective or dependency graph.
   repeated ObjectiveNode nodes = 1;
+  // edges are graph relationships between returned nodes.
   repeated ObjectiveEdge edges = 2;
 }
 
+// ObjectiveNode represents one objective, subtask, or plan node.
 message ObjectiveNode {
+  // id is the stable identifier for this record.
   string id = 1;
+  // description is the human-readable objective or subtask text.
   string description = 2;
+  // status reports the lifecycle or operation status.
   string status = 3;
+  // checks are verification steps requested by the caller.
   repeated CheckEntry checks = 4;
+  // changes are file or behavior changes associated with this node.
   repeated ChangeEntry changes = 5;
+  // children are nested objectives under this node.
   repeated ObjectiveNode children = 6;
+  // wall_clock_s is elapsed wall-clock time in seconds.
   double wall_clock_s = 7;
+  // work_time_s is active work time in seconds.
   double work_time_s = 8;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 9;
 }
 
+// ObjectiveEdge connects related objective graph nodes.
 message ObjectiveEdge {
+  // from is the beginning timestamp or source endpoint of a relationship.
   string from = 1;
+  // to is the ending timestamp or destination endpoint of a relationship.
   string to = 2;
+  // kind describes the graph relationship, such as dependency or decomposition.
   string kind = 3;
 }
 
+// CheckEntry summarizes one verification check attached to an objective.
 message CheckEntry {
+  // name is the check name.
   string name = 1;
+  // type identifies the check mechanism, such as command, test, build, or lint.
   string type = 2;
+  // passed is true when the check met its expected condition.
   bool passed = 3;
+  // has_result is true when a check produced a retained result payload.
   bool has_result = 4;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 5;
 }
 
+// ChangeEntry summarizes a file or behavior change linked to an objective.
 message ChangeEntry {
+  // file is a workspace- or service-relative source file path.
   string file = 1;
+  // action is the strategy, file, or debug action that occurred.
   string action = 2;
+  // what describes the changed artifact or behavior.
   string what = 3;
 }
 
 // ─── Trace ─────────────────────────────────────────────────────
 
+// GetTraceRequest identifies the trace data to retrieve.
 message GetTraceRequest {}
 
+// GetTraceResponse returns the root of the retained execution trace tree.
 message GetTraceResponse {
+  // root is the root trace node for the returned tree.
   TraceNode root = 1;
 }
 
+// TraceNode represents one agent, tool, or execution span in the trace tree.
 message TraceNode {
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 1;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 2;
+  // events are trace events emitted within this node.
   repeated TraceEvent events = 3;
+  // children are nested trace spans.
   repeated TraceNode children = 4;
+  // stats aggregates trace node counts, timings, and error totals.
   TraceStats stats = 5;
 }
 
+// TraceEvent is a streamable event emitted during trace.
 message TraceEvent {
+  // kind categorizes the trace event for filtering and rendering.
   string kind = 1;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 2;
+  // message is the event text shown in the trace view.
   string message = 3;
+  // data is the raw bytes or JSON-shaped payload.
   map<string, string> data = 4;
 }
 
+// TraceStats aggregates counts for one trace node.
 message TraceStats {
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 1;
+  // tool_calls is the number of tool calls made in this turn or iteration.
   int32 tool_calls = 2;
+  // errors is the number of failed trace nodes or operations.
   int32 errors = 3;
 }
 
 // ─── Metrics ───────────────────────────────────────────────────
 
+// GetMetricsRequest identifies the metrics data to retrieve.
 message GetMetricsRequest {}
 
+// GetMetricsResponse returns session-level model, token, and timing metrics.
 message GetMetricsResponse {
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 1;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 2;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 3;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 4;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 5;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 6;
+  // iterations is the number of execution loops completed.
   int32 iterations = 7;
+  // context is the measured context segment or prompt state.
   MetricsSummary context = 8;
 }
 
 // ─── Cost Breakdown ────────────────────────────────────────────
 
+// GetCostBreakdownRequest identifies the cost breakdown data to retrieve.
 message GetCostBreakdownRequest {}
 
+// GetCostBreakdownResponse returns hierarchical cost attribution for a session.
 message GetCostBreakdownResponse {
+  // title is the display label for a cost breakdown row.
   string title = 1;
+  // total is the aggregate number of cases represented.
   CostEntry total = 2;
+  // entries are child rows contributing to the total.
   repeated CostEntry entries = 3;
 }
 
+// CostEntry is one row in the cost breakdown table.
 message CostEntry {
+  // name labels the model, agent, objective, or phase being charged.
   string name = 1;
+  // calls is the number of model calls attributed to this row.
   int32 calls = 2;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 3;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 4;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 5;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 6;
 }
 
 // ─── Symbol Map ────────────────────────────────────────────────
 
+// GetSymbolMapRequest identifies the symbol map data to retrieve.
 message GetSymbolMapRequest {}
 
+// GetSymbolMapResponse returns the symbol map currently available to the debug UI.
 message GetSymbolMapResponse {
+  // total_symbols is the number of symbols available in the symbol map.
   int32 total_symbols = 1;
+  // total_files is the number of files included in the response.
   int32 total_files = 2;
+  // overlay_active is true when Mind has uncommitted overlay edits.
   bool overlay_active = 3;
+  // files are source files included in the symbol map.
   repeated FileSymbols files = 4;
 }
 
+// FileSymbols groups symbols discovered in one source file.
 message FileSymbols {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // symbols are code entities returned by language analysis.
   repeated SymbolNode symbols = 2;
 }
 
+// SymbolNode is a compact symbol entry for the symbol map view.
 message SymbolNode {
+  // name is the symbol name.
   string name = 1;
+  // kind classifies the language construct.
   string kind = 2;
+  // signature is the declaration text or callable shape for a symbol.
   string signature = 3;
+  // overlay is true when the symbol or file comes from the active edit overlay.
   bool overlay = 4;
 }
 
 // ─── File Changes ──────────────────────────────────────────────
 
+// GetFileChangesRequest identifies the file changes data to retrieve.
 message GetFileChangesRequest {}
 
+// GetFileChangesResponse returns file changes retained for the current run.
 message GetFileChangesResponse {
+  // files are changed files and their diffs.
   repeated FileChange files = 1;
 }
 
+// FileChange records one file operation and optional diff.
 message FileChange {
+  // path is a workspace- or service-relative filesystem path.
   string path = 1;
+  // op is the file operation such as create, update, delete, or rename.
   string op = 2;
+  // reason explains why this change, state, or decision occurred.
   string reason = 3;
+  // diff is the unified git diff text.
   string diff = 4;
 }
 
 // ─── Last Summary ──────────────────────────────────────────────
 
+// GetLastSummaryRequest identifies the last summary data to retrieve.
 message GetLastSummaryRequest {}
 
+// GetLastSummaryResponse returns the most recent completed-run summary.
 message GetLastSummaryResponse {
+  // achieved is true when Mind believes the objective was satisfied.
   bool achieved = 1;
+  // iterations is the number of execution loops completed.
   int32 iterations = 2;
+  // duration is wall-clock time spent on the run, suite, case, or operation.
   google.protobuf.Duration duration = 3;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 4;
+  // llm_calls is the number of model calls made during the operation.
   int32 llm_calls = 5;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 6;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 7;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 8;
+  // files are file changes included in the summary.
   repeated FileChange files = 9;
+  // checks are verification results included in the summary.
   repeated CheckResult checks = 10;
+  // trace_compact is a bounded trace summary suitable for UI display or prompts.
   string trace_compact = 11;
 }
 
+// CheckResult captures the outcome of one summary verification check.
 message CheckResult {
+  // name is the check name.
   string name = 1;
+  // passed is true when the check met its expected condition.
   bool passed = 2;
+  // error explains why the operation failed; empty means success at this layer.
   string error = 3;
 }
 
 // ─── Rules ─────────────────────────────────────────────────────
 
+// GetRulesRequest identifies the rules data to retrieve.
 message GetRulesRequest {}
 
+// GetRulesResponse returns rules loaded into the current Mind context.
 message GetRulesResponse {
+  // rules are loaded rules and their current match state.
   repeated RuleEntry rules = 1;
 }
 
+// RuleEntry describes one rule available to Mind.
 message RuleEntry {
+  // id is the stable identifier for this record.
   string id = 1;
+  // scope describes where a rule applies.
   RuleScope scope = 2;
+  // text is the plain-text payload or human-readable description.
   string text = 3;
+  // matched_current is true when the rule applies to the current request.
   bool matched_current = 4;
 }
 
+// RuleScope describes where a rule applies.
 message RuleScope {
+  // agents are Codefly plugin identities or filters relevant to this operation.
   repeated string agents = 1;
+  // objectives are objective filters or graph nodes.
   repeated string objectives = 2;
+  // code is the diagnostic or rule identifier from the producing tool.
   string code = 3;
 }
 
 // ─── LLM Calls ────────────────────────────────────────────────
 
+// GetLLMCallsRequest identifies retained model-call records to retrieve.
 message GetLLMCallsRequest {
+  // limit caps the number of records returned.
   int32 limit = 1;
+  // offset skips records before returning a paged result.
   int32 offset = 2;
 }
 
+// GetLLMCallsResponse returns a paged list of retained model calls.
 message GetLLMCallsResponse {
+  // calls are model calls retained in the debug log.
   repeated LLMCallEntry calls = 1;
+  // total is the total number of model calls available before paging.
   int32 total = 2;
 }
 
+// LLMCallEntry records one model call and retained prompt/response previews.
 message LLMCallEntry {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // model is the provider model identifier used for the call.
   string model = 2;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // prompt_hash is a stable hash of the prompt payload.
   string prompt_hash = 4;
+  // prompt_preview is a bounded prompt excerpt for debugging.
   string prompt_preview = 5;
+  // response_preview is a bounded response excerpt for debugging.
   string response_preview = 6;
+  // input_tokens is the total number of prompt/input tokens consumed.
   int32 input_tokens = 7;
+  // output_tokens is the total number of completion/output tokens produced.
   int32 output_tokens = 8;
+  // cached_tokens is the number of input tokens served from provider cache.
   int32 cached_tokens = 9;
+  // cost_usd is the estimated model cost in US dollars.
   double cost_usd = 10;
+  // duration_ms is wall-clock time in milliseconds.
   int64 duration_ms = 11;
+  // cache_hit is true when the provider reported a cache hit.
   bool cache_hit = 12;
+  // tool_call_count is the number of tool calls associated with the model call.
   int32 tool_call_count = 13;
+  // full_prompt is the complete prompt text when trace retention permits it.
   string full_prompt = 14;
+  // full_response is the complete model response when trace retention permits it.
   string full_response = 15;
 }
 
 // ─── Middleware ─────────────────────────────────────────────────
 
+// GetMiddlewareStateRequest identifies the middleware state data to retrieve.
 message GetMiddlewareStateRequest {}
 
+// GetMiddlewareStateResponse returns the current middleware pipeline state.
 message GetMiddlewareStateResponse {
+  // chain is the ordered middleware stack and its status.
   repeated MiddlewareEntry chain = 1;
 }
 
+// MiddlewareEntry describes one middleware stage.
 message MiddlewareEntry {
+  // name is the middleware stage name.
   string name = 1;
+  // status reports the lifecycle or operation status.
   string status = 2;
+  // details contains expanded middleware or diagnostic metadata.
   map<string, string> details = 3;
 }
 
 // ─── Streaming Events ──────────────────────────────────────────
 
+// StreamEventsRequest filters the live debug event stream.
 message StreamEventsRequest {
+  // kinds filters events to selected event types.
   repeated string kinds = 1;
+  // agent_filter restricts events to a single agent name.
   string agent_filter = 2;
 }
 
+// DebugEvent is a live event emitted to debug clients.
 message DebugEvent {
+  // timestamp is when the event, call, or record was produced.
   google.protobuf.Timestamp timestamp = 1;
+  // kind categorizes the event for filtering and rendering.
   string kind = 2;
+  // agent is the Codefly agent plugin responsible for this service type.
   string agent = 3;
+  // message is the event text shown in the debug UI.
   string message = 4;
+  // data is the raw bytes or JSON-shaped payload.
   map<string, string> data = 5;
 }

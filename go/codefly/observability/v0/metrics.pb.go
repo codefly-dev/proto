@@ -22,11 +22,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// TODO: Drill down on how we represent this
+// CPU records point-in-time CPU utilization for a running Codefly process or service.
 type CPU struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Usage         float64                `protobuf:"fixed64,2,opt,name=usage,proto3" json:"usage,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// usage is CPU utilization as a fraction or percentage, depending on the collector.
+	Usage         float64 `protobuf:"fixed64,2,opt,name=usage,proto3" json:"usage,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -75,10 +77,13 @@ func (x *CPU) GetUsage() float64 {
 	return 0
 }
 
+// Memory records point-in-time memory utilization for a running Codefly process or service.
 type Memory struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Usage         float64                `protobuf:"fixed64,2,opt,name=usage,proto3" json:"usage,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// timestamp is when the event, call, or record was produced.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// usage is memory utilization as reported by the collector.
+	Usage         float64 `protobuf:"fixed64,2,opt,name=usage,proto3" json:"usage,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

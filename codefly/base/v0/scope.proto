@@ -3,6 +3,7 @@ package codefly.base.v0;
 
 import "buf/validate/validate.proto";
 
+// RuntimeContext identifies the execution environment a service should use.
 message RuntimeContext {
   // RuntimeContext is used to define the scope of a runtime resource
   // - "free" lets the runtime decide the scope
@@ -13,6 +14,7 @@ message RuntimeContext {
   string name = 2;
 }
 
+// NetworkAccess selects which network instance a caller should use.
 message NetworkAccess {
   // NetworkContext is used to define
   // - "container" should be used to access system resources inside containers

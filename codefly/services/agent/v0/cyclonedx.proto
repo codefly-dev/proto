@@ -2,30 +2,45 @@ syntax = "proto3";
 
 package codefly.services.agent.v0;
 
-// Represents a component in the SBOM
+// Component is one software component in a CycloneDX SBOM.
 message Component {
+  // name is the component name.
   string name = 1;
+  // version is the component version.
   string version = 2;
+  // type is the CycloneDX component category.
   ComponentType type = 3;
+  // group is the CycloneDX component group or package namespace.
   string group = 4; // Optional
+  // purl is the package URL identifying a software component.
   string purl = 5; // Package URL
   // Add other fields as per the CycloneDX spec
 }
 
+// ComponentType enumerates the CycloneDX component categories Codefly currently emits.
 enum ComponentType {
+  // LIBRARY is a software library dependency.
   LIBRARY = 0;
+  // FRAMEWORK is an application framework dependency.
   FRAMEWORK = 1;
+  // MODULE is a Codefly or language module component.
   MODULE = 2;
+  // CONTAINER is a container image component.
   CONTAINER = 3;
   // Add other component types
 }
 
-// Represents the entire SBOM
+// Bom is the CycloneDX software bill of materials emitted by an agent.
 message Bom {
-  string bomFormat = 1; // Always "CycloneDX"
-  string specVersion = 2;
-  string serialNumber = 3;
+  // bom_format is the SBOM format name, normally CycloneDX.
+  string bom_format = 1; // Always "CycloneDX"
+  // spec_version is the CycloneDX specification version.
+  string spec_version = 2;
+  // serial_number is the unique SBOM serial number.
+  string serial_number = 3;
+  // version is the SBOM document version.
   int32 version = 4;
+  // components are software components included in the SBOM.
   repeated Component components = 5;
   // Add other fields like metadata, dependencies, vulnerabilities, etc.
 }

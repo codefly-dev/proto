@@ -14,85 +14,125 @@ Only public endpoint can be accessed across modules
 */
 
 
+// Endpoint is a logical API exposed by a service and later resolved into network mappings.
 message Endpoint {
-  // Name of the endpoint: in lots of cases, the name of the endpoint will be the API name (http, grpc, tcp, etc...)
+  // name is the endpoint identifier, often matching the API type such as http, grpc, or tcp.
   string name = 1 [(buf.validate.field).string.hostname = true,  (buf.validate.field).string.pattern = "^[a-z]+$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 20];
-  // Service name
+  // service is the service that owns this endpoint.
   string service = 2  [(buf.validate.field).string.hostname = true,  (buf.validate.field).string.pattern = "^[a-z0-9-]+$", (buf.validate.field).string.not_contains = "--", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
-  // Module name
+  // module is the module that contains the owning service.
   string module = 3  [(buf.validate.field).string.hostname = true,  (buf.validate.field).string.pattern = "^[a-z0-9-]+$", (buf.validate.field).string.not_contains = "--", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
-  // Description of the endpoint
+  // description explains what this endpoint is used for.
   string description = 4;
-  // Visibility of the endpoint
+  // visibility controls whether this endpoint is private, module-visible, public, or external.
   string visibility = 5 [(buf.validate.field).string.in = "external", (buf.validate.field).string.in = "public", (buf.validate.field).string.in = "module",(buf.validate.field).string.in = "private"];
+  // api describes the protocol exposed by the endpoint.
   string api = 6 [(buf.validate.field).string.in = "http", (buf.validate.field).string.in = "grpc", (buf.validate.field).string.in = "tcp", (buf.validate.field).string.in = "rest", (buf.validate.field).string.in = "connect"];
+  // api_details contains protocol-specific endpoint metadata.
   API api_details = 7;
 }
 
+// API selects protocol-specific endpoint details.
 message API {
+  // value selects exactly one supported value variant.
   oneof value {
+    // tcp carries protocol details for a raw TCP endpoint.
     TcpAPI tcp = 1;
+    // http carries protocol details for a generic HTTP endpoint.
     HttpAPI http = 2;
+    // rest carries protocol details for a REST endpoint with routes and OpenAPI metadata.
     RestAPI rest = 3;
+    // grpc carries protocol details for a gRPC endpoint with protobuf descriptors.
     GrpcAPI grpc = 4;
   }
 }
 
+// HTTPMethod enumerates HTTP methods.
 enum HTTPMethod {
+  // GET is the HTTP GET method.
   GET = 0;
+  // POST is the HTTP POST method.
   POST = 1;
+  // PUT is the HTTP PUT method.
   PUT = 2;
+  // DELETE is the HTTP DELETE method.
   DELETE = 3;
+  // PATCH is the HTTP PATCH method.
   PATCH = 4;
+  // OPTIONS is the HTTP OPTIONS method.
   OPTIONS = 5;
+  // HEAD is the HTTP HEAD method.
   HEAD = 6;
+  // CONNECT is the HTTP CONNECT method.
   CONNECT = 7;
+  // TRACE is the HTTP TRACE method.
   TRACE = 8;
 }
 
 // A RestRouteGroup is a collection of routes that share the same path
 message RestRouteGroup {
+  // path is the shared route prefix for this group.
   string path = 1;
-  // TODO [(buf.validate.field).string.pattern = "^/([a-z0-9-/]+)*$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+  // routes are the REST routes mounted under path.
   repeated RestRoute routes = 2;
 }
 
 // RestRoute represents the data of the route itself
 // It is usually found through a Route group
 message RestRoute {
+  // path is the route path relative to its route group.
   string path = 1;
-  // TODO [(buf.validate.field).string.pattern = "^/([a-z0-9-/]+)*$", (buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 25];
+  // method is the HTTP method handled by this route.
   HTTPMethod method = 2;
 }
 
 
+// RestAPI describes a REST API endpoint and its route groups.
 message RestAPI {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // module is the Codefly module name that groups services.
   string module = 2;
+  // groups are route groups discovered from the service API.
   repeated RestRouteGroup groups = 3;
+  // openapi is the serialized OpenAPI description for REST endpoints.
   bytes openapi = 4;
+  // secured is true when the endpoint expects TLS or equivalent transport security.
   bool secured = 5;
 }
 
+// RPC describes one callable method exposed by a gRPC service.
 message RPC {
+  // service_name is the protobuf service that owns this RPC.
   string service_name = 1;
+  // name is the RPC method name.
   string name = 2;
 }
 
 
+// GrpcAPI describes a gRPC API endpoint and its service descriptors.
 message GrpcAPI {
+  // service is the Codefly service name, optionally scoped by module in callers.
   string service = 1;
+  // module is the Codefly module name that groups services.
   string module = 2;
+  // package is the package, dependency, or artifact name.
   string package = 3;
+  // rpcs are the callable methods exposed by this gRPC endpoint.
   repeated RPC rpcs = 4;
+  // proto is the serialized protobuf descriptor data for gRPC endpoints.
   bytes proto = 5;
+  // secured is true when the endpoint expects TLS or equivalent transport security.
   bool secured = 6;
 }
 
 
+// HttpAPI describes an HTTP endpoint.
 message HttpAPI {
+  // secured is true when the endpoint expects TLS or equivalent transport security.
   bool secured = 1;
 }
 
+// TcpAPI describes a raw TCP endpoint.
 message TcpAPI {
 }

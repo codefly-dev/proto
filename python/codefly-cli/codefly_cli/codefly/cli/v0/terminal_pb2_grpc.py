@@ -7,7 +7,7 @@ from codefly.cli.v0 import terminal_pb2 as codefly_dot_cli_dot_v0_dot_terminal__
 
 class TerminalServiceStub(object):
     """TerminalService provides interactive terminal sessions scoped to workspace/module/service.
-    Sessions persist across client disconnections (daemon model).
+    Sessions persist across client disconnections in the server-backed terminal model.
     Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
     """
 
@@ -46,40 +46,40 @@ class TerminalServiceStub(object):
 
 class TerminalServiceServicer(object):
     """TerminalService provides interactive terminal sessions scoped to workspace/module/service.
-    Sessions persist across client disconnections (daemon model).
+    Sessions persist across client disconnections in the server-backed terminal model.
     Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
     """
 
     def Open(self, request, context):
-        """Open a new terminal session
+        """Open creates a new PTY-backed terminal session scoped to the requested workspace context.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Attach(self, request_iterator, context):
-        """Bidirectional stream: client sends input, server sends output
+        """Attach streams raw input bytes to the PTY and raw output bytes back to the client.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Resize(self, request, context):
-        """Resize the terminal window
+        """Resize changes the PTY dimensions for an active terminal session.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Close(self, request, context):
-        """Close a terminal session
+        """Close terminates an active terminal session.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def List(self, request, context):
-        """List active terminal sessions
+        """List returns active terminal sessions known to the CLI server.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -123,7 +123,7 @@ def add_TerminalServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class TerminalService(object):
     """TerminalService provides interactive terminal sessions scoped to workspace/module/service.
-    Sessions persist across client disconnections (daemon model).
+    Sessions persist across client disconnections in the server-backed terminal model.
     Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
     """
 

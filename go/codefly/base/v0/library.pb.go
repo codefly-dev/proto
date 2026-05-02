@@ -23,13 +23,19 @@ const (
 
 // Library represents internal shared code that can be used by services
 type Library struct {
-	state               protoimpl.MessageState `protogen:"open.v1"`
-	Name                string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description         string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Version             string                 `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
-	Languages           []*LanguageExport      `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"`
-	Git                 *GitConfig             `protobuf:"bytes,5,opt,name=git,proto3" json:"git,omitempty"`
-	LibraryDependencies []*LibraryReference    `protobuf:"bytes,6,rep,name=library_dependencies,json=libraryDependencies,proto3" json:"library_dependencies,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the library name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// description is the human-readable library description.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
+	// languages describes how this library is exported to each supported language.
+	Languages []*LanguageExport `protobuf:"bytes,4,rep,name=languages,proto3" json:"languages,omitempty"`
+	// git is repository or submodule metadata for this library.
+	Git *GitConfig `protobuf:"bytes,5,opt,name=git,proto3" json:"git,omitempty"`
+	// library_dependencies are other internal libraries required by this library.
+	LibraryDependencies []*LibraryReference `protobuf:"bytes,6,rep,name=library_dependencies,json=libraryDependencies,proto3" json:"library_dependencies,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -108,11 +114,15 @@ func (x *Library) GetLibraryDependencies() []*LibraryReference {
 
 // LanguageExport defines how a library is exported for a specific language
 type LanguageExport struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`       // Language name: "go", "python", "typescript"
-	Agent         string                 `protobuf:"bytes,2,opt,name=agent,proto3" json:"agent,omitempty"`     // Library agent identifier
-	Path          string                 `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`       // Relative path to language-specific code
-	Exports       []string               `protobuf:"bytes,4,rep,name=exports,proto3" json:"exports,omitempty"` // Package/module names exported
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the language name for this export.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // Language name: "go", "python", "typescript"
+	// agent is the library agent or generator responsible for this language export.
+	Agent string `protobuf:"bytes,2,opt,name=agent,proto3" json:"agent,omitempty"` // Library agent identifier
+	// path is a workspace- or service-relative filesystem path.
+	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"` // Relative path to language-specific code
+	// exports describes language-specific packages exposed by the library.
+	Exports       []string `protobuf:"bytes,4,rep,name=exports,proto3" json:"exports,omitempty"` // Package/module names exported
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -177,11 +187,15 @@ func (x *LanguageExport) GetExports() []string {
 
 // GitConfig for libraries that are git repositories (or submodules)
 type GitConfig struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Remote        string                 `protobuf:"bytes,1,opt,name=remote,proto3" json:"remote,omitempty"` // Git remote URL (optional for local libs)
-	Branch        string                 `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"` // Default branch
-	Commit        string                 `protobuf:"bytes,3,opt,name=commit,proto3" json:"commit,omitempty"` // Pinned commit hash (optional)
-	Tag           string                 `protobuf:"bytes,4,opt,name=tag,proto3" json:"tag,omitempty"`       // Version tag (optional)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// remote is the git remote URL for this library.
+	Remote string `protobuf:"bytes,1,opt,name=remote,proto3" json:"remote,omitempty"` // Git remote URL (optional for local libs)
+	// branch is the git branch used for this library.
+	Branch string `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"` // Default branch
+	// commit is the pinned git commit for this library.
+	Commit string `protobuf:"bytes,3,opt,name=commit,proto3" json:"commit,omitempty"` // Pinned commit hash (optional)
+	// tag is the pinned git tag for this library.
+	Tag           string `protobuf:"bytes,4,opt,name=tag,proto3" json:"tag,omitempty"` // Version tag (optional)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -246,9 +260,11 @@ func (x *GitConfig) GetTag() string {
 
 // LibraryReference is used for dependencies between libraries
 type LibraryReference struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"` // Semver constraint (e.g., ">=1.0.0")
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the referenced library name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version       string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"` // Semver constraint (e.g., ">=1.0.0")
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -299,10 +315,13 @@ func (x *LibraryReference) GetVersion() string {
 
 // LibraryDependency is used when a service depends on a library
 type LibraryDependency struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`     // Semver constraint
-	Languages     []string               `protobuf:"bytes,3,rep,name=languages,proto3" json:"languages,omitempty"` // Which language exports are needed
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the library dependency name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"` // Semver constraint
+	// languages identifies which language exports or generators apply.
+	Languages     []string `protobuf:"bytes,3,rep,name=languages,proto3" json:"languages,omitempty"` // Which language exports are needed
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -360,11 +379,15 @@ func (x *LibraryDependency) GetLanguages() []string {
 
 // LibraryIdentity uniquely identifies a library
 type LibraryIdentity struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Workspace     string                 `protobuf:"bytes,2,opt,name=workspace,proto3" json:"workspace,omitempty"`
-	Version       string                 `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
-	Path          string                 `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"` // Absolute path to library
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the library name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// workspace is the Codefly workspace name that scopes modules and services.
+	Workspace string `protobuf:"bytes,2,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	// version is the semantic or service-specific version for this resource.
+	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
+	// path is a workspace- or service-relative filesystem path.
+	Path          string `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"` // Absolute path to library
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
