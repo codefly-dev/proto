@@ -9,7 +9,8 @@ message RuntimeContext {
   // - "free" lets the runtime decide the scope
   // - "container" scope should be used inside containers
   // - "native" scope should be used when running "natively" on the host
-  string kind = 1 [(buf.validate.field).string.in = "free", (buf.validate.field).string.in = "container", (buf.validate.field).string.in = "native"];
+  // - "nix" scope runs natively from a nix-provisioned binary (Docker-free)
+  string kind = 1 [(buf.validate.field).string.in = "free", (buf.validate.field).string.in = "container", (buf.validate.field).string.in = "native", (buf.validate.field).string.in = "nix"];
   // Name enables to "tag" the runtime context: useful for test
   string name = 2;
 }
