@@ -20,6 +20,8 @@ message Language {
     TYPESCRIPT = 3;
     // RUBY is the Ruby language.
     RUBY = 4;
+    // RUST is the Rust language.
+    RUST = 5;
   }
   // type is the language represented by this entry.
   Type type = 1;
@@ -77,6 +79,10 @@ message Runtime {
     RUBY_BUNDLE = 7;
     // NIX is the Nix runtime/toolchain.
     NIX = 8;
+    // RUST is the Rust toolchain.
+    RUST = 9;
+    // CARGO is the Cargo build tool/package manager.
+    CARGO = 10;
   }
   // type is the required runtime toolchain.
   Type type = 1;
