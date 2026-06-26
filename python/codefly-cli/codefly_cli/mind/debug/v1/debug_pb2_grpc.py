@@ -5,7 +5,7 @@ import grpc
 from mind.debug.v1 import debug_pb2 as mind_dot_debug_dot_v1_dot_debug__pb2
 
 
-class DebugServiceStub(object):
+class DebugServiceStub:
     """DebugService exposes Mind's internal state for the debug web UI.
     All RPCs map directly to display view types in pkg/display.
     """
@@ -93,7 +93,7 @@ class DebugServiceStub(object):
                 _registered_method=True)
 
 
-class DebugServiceServicer(object):
+class DebugServiceServicer:
     """DebugService exposes Mind's internal state for the debug web UI.
     All RPCs map directly to display view types in pkg/display.
     """
@@ -289,7 +289,7 @@ def add_DebugServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class DebugService(object):
+class DebugService:
     """DebugService exposes Mind's internal state for the debug web UI.
     All RPCs map directly to display view types in pkg/display.
     """

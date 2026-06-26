@@ -35,6 +35,8 @@ const (
 	Language_TYPESCRIPT Language_Type = 3
 	// RUBY is the Ruby language.
 	Language_RUBY Language_Type = 4
+	// RUST is the Rust language.
+	Language_RUST Language_Type = 5
 )
 
 // Enum value maps for Language_Type.
@@ -45,6 +47,7 @@ var (
 		2: "JAVASCRIPT",
 		3: "TYPESCRIPT",
 		4: "RUBY",
+		5: "RUST",
 	}
 	Language_Type_value = map[string]int32{
 		"GO":         0,
@@ -52,6 +55,7 @@ var (
 		"JAVASCRIPT": 2,
 		"TYPESCRIPT": 3,
 		"RUBY":       4,
+		"RUST":       5,
 	}
 )
 
@@ -210,20 +214,26 @@ const (
 	Runtime_RUBY_BUNDLE Runtime_Type = 7
 	// NIX is the Nix runtime/toolchain.
 	Runtime_NIX Runtime_Type = 8
+	// RUST is the Rust toolchain.
+	Runtime_RUST Runtime_Type = 9
+	// CARGO is the Cargo build tool/package manager.
+	Runtime_CARGO Runtime_Type = 10
 )
 
 // Enum value maps for Runtime_Type.
 var (
 	Runtime_Type_name = map[int32]string{
-		0: "UNKNOWN",
-		1: "GO",
-		2: "NPM",
-		3: "PYTHON",
-		4: "PYTHON_POETRY",
-		5: "RUBY",
-		6: "RUBY_GEM",
-		7: "RUBY_BUNDLE",
-		8: "NIX",
+		0:  "UNKNOWN",
+		1:  "GO",
+		2:  "NPM",
+		3:  "PYTHON",
+		4:  "PYTHON_POETRY",
+		5:  "RUBY",
+		6:  "RUBY_GEM",
+		7:  "RUBY_BUNDLE",
+		8:  "NIX",
+		9:  "RUST",
+		10: "CARGO",
 	}
 	Runtime_Type_value = map[string]int32{
 		"UNKNOWN":       0,
@@ -235,6 +245,8 @@ var (
 		"RUBY_GEM":      6,
 		"RUBY_BUNDLE":   7,
 		"NIX":           8,
+		"RUST":          9,
+		"CARGO":         10,
 	}
 )
 
@@ -1112,9 +1124,9 @@ var File_codefly_services_agent_v0_agent_proto protoreflect.FileDescriptor
 
 const file_codefly_services_agent_v0_agent_proto_rawDesc = "" +
 	"\n" +
-	"%codefly/services/agent/v0/agent.proto\x12\x19codefly.services.agent.v0\"\x8e\x01\n" +
+	"%codefly/services/agent/v0/agent.proto\x12\x19codefly.services.agent.v0\"\x98\x01\n" +
 	"\bLanguage\x12<\n" +
-	"\x04type\x18\x01 \x01(\x0e2(.codefly.services.agent.v0.Language.TypeR\x04type\"D\n" +
+	"\x04type\x18\x01 \x01(\x0e2(.codefly.services.agent.v0.Language.TypeR\x04type\"N\n" +
 	"\x04Type\x12\x06\n" +
 	"\x02GO\x10\x00\x12\n" +
 	"\n" +
@@ -1123,7 +1135,8 @@ const file_codefly_services_agent_v0_agent_proto_rawDesc = "" +
 	"JAVASCRIPT\x10\x02\x12\x0e\n" +
 	"\n" +
 	"TYPESCRIPT\x10\x03\x12\b\n" +
-	"\x04RUBY\x10\x04\"d\n" +
+	"\x04RUBY\x10\x04\x12\b\n" +
+	"\x04RUST\x10\x05\"d\n" +
 	"\bProtocol\x12<\n" +
 	"\x04type\x18\x01 \x01(\x0e2(.codefly.services.agent.v0.Protocol.TypeR\x04type\"\x1a\n" +
 	"\x04Type\x12\b\n" +
@@ -1137,10 +1150,10 @@ const file_codefly_services_agent_v0_agent_proto_rawDesc = "" +
 	"\aBUILDER\x10\x01\x12\v\n" +
 	"\aRUNTIME\x10\x02\x12\x0e\n" +
 	"\n" +
-	"HOT_RELOAD\x10\x03\"\xd7\x01\n" +
+	"HOT_RELOAD\x10\x03\"\xed\x01\n" +
 	"\aRuntime\x12;\n" +
 	"\x04type\x18\x01 \x01(\x0e2'.codefly.services.agent.v0.Runtime.TypeR\x04type\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\"u\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion\"\x8a\x01\n" +
 	"\x04Type\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\x06\n" +
 	"\x02GO\x10\x01\x12\a\n" +
@@ -1151,7 +1164,10 @@ const file_codefly_services_agent_v0_agent_proto_rawDesc = "" +
 	"\x04RUBY\x10\x05\x12\f\n" +
 	"\bRUBY_GEM\x10\x06\x12\x0f\n" +
 	"\vRUBY_BUNDLE\x10\a\x12\a\n" +
-	"\x03NIX\x10\b\"U\n" +
+	"\x03NIX\x10\b\x12\b\n" +
+	"\x04RUST\x10\t\x12\t\n" +
+	"\x05CARGO\x10\n" +
+	"\"U\n" +
 	"\x1dConfigurationValueInformation\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\"\xa2\x01\n" +

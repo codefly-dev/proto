@@ -6,7 +6,7 @@ from codefly.services.agent.v0 import communicate_pb2 as codefly_dot_services_do
 from codefly.services.builder.v0 import builder_pb2 as codefly_dot_services_dot_builder_dot_v0_dot_builder__pb2
 
 
-class BuilderStub(object):
+class BuilderStub:
     """Builder is responsible for:
     - creation
     - Docker build
@@ -72,7 +72,7 @@ class BuilderStub(object):
                 _registered_method=True)
 
 
-class BuilderServicer(object):
+class BuilderServicer:
     """Builder is responsible for:
     - creation
     - Docker build
@@ -212,7 +212,7 @@ def add_BuilderServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Builder(object):
+class Builder:
     """Builder is responsible for:
     - creation
     - Docker build

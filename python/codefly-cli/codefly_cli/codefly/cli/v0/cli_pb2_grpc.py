@@ -10,7 +10,7 @@ from codefly.services.agent.v0 import agent_pb2 as codefly_dot_services_dot_agen
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-class CLIStub(object):
+class CLIStub:
     """CLI exposes the local Codefly command bridge used by companion UIs and integrations.
     """
 
@@ -102,7 +102,7 @@ class CLIStub(object):
                 _registered_method=True)
 
 
-class CLIServicer(object):
+class CLIServicer:
     """CLI exposes the local Codefly command bridge used by companion UIs and integrations.
     """
 
@@ -311,7 +311,7 @@ def add_CLIServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class CLI(object):
+class CLI:
     """CLI exposes the local Codefly command bridge used by companion UIs and integrations.
     """
 

@@ -146,8 +146,9 @@ func (x *IdentityResponse) GetSandboxSummary() string {
 	return ""
 }
 
-// Tool is a callable surface — a function the agent can invoke with
-// JSON-Schema-typed arguments and receive structured Content back.
+// Tool is the heavy "everything in one envelope" callable surface.
+// Returned by the legacy ListTools. New code prefers ToolSummary +
+// ToolSpec (two-phase) below.
 type Tool struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Dotted name. Convention: <toolbox>.<verb>, e.g. "git.commit",
@@ -234,6 +235,494 @@ func (x *Tool) GetDestructive() bool {
 	return false
 }
 
+// ToolSummary is a CATALOG ENTRY — enough for the LLM to decide
+// "should I pick this tool?" without paying the full-schema cost.
+// Returned by ListToolSummaries.
+//
+// The one-line description must answer "when would I call this?"
+// The tags drive pre-filtering ("read-only", "git", "destructive").
+// Schemas + examples live in ToolSpec, fetched per-tool via
+// DescribeTool right before invocation.
+type ToolSummary struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Dotted name. Same convention as Tool.name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// ONE LINE optimized for routing decisions. ~120 chars or less
+	// by convention. Should answer "when would I pick this?"
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// Categories useful for pre-filtering. Conventional values:
+	//
+	//	read-only       — never mutates state
+	//	destructive     — mirrors Tool.destructive; surfaced for symmetry
+	//	network         — issues outbound network calls
+	//	filesystem      — reads or writes the host filesystem
+	//	<toolbox-name>  — every tool tags its toolbox name (git, docker, ...)
+	//
+	// Plus domain-specific tags the toolbox author chooses.
+	Tags []string `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
+	// Mirrors Tool.destructive — promoted so callers can decide
+	// without combing tags.
+	Destructive   bool `protobuf:"varint,4,opt,name=destructive,proto3" json:"destructive,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ToolSummary) Reset() {
+	*x = ToolSummary{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ToolSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolSummary) ProtoMessage() {}
+
+func (x *ToolSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ToolSummary.ProtoReflect.Descriptor instead.
+func (*ToolSummary) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ToolSummary) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ToolSummary) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ToolSummary) GetTags() []string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+func (x *ToolSummary) GetDestructive() bool {
+	if x != nil {
+		return x.Destructive
+	}
+	return false
+}
+
+// ToolSpec is the FULL spec for one tool. Heavy: contains JSON
+// Schemas + worked examples. Fetched on-demand via DescribeTool;
+// not part of any catalog list.
+type ToolSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Dotted name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Multi-paragraph description allowed. Spell out the contract,
+	// edge cases, when to use vs. not use.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// JSON Schema for the input. Same shape as Tool.input_schema.
+	InputSchema *structpb.Struct `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema,proto3" json:"input_schema,omitempty"`
+	// JSON Schema for the result Content envelope. Optional.
+	OutputSchema *structpb.Struct `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema,proto3" json:"output_schema,omitempty"`
+	// Destructive marker; same semantics as Tool.destructive.
+	Destructive bool `protobuf:"varint,5,opt,name=destructive,proto3" json:"destructive,omitempty"`
+	// Same tag set as ToolSummary.tags (kept here for self-containment
+	// — DescribeTool's response shouldn't require pairing with a
+	// separate summary fetch).
+	Tags []string `protobuf:"bytes,6,rep,name=tags,proto3" json:"tags,omitempty"`
+	// Worked examples. The single biggest win of the two-phase design:
+	// LLMs structure arguments dramatically better with 1-2 examples
+	// than with a JSON schema alone. Tool authors should always include
+	// at least one canonical example.
+	Examples []*ToolExample `protobuf:"bytes,7,rep,name=examples,proto3" json:"examples,omitempty"`
+	// Idempotency hint for retry / dedup logic.
+	// Conventional values: "idempotent" | "side_effecting" | "unknown".
+	Idempotency string `protobuf:"bytes,8,opt,name=idempotency,proto3" json:"idempotency,omitempty"`
+	// Free-text on what failure looks like — when the tool fails, what
+	// does the error message contain, and what should the caller do?
+	// Helps the LLM diagnose without re-running the call.
+	ErrorModes    string `protobuf:"bytes,9,opt,name=error_modes,json=errorModes,proto3" json:"error_modes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ToolSpec) Reset() {
+	*x = ToolSpec{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ToolSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolSpec) ProtoMessage() {}
+
+func (x *ToolSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ToolSpec.ProtoReflect.Descriptor instead.
+func (*ToolSpec) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ToolSpec) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ToolSpec) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ToolSpec) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *ToolSpec) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
+func (x *ToolSpec) GetDestructive() bool {
+	if x != nil {
+		return x.Destructive
+	}
+	return false
+}
+
+func (x *ToolSpec) GetTags() []string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+func (x *ToolSpec) GetExamples() []*ToolExample {
+	if x != nil {
+		return x.Examples
+	}
+	return nil
+}
+
+func (x *ToolSpec) GetIdempotency() string {
+	if x != nil {
+		return x.Idempotency
+	}
+	return ""
+}
+
+func (x *ToolSpec) GetErrorModes() string {
+	if x != nil {
+		return x.ErrorModes
+	}
+	return ""
+}
+
+// ToolExample is a worked invocation: arguments + outcome. The LLM
+// uses these to pattern-match its own call. Authors should pick
+// examples that span the parameter space (e.g. with vs without
+// optional flags) rather than just one happy path.
+type ToolExample struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Human-readable summary of what this example demonstrates.
+	// E.g. "List the last 5 commits on the default branch".
+	Description string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
+	// Sample arguments matching input_schema.
+	Arguments *structpb.Struct `protobuf:"bytes,2,opt,name=arguments,proto3" json:"arguments,omitempty"`
+	// Expected outcome — short prose, not strict assertion.
+	// E.g. "returns 5 commit objects with hash, author, message".
+	ExpectedOutcome string `protobuf:"bytes,3,opt,name=expected_outcome,json=expectedOutcome,proto3" json:"expected_outcome,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ToolExample) Reset() {
+	*x = ToolExample{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ToolExample) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolExample) ProtoMessage() {}
+
+func (x *ToolExample) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ToolExample.ProtoReflect.Descriptor instead.
+func (*ToolExample) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ToolExample) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ToolExample) GetArguments() *structpb.Struct {
+	if x != nil {
+		return x.Arguments
+	}
+	return nil
+}
+
+func (x *ToolExample) GetExpectedOutcome() string {
+	if x != nil {
+		return x.ExpectedOutcome
+	}
+	return ""
+}
+
+// ListToolSummariesRequest can pre-filter by tags. Empty filter
+// returns every tool the toolbox exposes. With filter, only tools
+// whose tags include EVERY entry in tags_filter are returned (AND
+// semantics — a "read-only AND fast" filter is conjunctive).
+type ListToolSummariesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Pre-filter: only return tools whose tags include every entry
+	// here (conjunctive AND). Empty = no filter. Useful for
+	// "read-only" pre-selection.
+	TagsFilter    []string `protobuf:"bytes,1,rep,name=tags_filter,json=tagsFilter,proto3" json:"tags_filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListToolSummariesRequest) Reset() {
+	*x = ListToolSummariesRequest{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListToolSummariesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListToolSummariesRequest) ProtoMessage() {}
+
+func (x *ListToolSummariesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListToolSummariesRequest.ProtoReflect.Descriptor instead.
+func (*ListToolSummariesRequest) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListToolSummariesRequest) GetTagsFilter() []string {
+	if x != nil {
+		return x.TagsFilter
+	}
+	return nil
+}
+
+// ListToolSummariesResponse is the lightweight catalog.
+type ListToolSummariesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Catalog entries — one per tool exposed by this toolbox after
+	// tags_filter is applied.
+	Tools         []*ToolSummary `protobuf:"bytes,1,rep,name=tools,proto3" json:"tools,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListToolSummariesResponse) Reset() {
+	*x = ListToolSummariesResponse{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListToolSummariesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListToolSummariesResponse) ProtoMessage() {}
+
+func (x *ListToolSummariesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListToolSummariesResponse.ProtoReflect.Descriptor instead.
+func (*ListToolSummariesResponse) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ListToolSummariesResponse) GetTools() []*ToolSummary {
+	if x != nil {
+		return x.Tools
+	}
+	return nil
+}
+
+// DescribeToolRequest asks for the full spec of ONE tool by name.
+type DescribeToolRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Dotted tool name as returned in ToolSummary.name.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DescribeToolRequest) Reset() {
+	*x = DescribeToolRequest{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DescribeToolRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DescribeToolRequest) ProtoMessage() {}
+
+func (x *DescribeToolRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DescribeToolRequest.ProtoReflect.Descriptor instead.
+func (*DescribeToolRequest) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DescribeToolRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// DescribeToolResponse carries the spec OR an error. Error is set
+// when name doesn't match any tool; tool is unset in that case.
+type DescribeToolResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Full spec when the named tool exists. Unset when error is set.
+	Tool *ToolSpec `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`
+	// Set when the requested tool name doesn't exist. Empty on success.
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DescribeToolResponse) Reset() {
+	*x = DescribeToolResponse{}
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DescribeToolResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DescribeToolResponse) ProtoMessage() {}
+
+func (x *DescribeToolResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DescribeToolResponse.ProtoReflect.Descriptor instead.
+func (*DescribeToolResponse) Descriptor() ([]byte, []int) {
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DescribeToolResponse) GetTool() *ToolSpec {
+	if x != nil {
+		return x.Tool
+	}
+	return nil
+}
+
+func (x *DescribeToolResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 // ListToolsRequest asks for the toolbox's callable tool catalog.
 type ListToolsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -243,7 +732,7 @@ type ListToolsRequest struct {
 
 func (x *ListToolsRequest) Reset() {
 	*x = ListToolsRequest{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[3]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -255,7 +744,7 @@ func (x *ListToolsRequest) String() string {
 func (*ListToolsRequest) ProtoMessage() {}
 
 func (x *ListToolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[3]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -268,7 +757,7 @@ func (x *ListToolsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListToolsRequest.ProtoReflect.Descriptor instead.
 func (*ListToolsRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{3}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{10}
 }
 
 // ListToolsResponse contains the callable tools exposed by the toolbox.
@@ -282,7 +771,7 @@ type ListToolsResponse struct {
 
 func (x *ListToolsResponse) Reset() {
 	*x = ListToolsResponse{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[4]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -294,7 +783,7 @@ func (x *ListToolsResponse) String() string {
 func (*ListToolsResponse) ProtoMessage() {}
 
 func (x *ListToolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[4]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -307,7 +796,7 @@ func (x *ListToolsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListToolsResponse.ProtoReflect.Descriptor instead.
 func (*ListToolsResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{4}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListToolsResponse) GetTools() []*Tool {
@@ -334,7 +823,7 @@ type CallToolRequest struct {
 
 func (x *CallToolRequest) Reset() {
 	*x = CallToolRequest{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[5]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -346,7 +835,7 @@ func (x *CallToolRequest) String() string {
 func (*CallToolRequest) ProtoMessage() {}
 
 func (x *CallToolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[5]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +848,7 @@ func (x *CallToolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallToolRequest.ProtoReflect.Descriptor instead.
 func (*CallToolRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{5}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CallToolRequest) GetName() string {
@@ -402,7 +891,7 @@ type Content struct {
 
 func (x *Content) Reset() {
 	*x = Content{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[6]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -414,7 +903,7 @@ func (x *Content) String() string {
 func (*Content) ProtoMessage() {}
 
 func (x *Content) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[6]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -427,7 +916,7 @@ func (x *Content) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Content.ProtoReflect.Descriptor instead.
 func (*Content) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{6}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Content) GetBody() isContent_Body {
@@ -505,7 +994,7 @@ type Blob struct {
 
 func (x *Blob) Reset() {
 	*x = Blob{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[7]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -517,7 +1006,7 @@ func (x *Blob) String() string {
 func (*Blob) ProtoMessage() {}
 
 func (x *Blob) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[7]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -530,7 +1019,7 @@ func (x *Blob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Blob.ProtoReflect.Descriptor instead.
 func (*Blob) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{7}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Blob) GetMediaType() string {
@@ -572,7 +1061,7 @@ type CallToolResponse struct {
 
 func (x *CallToolResponse) Reset() {
 	*x = CallToolResponse{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[8]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -584,7 +1073,7 @@ func (x *CallToolResponse) String() string {
 func (*CallToolResponse) ProtoMessage() {}
 
 func (x *CallToolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[8]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -597,7 +1086,7 @@ func (x *CallToolResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallToolResponse.ProtoReflect.Descriptor instead.
 func (*CallToolResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{8}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CallToolResponse) GetContent() []*Content {
@@ -646,7 +1135,7 @@ type Resource struct {
 
 func (x *Resource) Reset() {
 	*x = Resource{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[9]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -658,7 +1147,7 @@ func (x *Resource) String() string {
 func (*Resource) ProtoMessage() {}
 
 func (x *Resource) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[9]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -671,7 +1160,7 @@ func (x *Resource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Resource.ProtoReflect.Descriptor instead.
 func (*Resource) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{9}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *Resource) GetUri() string {
@@ -711,7 +1200,7 @@ type ListResourcesRequest struct {
 
 func (x *ListResourcesRequest) Reset() {
 	*x = ListResourcesRequest{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[10]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -723,7 +1212,7 @@ func (x *ListResourcesRequest) String() string {
 func (*ListResourcesRequest) ProtoMessage() {}
 
 func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[10]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -736,7 +1225,7 @@ func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourcesRequest.ProtoReflect.Descriptor instead.
 func (*ListResourcesRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{10}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{17}
 }
 
 // ListResourcesResponse contains every readable resource the toolbox exposes.
@@ -750,7 +1239,7 @@ type ListResourcesResponse struct {
 
 func (x *ListResourcesResponse) Reset() {
 	*x = ListResourcesResponse{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[11]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -762,7 +1251,7 @@ func (x *ListResourcesResponse) String() string {
 func (*ListResourcesResponse) ProtoMessage() {}
 
 func (x *ListResourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[11]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -775,7 +1264,7 @@ func (x *ListResourcesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourcesResponse.ProtoReflect.Descriptor instead.
 func (*ListResourcesResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{11}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ListResourcesResponse) GetResources() []*Resource {
@@ -796,7 +1285,7 @@ type ReadResourceRequest struct {
 
 func (x *ReadResourceRequest) Reset() {
 	*x = ReadResourceRequest{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[12]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -808,7 +1297,7 @@ func (x *ReadResourceRequest) String() string {
 func (*ReadResourceRequest) ProtoMessage() {}
 
 func (x *ReadResourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[12]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -821,7 +1310,7 @@ func (x *ReadResourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadResourceRequest.ProtoReflect.Descriptor instead.
 func (*ReadResourceRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{12}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ReadResourceRequest) GetUri() string {
@@ -844,7 +1333,7 @@ type ReadResourceResponse struct {
 
 func (x *ReadResourceResponse) Reset() {
 	*x = ReadResourceResponse{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[13]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -856,7 +1345,7 @@ func (x *ReadResourceResponse) String() string {
 func (*ReadResourceResponse) ProtoMessage() {}
 
 func (x *ReadResourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[13]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -869,7 +1358,7 @@ func (x *ReadResourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadResourceResponse.ProtoReflect.Descriptor instead.
 func (*ReadResourceResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{13}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ReadResourceResponse) GetContent() []*Content {
@@ -894,7 +1383,7 @@ type PromptArgument struct {
 
 func (x *PromptArgument) Reset() {
 	*x = PromptArgument{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[14]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -906,7 +1395,7 @@ func (x *PromptArgument) String() string {
 func (*PromptArgument) ProtoMessage() {}
 
 func (x *PromptArgument) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[14]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -919,7 +1408,7 @@ func (x *PromptArgument) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromptArgument.ProtoReflect.Descriptor instead.
 func (*PromptArgument) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{14}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *PromptArgument) GetName() string {
@@ -958,7 +1447,7 @@ type Prompt struct {
 
 func (x *Prompt) Reset() {
 	*x = Prompt{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[15]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -970,7 +1459,7 @@ func (x *Prompt) String() string {
 func (*Prompt) ProtoMessage() {}
 
 func (x *Prompt) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[15]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -983,7 +1472,7 @@ func (x *Prompt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Prompt.ProtoReflect.Descriptor instead.
 func (*Prompt) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{15}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *Prompt) GetName() string {
@@ -1016,7 +1505,7 @@ type ListPromptsRequest struct {
 
 func (x *ListPromptsRequest) Reset() {
 	*x = ListPromptsRequest{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[16]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1028,7 +1517,7 @@ func (x *ListPromptsRequest) String() string {
 func (*ListPromptsRequest) ProtoMessage() {}
 
 func (x *ListPromptsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[16]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1041,7 +1530,7 @@ func (x *ListPromptsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPromptsRequest.ProtoReflect.Descriptor instead.
 func (*ListPromptsRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{16}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{23}
 }
 
 // ListPromptsResponse contains every prompt template the toolbox exposes.
@@ -1055,7 +1544,7 @@ type ListPromptsResponse struct {
 
 func (x *ListPromptsResponse) Reset() {
 	*x = ListPromptsResponse{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[17]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1067,7 +1556,7 @@ func (x *ListPromptsResponse) String() string {
 func (*ListPromptsResponse) ProtoMessage() {}
 
 func (x *ListPromptsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[17]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1080,7 +1569,7 @@ func (x *ListPromptsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPromptsResponse.ProtoReflect.Descriptor instead.
 func (*ListPromptsResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{17}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListPromptsResponse) GetPrompts() []*Prompt {
@@ -1103,7 +1592,7 @@ type GetPromptRequest struct {
 
 func (x *GetPromptRequest) Reset() {
 	*x = GetPromptRequest{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[18]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1115,7 +1604,7 @@ func (x *GetPromptRequest) String() string {
 func (*GetPromptRequest) ProtoMessage() {}
 
 func (x *GetPromptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[18]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1128,7 +1617,7 @@ func (x *GetPromptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPromptRequest.ProtoReflect.Descriptor instead.
 func (*GetPromptRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{18}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GetPromptRequest) GetName() string {
@@ -1158,7 +1647,7 @@ type PromptMessage struct {
 
 func (x *PromptMessage) Reset() {
 	*x = PromptMessage{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[19]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1170,7 +1659,7 @@ func (x *PromptMessage) String() string {
 func (*PromptMessage) ProtoMessage() {}
 
 func (x *PromptMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[19]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1183,7 +1672,7 @@ func (x *PromptMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromptMessage.ProtoReflect.Descriptor instead.
 func (*PromptMessage) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{19}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *PromptMessage) GetRole() string {
@@ -1213,7 +1702,7 @@ type GetPromptResponse struct {
 
 func (x *GetPromptResponse) Reset() {
 	*x = GetPromptResponse{}
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[20]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1225,7 +1714,7 @@ func (x *GetPromptResponse) String() string {
 func (*GetPromptResponse) ProtoMessage() {}
 
 func (x *GetPromptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[20]
+	mi := &file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1238,7 +1727,7 @@ func (x *GetPromptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPromptResponse.ProtoReflect.Descriptor instead.
 func (*GetPromptResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{20}
+	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetPromptResponse) GetDescription() string {
@@ -1272,7 +1761,37 @@ const file_codefly_services_toolbox_v0_toolbox_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12 \n" +
-	"\vdestructive\x18\x05 \x01(\bR\vdestructive\"\x12\n" +
+	"\vdestructive\x18\x05 \x01(\bR\vdestructive\"y\n" +
+	"\vToolSummary\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x12\n" +
+	"\x04tags\x18\x03 \x03(\tR\x04tags\x12 \n" +
+	"\vdestructive\x18\x04 \x01(\bR\vdestructive\"\xf9\x02\n" +
+	"\bToolSpec\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
+	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
+	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12 \n" +
+	"\vdestructive\x18\x05 \x01(\bR\vdestructive\x12\x12\n" +
+	"\x04tags\x18\x06 \x03(\tR\x04tags\x12D\n" +
+	"\bexamples\x18\a \x03(\v2(.codefly.services.toolbox.v0.ToolExampleR\bexamples\x12 \n" +
+	"\vidempotency\x18\b \x01(\tR\vidempotency\x12\x1f\n" +
+	"\verror_modes\x18\t \x01(\tR\n" +
+	"errorModes\"\x91\x01\n" +
+	"\vToolExample\x12 \n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x125\n" +
+	"\targuments\x18\x02 \x01(\v2\x17.google.protobuf.StructR\targuments\x12)\n" +
+	"\x10expected_outcome\x18\x03 \x01(\tR\x0fexpectedOutcome\";\n" +
+	"\x18ListToolSummariesRequest\x12\x1f\n" +
+	"\vtags_filter\x18\x01 \x03(\tR\n" +
+	"tagsFilter\"[\n" +
+	"\x19ListToolSummariesResponse\x12>\n" +
+	"\x05tools\x18\x01 \x03(\v2(.codefly.services.toolbox.v0.ToolSummaryR\x05tools\")\n" +
+	"\x13DescribeToolRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"g\n" +
+	"\x14DescribeToolResponse\x129\n" +
+	"\x04tool\x18\x01 \x01(\v2%.codefly.services.toolbox.v0.ToolSpecR\x04tool\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"\x12\n" +
 	"\x10ListToolsRequest\"L\n" +
 	"\x11ListToolsResponse\x127\n" +
 	"\x05tools\x18\x01 \x03(\v2!.codefly.services.toolbox.v0.ToolR\x05tools\"r\n" +
@@ -1327,10 +1846,12 @@ const file_codefly_services_toolbox_v0_toolbox_proto_rawDesc = "" +
 	"\acontent\x18\x02 \x03(\v2$.codefly.services.toolbox.v0.ContentR\acontent\"}\n" +
 	"\x11GetPromptResponse\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12F\n" +
-	"\bmessages\x18\x02 \x03(\v2*.codefly.services.toolbox.v0.PromptMessageR\bmessages2\x92\x06\n" +
+	"\bmessages\x18\x02 \x03(\v2*.codefly.services.toolbox.v0.PromptMessageR\bmessages2\x91\b\n" +
 	"\aToolbox\x12g\n" +
-	"\bIdentity\x12,.codefly.services.toolbox.v0.IdentityRequest\x1a-.codefly.services.toolbox.v0.IdentityResponse\x12j\n" +
-	"\tListTools\x12-.codefly.services.toolbox.v0.ListToolsRequest\x1a..codefly.services.toolbox.v0.ListToolsResponse\x12g\n" +
+	"\bIdentity\x12,.codefly.services.toolbox.v0.IdentityRequest\x1a-.codefly.services.toolbox.v0.IdentityResponse\x12o\n" +
+	"\tListTools\x12-.codefly.services.toolbox.v0.ListToolsRequest\x1a..codefly.services.toolbox.v0.ListToolsResponse\"\x03\x88\x02\x01\x12\x82\x01\n" +
+	"\x11ListToolSummaries\x125.codefly.services.toolbox.v0.ListToolSummariesRequest\x1a6.codefly.services.toolbox.v0.ListToolSummariesResponse\x12s\n" +
+	"\fDescribeTool\x120.codefly.services.toolbox.v0.DescribeToolRequest\x1a1.codefly.services.toolbox.v0.DescribeToolResponse\x12g\n" +
 	"\bCallTool\x12,.codefly.services.toolbox.v0.CallToolRequest\x1a-.codefly.services.toolbox.v0.CallToolResponse\x12v\n" +
 	"\rListResources\x121.codefly.services.toolbox.v0.ListResourcesRequest\x1a2.codefly.services.toolbox.v0.ListResourcesResponse\x12s\n" +
 	"\fReadResource\x120.codefly.services.toolbox.v0.ReadResourceRequest\x1a1.codefly.services.toolbox.v0.ReadResourceResponse\x12p\n" +
@@ -1350,65 +1871,82 @@ func file_codefly_services_toolbox_v0_toolbox_proto_rawDescGZIP() []byte {
 	return file_codefly_services_toolbox_v0_toolbox_proto_rawDescData
 }
 
-var file_codefly_services_toolbox_v0_toolbox_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_codefly_services_toolbox_v0_toolbox_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_codefly_services_toolbox_v0_toolbox_proto_goTypes = []any{
-	(*IdentityRequest)(nil),       // 0: codefly.services.toolbox.v0.IdentityRequest
-	(*IdentityResponse)(nil),      // 1: codefly.services.toolbox.v0.IdentityResponse
-	(*Tool)(nil),                  // 2: codefly.services.toolbox.v0.Tool
-	(*ListToolsRequest)(nil),      // 3: codefly.services.toolbox.v0.ListToolsRequest
-	(*ListToolsResponse)(nil),     // 4: codefly.services.toolbox.v0.ListToolsResponse
-	(*CallToolRequest)(nil),       // 5: codefly.services.toolbox.v0.CallToolRequest
-	(*Content)(nil),               // 6: codefly.services.toolbox.v0.Content
-	(*Blob)(nil),                  // 7: codefly.services.toolbox.v0.Blob
-	(*CallToolResponse)(nil),      // 8: codefly.services.toolbox.v0.CallToolResponse
-	(*Resource)(nil),              // 9: codefly.services.toolbox.v0.Resource
-	(*ListResourcesRequest)(nil),  // 10: codefly.services.toolbox.v0.ListResourcesRequest
-	(*ListResourcesResponse)(nil), // 11: codefly.services.toolbox.v0.ListResourcesResponse
-	(*ReadResourceRequest)(nil),   // 12: codefly.services.toolbox.v0.ReadResourceRequest
-	(*ReadResourceResponse)(nil),  // 13: codefly.services.toolbox.v0.ReadResourceResponse
-	(*PromptArgument)(nil),        // 14: codefly.services.toolbox.v0.PromptArgument
-	(*Prompt)(nil),                // 15: codefly.services.toolbox.v0.Prompt
-	(*ListPromptsRequest)(nil),    // 16: codefly.services.toolbox.v0.ListPromptsRequest
-	(*ListPromptsResponse)(nil),   // 17: codefly.services.toolbox.v0.ListPromptsResponse
-	(*GetPromptRequest)(nil),      // 18: codefly.services.toolbox.v0.GetPromptRequest
-	(*PromptMessage)(nil),         // 19: codefly.services.toolbox.v0.PromptMessage
-	(*GetPromptResponse)(nil),     // 20: codefly.services.toolbox.v0.GetPromptResponse
-	(*structpb.Struct)(nil),       // 21: google.protobuf.Struct
+	(*IdentityRequest)(nil),           // 0: codefly.services.toolbox.v0.IdentityRequest
+	(*IdentityResponse)(nil),          // 1: codefly.services.toolbox.v0.IdentityResponse
+	(*Tool)(nil),                      // 2: codefly.services.toolbox.v0.Tool
+	(*ToolSummary)(nil),               // 3: codefly.services.toolbox.v0.ToolSummary
+	(*ToolSpec)(nil),                  // 4: codefly.services.toolbox.v0.ToolSpec
+	(*ToolExample)(nil),               // 5: codefly.services.toolbox.v0.ToolExample
+	(*ListToolSummariesRequest)(nil),  // 6: codefly.services.toolbox.v0.ListToolSummariesRequest
+	(*ListToolSummariesResponse)(nil), // 7: codefly.services.toolbox.v0.ListToolSummariesResponse
+	(*DescribeToolRequest)(nil),       // 8: codefly.services.toolbox.v0.DescribeToolRequest
+	(*DescribeToolResponse)(nil),      // 9: codefly.services.toolbox.v0.DescribeToolResponse
+	(*ListToolsRequest)(nil),          // 10: codefly.services.toolbox.v0.ListToolsRequest
+	(*ListToolsResponse)(nil),         // 11: codefly.services.toolbox.v0.ListToolsResponse
+	(*CallToolRequest)(nil),           // 12: codefly.services.toolbox.v0.CallToolRequest
+	(*Content)(nil),                   // 13: codefly.services.toolbox.v0.Content
+	(*Blob)(nil),                      // 14: codefly.services.toolbox.v0.Blob
+	(*CallToolResponse)(nil),          // 15: codefly.services.toolbox.v0.CallToolResponse
+	(*Resource)(nil),                  // 16: codefly.services.toolbox.v0.Resource
+	(*ListResourcesRequest)(nil),      // 17: codefly.services.toolbox.v0.ListResourcesRequest
+	(*ListResourcesResponse)(nil),     // 18: codefly.services.toolbox.v0.ListResourcesResponse
+	(*ReadResourceRequest)(nil),       // 19: codefly.services.toolbox.v0.ReadResourceRequest
+	(*ReadResourceResponse)(nil),      // 20: codefly.services.toolbox.v0.ReadResourceResponse
+	(*PromptArgument)(nil),            // 21: codefly.services.toolbox.v0.PromptArgument
+	(*Prompt)(nil),                    // 22: codefly.services.toolbox.v0.Prompt
+	(*ListPromptsRequest)(nil),        // 23: codefly.services.toolbox.v0.ListPromptsRequest
+	(*ListPromptsResponse)(nil),       // 24: codefly.services.toolbox.v0.ListPromptsResponse
+	(*GetPromptRequest)(nil),          // 25: codefly.services.toolbox.v0.GetPromptRequest
+	(*PromptMessage)(nil),             // 26: codefly.services.toolbox.v0.PromptMessage
+	(*GetPromptResponse)(nil),         // 27: codefly.services.toolbox.v0.GetPromptResponse
+	(*structpb.Struct)(nil),           // 28: google.protobuf.Struct
 }
 var file_codefly_services_toolbox_v0_toolbox_proto_depIdxs = []int32{
-	21, // 0: codefly.services.toolbox.v0.Tool.input_schema:type_name -> google.protobuf.Struct
-	21, // 1: codefly.services.toolbox.v0.Tool.output_schema:type_name -> google.protobuf.Struct
-	2,  // 2: codefly.services.toolbox.v0.ListToolsResponse.tools:type_name -> codefly.services.toolbox.v0.Tool
-	21, // 3: codefly.services.toolbox.v0.CallToolRequest.arguments:type_name -> google.protobuf.Struct
-	21, // 4: codefly.services.toolbox.v0.Content.structured:type_name -> google.protobuf.Struct
-	7,  // 5: codefly.services.toolbox.v0.Content.blob:type_name -> codefly.services.toolbox.v0.Blob
-	6,  // 6: codefly.services.toolbox.v0.CallToolResponse.content:type_name -> codefly.services.toolbox.v0.Content
-	9,  // 7: codefly.services.toolbox.v0.ListResourcesResponse.resources:type_name -> codefly.services.toolbox.v0.Resource
-	6,  // 8: codefly.services.toolbox.v0.ReadResourceResponse.content:type_name -> codefly.services.toolbox.v0.Content
-	14, // 9: codefly.services.toolbox.v0.Prompt.arguments:type_name -> codefly.services.toolbox.v0.PromptArgument
-	15, // 10: codefly.services.toolbox.v0.ListPromptsResponse.prompts:type_name -> codefly.services.toolbox.v0.Prompt
-	21, // 11: codefly.services.toolbox.v0.GetPromptRequest.arguments:type_name -> google.protobuf.Struct
-	6,  // 12: codefly.services.toolbox.v0.PromptMessage.content:type_name -> codefly.services.toolbox.v0.Content
-	19, // 13: codefly.services.toolbox.v0.GetPromptResponse.messages:type_name -> codefly.services.toolbox.v0.PromptMessage
-	0,  // 14: codefly.services.toolbox.v0.Toolbox.Identity:input_type -> codefly.services.toolbox.v0.IdentityRequest
-	3,  // 15: codefly.services.toolbox.v0.Toolbox.ListTools:input_type -> codefly.services.toolbox.v0.ListToolsRequest
-	5,  // 16: codefly.services.toolbox.v0.Toolbox.CallTool:input_type -> codefly.services.toolbox.v0.CallToolRequest
-	10, // 17: codefly.services.toolbox.v0.Toolbox.ListResources:input_type -> codefly.services.toolbox.v0.ListResourcesRequest
-	12, // 18: codefly.services.toolbox.v0.Toolbox.ReadResource:input_type -> codefly.services.toolbox.v0.ReadResourceRequest
-	16, // 19: codefly.services.toolbox.v0.Toolbox.ListPrompts:input_type -> codefly.services.toolbox.v0.ListPromptsRequest
-	18, // 20: codefly.services.toolbox.v0.Toolbox.GetPrompt:input_type -> codefly.services.toolbox.v0.GetPromptRequest
-	1,  // 21: codefly.services.toolbox.v0.Toolbox.Identity:output_type -> codefly.services.toolbox.v0.IdentityResponse
-	4,  // 22: codefly.services.toolbox.v0.Toolbox.ListTools:output_type -> codefly.services.toolbox.v0.ListToolsResponse
-	8,  // 23: codefly.services.toolbox.v0.Toolbox.CallTool:output_type -> codefly.services.toolbox.v0.CallToolResponse
-	11, // 24: codefly.services.toolbox.v0.Toolbox.ListResources:output_type -> codefly.services.toolbox.v0.ListResourcesResponse
-	13, // 25: codefly.services.toolbox.v0.Toolbox.ReadResource:output_type -> codefly.services.toolbox.v0.ReadResourceResponse
-	17, // 26: codefly.services.toolbox.v0.Toolbox.ListPrompts:output_type -> codefly.services.toolbox.v0.ListPromptsResponse
-	20, // 27: codefly.services.toolbox.v0.Toolbox.GetPrompt:output_type -> codefly.services.toolbox.v0.GetPromptResponse
-	21, // [21:28] is the sub-list for method output_type
-	14, // [14:21] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	28, // 0: codefly.services.toolbox.v0.Tool.input_schema:type_name -> google.protobuf.Struct
+	28, // 1: codefly.services.toolbox.v0.Tool.output_schema:type_name -> google.protobuf.Struct
+	28, // 2: codefly.services.toolbox.v0.ToolSpec.input_schema:type_name -> google.protobuf.Struct
+	28, // 3: codefly.services.toolbox.v0.ToolSpec.output_schema:type_name -> google.protobuf.Struct
+	5,  // 4: codefly.services.toolbox.v0.ToolSpec.examples:type_name -> codefly.services.toolbox.v0.ToolExample
+	28, // 5: codefly.services.toolbox.v0.ToolExample.arguments:type_name -> google.protobuf.Struct
+	3,  // 6: codefly.services.toolbox.v0.ListToolSummariesResponse.tools:type_name -> codefly.services.toolbox.v0.ToolSummary
+	4,  // 7: codefly.services.toolbox.v0.DescribeToolResponse.tool:type_name -> codefly.services.toolbox.v0.ToolSpec
+	2,  // 8: codefly.services.toolbox.v0.ListToolsResponse.tools:type_name -> codefly.services.toolbox.v0.Tool
+	28, // 9: codefly.services.toolbox.v0.CallToolRequest.arguments:type_name -> google.protobuf.Struct
+	28, // 10: codefly.services.toolbox.v0.Content.structured:type_name -> google.protobuf.Struct
+	14, // 11: codefly.services.toolbox.v0.Content.blob:type_name -> codefly.services.toolbox.v0.Blob
+	13, // 12: codefly.services.toolbox.v0.CallToolResponse.content:type_name -> codefly.services.toolbox.v0.Content
+	16, // 13: codefly.services.toolbox.v0.ListResourcesResponse.resources:type_name -> codefly.services.toolbox.v0.Resource
+	13, // 14: codefly.services.toolbox.v0.ReadResourceResponse.content:type_name -> codefly.services.toolbox.v0.Content
+	21, // 15: codefly.services.toolbox.v0.Prompt.arguments:type_name -> codefly.services.toolbox.v0.PromptArgument
+	22, // 16: codefly.services.toolbox.v0.ListPromptsResponse.prompts:type_name -> codefly.services.toolbox.v0.Prompt
+	28, // 17: codefly.services.toolbox.v0.GetPromptRequest.arguments:type_name -> google.protobuf.Struct
+	13, // 18: codefly.services.toolbox.v0.PromptMessage.content:type_name -> codefly.services.toolbox.v0.Content
+	26, // 19: codefly.services.toolbox.v0.GetPromptResponse.messages:type_name -> codefly.services.toolbox.v0.PromptMessage
+	0,  // 20: codefly.services.toolbox.v0.Toolbox.Identity:input_type -> codefly.services.toolbox.v0.IdentityRequest
+	10, // 21: codefly.services.toolbox.v0.Toolbox.ListTools:input_type -> codefly.services.toolbox.v0.ListToolsRequest
+	6,  // 22: codefly.services.toolbox.v0.Toolbox.ListToolSummaries:input_type -> codefly.services.toolbox.v0.ListToolSummariesRequest
+	8,  // 23: codefly.services.toolbox.v0.Toolbox.DescribeTool:input_type -> codefly.services.toolbox.v0.DescribeToolRequest
+	12, // 24: codefly.services.toolbox.v0.Toolbox.CallTool:input_type -> codefly.services.toolbox.v0.CallToolRequest
+	17, // 25: codefly.services.toolbox.v0.Toolbox.ListResources:input_type -> codefly.services.toolbox.v0.ListResourcesRequest
+	19, // 26: codefly.services.toolbox.v0.Toolbox.ReadResource:input_type -> codefly.services.toolbox.v0.ReadResourceRequest
+	23, // 27: codefly.services.toolbox.v0.Toolbox.ListPrompts:input_type -> codefly.services.toolbox.v0.ListPromptsRequest
+	25, // 28: codefly.services.toolbox.v0.Toolbox.GetPrompt:input_type -> codefly.services.toolbox.v0.GetPromptRequest
+	1,  // 29: codefly.services.toolbox.v0.Toolbox.Identity:output_type -> codefly.services.toolbox.v0.IdentityResponse
+	11, // 30: codefly.services.toolbox.v0.Toolbox.ListTools:output_type -> codefly.services.toolbox.v0.ListToolsResponse
+	7,  // 31: codefly.services.toolbox.v0.Toolbox.ListToolSummaries:output_type -> codefly.services.toolbox.v0.ListToolSummariesResponse
+	9,  // 32: codefly.services.toolbox.v0.Toolbox.DescribeTool:output_type -> codefly.services.toolbox.v0.DescribeToolResponse
+	15, // 33: codefly.services.toolbox.v0.Toolbox.CallTool:output_type -> codefly.services.toolbox.v0.CallToolResponse
+	18, // 34: codefly.services.toolbox.v0.Toolbox.ListResources:output_type -> codefly.services.toolbox.v0.ListResourcesResponse
+	20, // 35: codefly.services.toolbox.v0.Toolbox.ReadResource:output_type -> codefly.services.toolbox.v0.ReadResourceResponse
+	24, // 36: codefly.services.toolbox.v0.Toolbox.ListPrompts:output_type -> codefly.services.toolbox.v0.ListPromptsResponse
+	27, // 37: codefly.services.toolbox.v0.Toolbox.GetPrompt:output_type -> codefly.services.toolbox.v0.GetPromptResponse
+	29, // [29:38] is the sub-list for method output_type
+	20, // [20:29] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_codefly_services_toolbox_v0_toolbox_proto_init() }
@@ -1416,7 +1954,7 @@ func file_codefly_services_toolbox_v0_toolbox_proto_init() {
 	if File_codefly_services_toolbox_v0_toolbox_proto != nil {
 		return
 	}
-	file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[6].OneofWrappers = []any{
+	file_codefly_services_toolbox_v0_toolbox_proto_msgTypes[13].OneofWrappers = []any{
 		(*Content_Text)(nil),
 		(*Content_Structured)(nil),
 		(*Content_Blob)(nil),
@@ -1427,7 +1965,7 @@ func file_codefly_services_toolbox_v0_toolbox_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_codefly_services_toolbox_v0_toolbox_proto_rawDesc), len(file_codefly_services_toolbox_v0_toolbox_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

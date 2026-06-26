@@ -5,7 +5,7 @@ import grpc
 from codefly.cli.v0 import terminal_pb2 as codefly_dot_cli_dot_v0_dot_terminal__pb2
 
 
-class TerminalServiceStub(object):
+class TerminalServiceStub:
     """TerminalService provides interactive terminal sessions scoped to workspace/module/service.
     Sessions persist across client disconnections in the server-backed terminal model.
     Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
@@ -44,7 +44,7 @@ class TerminalServiceStub(object):
                 _registered_method=True)
 
 
-class TerminalServiceServicer(object):
+class TerminalServiceServicer:
     """TerminalService provides interactive terminal sessions scoped to workspace/module/service.
     Sessions persist across client disconnections in the server-backed terminal model.
     Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.
@@ -121,7 +121,7 @@ def add_TerminalServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class TerminalService(object):
+class TerminalService:
     """TerminalService provides interactive terminal sessions scoped to workspace/module/service.
     Sessions persist across client disconnections in the server-backed terminal model.
     Attach() is bidirectional streaming — auto-upgrades to WebSocket via grpc-websocket-proxy.

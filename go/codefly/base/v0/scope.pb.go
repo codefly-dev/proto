@@ -29,6 +29,7 @@ type RuntimeContext struct {
 	// - "free" lets the runtime decide the scope
 	// - "container" scope should be used inside containers
 	// - "native" scope should be used when running "natively" on the host
+	// - "nix" scope runs natively from a nix-provisioned binary (Docker-free)
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Name enables to "tag" the runtime context: useful for test
 	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -133,9 +134,9 @@ var File_codefly_base_v0_scope_proto protoreflect.FileDescriptor
 
 const file_codefly_base_v0_scope_proto_rawDesc = "" +
 	"\n" +
-	"\x1bcodefly/base/v0/scope.proto\x12\x0fcodefly.base.v0\x1a\x1bbuf/validate/validate.proto\"X\n" +
-	"\x0eRuntimeContext\x122\n" +
-	"\x04kind\x18\x01 \x01(\tB\x1e\xbaH\x1br\x19R\x04freeR\tcontainerR\x06nativeR\x04kind\x12\x12\n" +
+	"\x1bcodefly/base/v0/scope.proto\x12\x0fcodefly.base.v0\x1a\x1bbuf/validate/validate.proto\"]\n" +
+	"\x0eRuntimeContext\x127\n" +
+	"\x04kind\x18\x01 \x01(\tB#\xbaH r\x1eR\x04freeR\tcontainerR\x06nativeR\x03nixR\x04kind\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\"E\n" +
 	"\rNetworkAccess\x124\n" +
 	"\x04kind\x18\x01 \x01(\tB \xbaH\x1dr\x1bR\tcontainerR\x06nativeR\x06publicR\x04kindB\xb9\x01\n" +

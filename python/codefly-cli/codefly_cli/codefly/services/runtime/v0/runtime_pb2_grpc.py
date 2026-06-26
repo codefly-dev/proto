@@ -6,7 +6,7 @@ from codefly.services.agent.v0 import communicate_pb2 as codefly_dot_services_do
 from codefly.services.runtime.v0 import runtime_pb2 as codefly_dot_services_dot_runtime_dot_v0_dot_runtime__pb2
 
 
-class RuntimeStub(object):
+class RuntimeStub:
     """
     Public API
 
@@ -76,7 +76,7 @@ class RuntimeStub(object):
                 _registered_method=True)
 
 
-class RuntimeServicer(object):
+class RuntimeServicer:
     """
     Public API
 
@@ -222,7 +222,7 @@ def add_RuntimeServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Runtime(object):
+class Runtime:
     """
     Public API
 

@@ -5,7 +5,7 @@ import grpc
 from codefly.services.toolbox.v0 import toolbox_pb2 as codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2
 
 
-class ToolboxStub(object):
+class ToolboxStub:
     """Toolbox is the codefly toolbox contract.
 
     Vocabulary mirrors the Model Context Protocol (MCP) so that an MCP
@@ -50,6 +50,16 @@ class ToolboxStub(object):
                 request_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolsRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolsResponse.FromString,
                 _registered_method=True)
+        self.ListToolSummaries = channel.unary_unary(
+                '/codefly.services.toolbox.v0.Toolbox/ListToolSummaries',
+                request_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolSummariesRequest.SerializeToString,
+                response_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolSummariesResponse.FromString,
+                _registered_method=True)
+        self.DescribeTool = channel.unary_unary(
+                '/codefly.services.toolbox.v0.Toolbox/DescribeTool',
+                request_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.DescribeToolRequest.SerializeToString,
+                response_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.DescribeToolResponse.FromString,
+                _registered_method=True)
         self.CallTool = channel.unary_unary(
                 '/codefly.services.toolbox.v0.Toolbox/CallTool',
                 request_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.CallToolRequest.SerializeToString,
@@ -77,7 +87,7 @@ class ToolboxStub(object):
                 _registered_method=True)
 
 
-class ToolboxServicer(object):
+class ToolboxServicer:
     """Toolbox is the codefly toolbox contract.
 
     Vocabulary mirrors the Model Context Protocol (MCP) so that an MCP
@@ -114,7 +124,38 @@ class ToolboxServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ListTools(self, request, context):
-        """ListTools returns every tool this toolbox exposes.
+        """ListTools returns every tool this toolbox exposes WITH FULL
+        SPECS (schemas, descriptions). Heavy. Kept for transitional
+        consumers and for MCP transcoding; new code should prefer the
+        two-phase pair below — ListToolSummaries (catalog) +
+        DescribeTool (per-tool spec on demand) — which keeps the LLM's
+        routing context small while making per-call descriptions richer.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListToolSummaries(self, request, context):
+        """ListToolSummaries returns lightweight catalog entries — enough
+        for the LLM to pick a tool, but no schemas or examples. The
+        load-bearing routing surface: with N toolboxes and M tools each,
+        every LLM turn pays only the catalog cost (~50 bytes/tool); the
+        heavy spec is fetched per-tool via DescribeTool right before
+        invoking it, then drops out of context.
+
+        Optional tags_filter pre-selects (e.g. ["read-only"]) so the
+        LLM doesn't even see destructive tools when the goal is read.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DescribeTool(self, request, context):
+        """DescribeTool returns the full spec for ONE tool — input/output
+        schemas, multi-paragraph description, examples, error modes.
+        Called on-demand: the LLM picks a tool from the summary catalog,
+        the host fetches DescribeTool for that one, injects it into the
+        next prompt only, then drops it.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -172,6 +213,16 @@ def add_ToolboxServicer_to_server(servicer, server):
                     request_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolsRequest.FromString,
                     response_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolsResponse.SerializeToString,
             ),
+            'ListToolSummaries': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListToolSummaries,
+                    request_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolSummariesRequest.FromString,
+                    response_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolSummariesResponse.SerializeToString,
+            ),
+            'DescribeTool': grpc.unary_unary_rpc_method_handler(
+                    servicer.DescribeTool,
+                    request_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.DescribeToolRequest.FromString,
+                    response_serializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.DescribeToolResponse.SerializeToString,
+            ),
             'CallTool': grpc.unary_unary_rpc_method_handler(
                     servicer.CallTool,
                     request_deserializer=codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.CallToolRequest.FromString,
@@ -205,7 +256,7 @@ def add_ToolboxServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Toolbox(object):
+class Toolbox:
     """Toolbox is the codefly toolbox contract.
 
     Vocabulary mirrors the Model Context Protocol (MCP) so that an MCP
@@ -278,6 +329,60 @@ class Toolbox(object):
             '/codefly.services.toolbox.v0.Toolbox/ListTools',
             codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolsRequest.SerializeToString,
             codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListToolSummaries(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/codefly.services.toolbox.v0.Toolbox/ListToolSummaries',
+            codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolSummariesRequest.SerializeToString,
+            codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.ListToolSummariesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DescribeTool(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/codefly.services.toolbox.v0.Toolbox/DescribeTool',
+            codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.DescribeToolRequest.SerializeToString,
+            codefly_dot_services_dot_toolbox_dot_v0_dot_toolbox__pb2.DescribeToolResponse.FromString,
             options,
             channel_credentials,
             insecure,

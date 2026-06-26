@@ -5,7 +5,7 @@ import grpc
 from codefly.services.agent.v0 import agent_pb2 as codefly_dot_services_dot_agent_dot_v0_dot_agent__pb2
 
 
-class AgentStub(object):
+class AgentStub:
     """Agent exposes plugin identity, metadata, and plugin-defined commands.
     """
 
@@ -32,7 +32,7 @@ class AgentStub(object):
                 _registered_method=True)
 
 
-class AgentServicer(object):
+class AgentServicer:
     """Agent exposes plugin identity, metadata, and plugin-defined commands.
     """
 
@@ -83,7 +83,7 @@ def add_AgentServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Agent(object):
+class Agent:
     """Agent exposes plugin identity, metadata, and plugin-defined commands.
     """
 

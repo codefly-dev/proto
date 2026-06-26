@@ -5,7 +5,7 @@ import grpc
 from codefly.mcp.v0 import mcp_pb2 as codefly_dot_mcp_dot_v0_dot_mcp__pb2
 
 
-class MCPStub(object):
+class MCPStub:
     """MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
     """
 
@@ -42,7 +42,7 @@ class MCPStub(object):
                 _registered_method=True)
 
 
-class MCPServicer(object):
+class MCPServicer:
     """MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
     """
 
@@ -117,7 +117,7 @@ def add_MCPServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class MCP(object):
+class MCP:
     """MCP Service (for potential gRPC usage, though MCP typically uses JSON-RPC)
     """
 

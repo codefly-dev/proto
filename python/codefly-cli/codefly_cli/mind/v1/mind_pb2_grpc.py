@@ -5,7 +5,7 @@ import grpc
 from mind.v1 import mind_pb2 as mind_dot_v1_dot_mind__pb2
 
 
-class MindServiceStub(object):
+class MindServiceStub:
     """MindService is the complete API for Mind — the AI coding agent.
 
     It supports three usage modes through a single interface:
@@ -184,7 +184,7 @@ class MindServiceStub(object):
                 _registered_method=True)
 
 
-class MindServiceServicer(object):
+class MindServiceServicer:
     """MindService is the complete API for Mind — the AI coding agent.
 
     It supports three usage modes through a single interface:
@@ -620,7 +620,7 @@ def add_MindServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class MindService(object):
+class MindService:
     """MindService is the complete API for Mind — the AI coding agent.
 
     It supports three usage modes through a single interface:
