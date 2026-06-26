@@ -5,12 +5,12 @@ import grpc
 from mind.gateway.v1 import gateway_pb2 as mind_dot_gateway_dot_v1_dot_gateway__pb2
 
 
-class GatewayStub(object):
+class GatewayStub:
     """Gateway is the ONLY service Mind talks to.
     Codefly CLI implements it. Everything else is behind this wall.
 
-    Mind sees: services, symbols, build results, check results, diagnostics,
-    definitions, references, dependencies, git state, and command output.
+    Mind sees: services, files, build results, check results, dependencies,
+    git state, and command output.
     Mind never sees: agents, processes, containers, addresses.
 
     Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
@@ -57,36 +57,6 @@ class GatewayStub(object):
                 '/mind.gateway.v1.Gateway/CreateFile',
                 request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.CreateFileRequest.SerializeToString,
                 response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.CreateFileResponse.FromString,
-                _registered_method=True)
-        self.ListSymbols = channel.unary_unary(
-                '/mind.gateway.v1.Gateway/ListSymbols',
-                request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.ListSymbolsRequest.SerializeToString,
-                response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.ListSymbolsResponse.FromString,
-                _registered_method=True)
-        self.GetDiagnostics = channel.unary_unary(
-                '/mind.gateway.v1.Gateway/GetDiagnostics',
-                request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetDiagnosticsRequest.SerializeToString,
-                response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetDiagnosticsResponse.FromString,
-                _registered_method=True)
-        self.GoToDefinition = channel.unary_unary(
-                '/mind.gateway.v1.Gateway/GoToDefinition',
-                request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GoToDefinitionRequest.SerializeToString,
-                response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GoToDefinitionResponse.FromString,
-                _registered_method=True)
-        self.FindReferences = channel.unary_unary(
-                '/mind.gateway.v1.Gateway/FindReferences',
-                request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.FindReferencesRequest.SerializeToString,
-                response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.FindReferencesResponse.FromString,
-                _registered_method=True)
-        self.RenameSymbol = channel.unary_unary(
-                '/mind.gateway.v1.Gateway/RenameSymbol',
-                request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.RenameSymbolRequest.SerializeToString,
-                response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.RenameSymbolResponse.FromString,
-                _registered_method=True)
-        self.GetHoverInfo = channel.unary_unary(
-                '/mind.gateway.v1.Gateway/GetHoverInfo',
-                request_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetHoverInfoRequest.SerializeToString,
-                response_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetHoverInfoResponse.FromString,
                 _registered_method=True)
         self.Fix = channel.unary_unary(
                 '/mind.gateway.v1.Gateway/Fix',
@@ -180,12 +150,12 @@ class GatewayStub(object):
                 _registered_method=True)
 
 
-class GatewayServicer(object):
+class GatewayServicer:
     """Gateway is the ONLY service Mind talks to.
     Codefly CLI implements it. Everything else is behind this wall.
 
-    Mind sees: services, symbols, build results, check results, diagnostics,
-    definitions, references, dependencies, git state, and command output.
+    Mind sees: services, files, build results, check results, dependencies,
+    git state, and command output.
     Mind never sees: agents, processes, containers, addresses.
 
     Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
@@ -240,51 +210,6 @@ class GatewayServicer(object):
 
     def CreateFile(self, request, context):
         """CreateFile creates a new file (fails if exists unless overwrite set).
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ListSymbols(self, request, context):
-        """─── Code Intelligence (LSP) ────────────────────────────────
-
-        ListSymbols returns code symbols from a service via LSP.
-        If service is empty, returns symbols across all services.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetDiagnostics(self, request, context):
-        """GetDiagnostics returns compiler/linter diagnostics from the language server.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GoToDefinition(self, request, context):
-        """GoToDefinition finds where a symbol at a given position is defined.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def FindReferences(self, request, context):
-        """FindReferences finds all usages of a symbol at a given position.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def RenameSymbol(self, request, context):
-        """RenameSymbol performs a language-aware rename across all files.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetHoverInfo(self, request, context):
-        """GetHoverInfo returns type info and documentation at a position.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -472,36 +397,6 @@ def add_GatewayServicer_to_server(servicer, server):
                     request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.CreateFileRequest.FromString,
                     response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.CreateFileResponse.SerializeToString,
             ),
-            'ListSymbols': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListSymbols,
-                    request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.ListSymbolsRequest.FromString,
-                    response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.ListSymbolsResponse.SerializeToString,
-            ),
-            'GetDiagnostics': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetDiagnostics,
-                    request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetDiagnosticsRequest.FromString,
-                    response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetDiagnosticsResponse.SerializeToString,
-            ),
-            'GoToDefinition': grpc.unary_unary_rpc_method_handler(
-                    servicer.GoToDefinition,
-                    request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GoToDefinitionRequest.FromString,
-                    response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GoToDefinitionResponse.SerializeToString,
-            ),
-            'FindReferences': grpc.unary_unary_rpc_method_handler(
-                    servicer.FindReferences,
-                    request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.FindReferencesRequest.FromString,
-                    response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.FindReferencesResponse.SerializeToString,
-            ),
-            'RenameSymbol': grpc.unary_unary_rpc_method_handler(
-                    servicer.RenameSymbol,
-                    request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.RenameSymbolRequest.FromString,
-                    response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.RenameSymbolResponse.SerializeToString,
-            ),
-            'GetHoverInfo': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetHoverInfo,
-                    request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetHoverInfoRequest.FromString,
-                    response_serializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.GetHoverInfoResponse.SerializeToString,
-            ),
             'Fix': grpc.unary_unary_rpc_method_handler(
                     servicer.Fix,
                     request_deserializer=mind_dot_gateway_dot_v1_dot_gateway__pb2.FixRequest.FromString,
@@ -600,12 +495,12 @@ def add_GatewayServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Gateway(object):
+class Gateway:
     """Gateway is the ONLY service Mind talks to.
     Codefly CLI implements it. Everything else is behind this wall.
 
-    Mind sees: services, symbols, build results, check results, diagnostics,
-    definitions, references, dependencies, git state, and command output.
+    Mind sees: services, files, build results, check results, dependencies,
+    git state, and command output.
     Mind never sees: agents, processes, containers, addresses.
 
     Gateway is the firewall API Mind uses to reach Codefly workspaces without talking directly to
@@ -791,168 +686,6 @@ class Gateway(object):
             '/mind.gateway.v1.Gateway/CreateFile',
             mind_dot_gateway_dot_v1_dot_gateway__pb2.CreateFileRequest.SerializeToString,
             mind_dot_gateway_dot_v1_dot_gateway__pb2.CreateFileResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def ListSymbols(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mind.gateway.v1.Gateway/ListSymbols',
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.ListSymbolsRequest.SerializeToString,
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.ListSymbolsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetDiagnostics(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mind.gateway.v1.Gateway/GetDiagnostics',
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.GetDiagnosticsRequest.SerializeToString,
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.GetDiagnosticsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GoToDefinition(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mind.gateway.v1.Gateway/GoToDefinition',
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.GoToDefinitionRequest.SerializeToString,
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.GoToDefinitionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def FindReferences(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mind.gateway.v1.Gateway/FindReferences',
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.FindReferencesRequest.SerializeToString,
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.FindReferencesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def RenameSymbol(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mind.gateway.v1.Gateway/RenameSymbol',
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.RenameSymbolRequest.SerializeToString,
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.RenameSymbolResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetHoverInfo(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mind.gateway.v1.Gateway/GetHoverInfo',
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.GetHoverInfoRequest.SerializeToString,
-            mind_dot_gateway_dot_v1_dot_gateway__pb2.GetHoverInfoResponse.FromString,
             options,
             channel_credentials,
             insecure,

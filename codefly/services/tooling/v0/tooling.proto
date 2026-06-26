@@ -2,17 +2,17 @@ syntax = "proto3";
 package codefly.services.tooling.v0;
 
 /*
-Tooling service: language-specific code operations backed by a codefly agent.
+Tooling service: command-oriented language tooling backed by a codefly agent.
 
 Separation of concerns:
   - Gateway/core owns file, git, shell, and web access through the VFS/tool boundary.
-  - Agent owns LSP, diagnostics, callgraph, fix, and dependencies through this service.
+  - Mind owns semantic code intelligence such as symbols, references, hover, and call graphs.
+  - Agent owns formatting, dependency management, project metadata, build, test, and lint.
 
-Mind never performs language-specific analysis. The agent should use the workspace surface
-provided by Codefly rather than inventing its own filesystem contract.
+The agent should use the workspace surface provided by Codefly rather than inventing
+its own filesystem contract.
 
 Each language agent (go-grpc, python-fastapi, nextjs) implements this service.
-The agent runs the language server (gopls, pylsp, typescript-language-server) internally.
 
 File/git operations are NOT in this service — they are in Mind's native tool system.
 This is intentional: the Tooling agent does not need filesystem access for most operations.
@@ -21,83 +21,6 @@ workspace is committed to disk first.
 */
 
 // ── Types ──────────────────────────────────────────────
-
-// SymbolKind enumerates supported symbol kinds.
-enum SymbolKind {
-  // SYMBOL_KIND_UNKNOWN is the default value when symbol kind is not specified.
-  SYMBOL_KIND_UNKNOWN = 0;
-  // SYMBOL_KIND_FUNCTION represents a function symbol.
-  SYMBOL_KIND_FUNCTION = 1;
-  // SYMBOL_KIND_METHOD represents a method symbol.
-  SYMBOL_KIND_METHOD = 2;
-  // SYMBOL_KIND_STRUCT represents a struct symbol.
-  SYMBOL_KIND_STRUCT = 3;
-  // SYMBOL_KIND_INTERFACE represents an interface symbol.
-  SYMBOL_KIND_INTERFACE = 4;
-  // SYMBOL_KIND_CONSTANT represents a constant symbol.
-  SYMBOL_KIND_CONSTANT = 5;
-  // SYMBOL_KIND_VARIABLE represents a variable symbol.
-  SYMBOL_KIND_VARIABLE = 6;
-  // SYMBOL_KIND_TYPE_ALIAS represents a type alias symbol.
-  SYMBOL_KIND_TYPE_ALIAS = 7;
-  // SYMBOL_KIND_PACKAGE represents a package symbol.
-  SYMBOL_KIND_PACKAGE = 8;
-  // SYMBOL_KIND_FIELD represents a field symbol.
-  SYMBOL_KIND_FIELD = 9;
-  // SYMBOL_KIND_ENUM represents an enum symbol.
-  SYMBOL_KIND_ENUM = 10;
-  // SYMBOL_KIND_CLASS represents a class symbol.
-  SYMBOL_KIND_CLASS = 11;
-}
-
-// Location identifies a source range in a service file.
-message Location {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // line is the 1-based source line number.
-  int32  line = 2;
-  // column is the 1-based source column number when known.
-  int32  column = 3;
-  // end_line is the 1-based ending source line for a range.
-  int32  end_line = 4;
-  // end_column is the 1-based ending source column for a range.
-  int32  end_column = 5;
-}
-
-// Symbol represents a language symbol discovered by the agent's analyzer.
-message Symbol {
-  // name is the symbol name reported by the language tooling.
-  string     name = 1;
-  // kind classifies the language construct so clients can filter or render it.
-  SymbolKind kind = 2;
-  // location points to the declaration or source range for the symbol.
-  Location   location = 3;
-  // signature is the declaration text or callable shape for a symbol.
-  string     signature = 4;
-  // documentation is the doc comment or hover text supplied by language tooling.
-  string     documentation = 5;
-  // parent is the containing package, type, or symbol when known.
-  string     parent = 6;
-  // children contains nested symbols such as fields or interface methods.
-  repeated Symbol children = 7;
-
-  // Versioned graph properties — enable content-addressed dedup (HyperAST-style).
-  // When two versions share a symbol with identical body_hash, the graph stores
-  // ONE node reachable via CONTAINS edges from both CodeVersions.
-
-  // qualified_name disambiguates across packages and receivers.
-  // For functions: "<package>.<name>", for methods: "<package>.<Type>.<name>"
-  string qualified_name = 8;
-
-  // body_hash is sha256 of the normalized function body text.
-  // Whitespace-insensitive (trailing WS stripped, blank lines dropped).
-  // Changes when implementation changes; stable across reformatting.
-  string body_hash = 9;
-
-  // signature_hash is sha256 of the function signature (excluding body).
-  // Changes when the API contract changes (new parameter, return type).
-  string signature_hash = 10;
-}
 
 // DiagnosticSeverity enumerates diagnostic severity levels.
 enum DiagnosticSeverity {
@@ -135,22 +58,6 @@ message Diagnostic {
   string code = 9;
 }
 
-// TextEdit represents one source replacement produced by language tooling.
-message TextEdit {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // start_line is the 1-based starting line for an edit range.
-  int32 start_line = 2;
-  // start_column is the 1-based starting column for an edit range.
-  int32 start_column = 3;
-  // end_line is the 1-based ending source line for a range.
-  int32 end_line = 4;
-  // end_column is the 1-based ending source column for a range.
-  int32 end_column = 5;
-  // new_text is the replacement text inserted by this edit.
-  string new_text = 6;
-}
-
 // Dependency represents a package or module dependency.
 message Dependency {
   // name is the package, module, or dependency identifier.
@@ -159,60 +66,6 @@ message Dependency {
   string version = 2;
   // direct is true when the dependency is declared directly rather than transitively inferred.
   bool direct = 3;
-}
-
-// CompletionKind enumerates supported completion kinds.
-enum CompletionKind {
-  // COMPLETION_KIND_UNKNOWN is the default value when completion kind is not specified.
-  COMPLETION_KIND_UNKNOWN = 0;
-  // COMPLETION_KIND_TEXT represents a text completion item.
-  COMPLETION_KIND_TEXT = 1;
-  // COMPLETION_KIND_METHOD represents a method completion item.
-  COMPLETION_KIND_METHOD = 2;
-  // COMPLETION_KIND_FUNCTION represents a function completion item.
-  COMPLETION_KIND_FUNCTION = 3;
-  // COMPLETION_KIND_CONSTRUCTOR represents a constructor completion item.
-  COMPLETION_KIND_CONSTRUCTOR = 4;
-  // COMPLETION_KIND_FIELD represents a field completion item.
-  COMPLETION_KIND_FIELD = 5;
-  // COMPLETION_KIND_VARIABLE represents a variable completion item.
-  COMPLETION_KIND_VARIABLE = 6;
-  // COMPLETION_KIND_CLASS represents a class completion item.
-  COMPLETION_KIND_CLASS = 7;
-  // COMPLETION_KIND_INTERFACE represents an interface completion item.
-  COMPLETION_KIND_INTERFACE = 8;
-  // COMPLETION_KIND_MODULE represents a module completion item.
-  COMPLETION_KIND_MODULE = 9;
-  // COMPLETION_KIND_PROPERTY represents a property completion item.
-  COMPLETION_KIND_PROPERTY = 10;
-  // COMPLETION_KIND_ENUM represents an enum completion item.
-  COMPLETION_KIND_ENUM = 13;
-  // COMPLETION_KIND_KEYWORD represents a keyword completion item.
-  COMPLETION_KIND_KEYWORD = 14;
-  // COMPLETION_KIND_SNIPPET represents a snippet completion item.
-  COMPLETION_KIND_SNIPPET = 15;
-  // COMPLETION_KIND_CONSTANT represents a constant completion item.
-  COMPLETION_KIND_CONSTANT = 21;
-  // COMPLETION_KIND_STRUCT represents a struct completion item.
-  COMPLETION_KIND_STRUCT = 22;
-  // COMPLETION_KIND_TYPE_PARAMETER represents a type parameter completion item.
-  COMPLETION_KIND_TYPE_PARAMETER = 25;
-}
-
-// CompletionItem represents one language-server completion suggestion.
-message CompletionItem {
-  // label is the text displayed for a completion or option.
-  string label = 1;
-  // kind classifies the suggestion using LSP-style categories.
-  CompletionKind kind = 2;
-  // detail is a short description such as a type signature.
-  string detail = 3;
-  // documentation is the doc comment or hover text supplied by language tooling.
-  string documentation = 4;
-  // insert_text is the text inserted when a completion is accepted.
-  string insert_text = 5;
-  // sort_text controls stable ordering of completion items.
-  string sort_text = 6;
 }
 
 // PackageInfo describes one language package or module in the project.
@@ -227,146 +80,6 @@ message PackageInfo {
   repeated string imports = 4;
   // doc is package-level documentation from source comments.
   string doc = 5;
-}
-
-// CallEdge represents a function call discovered by call graph analysis.
-message CallEdge {
-  // caller_id identifies the calling symbol in the graph.
-  string caller_id = 1;
-  // callee_id identifies the called symbol in the graph.
-  string callee_id = 2;
-  // call_type describes whether the call is static, dynamic, interface, or inferred.
-  string call_type = 3;
-  // call_site is the source location where a call occurs.
-  Location call_site = 4;
-}
-
-// ImplementsEdge records that a concrete type implements an interface.
-message ImplementsEdge {
-  // type_id identifies the concrete type in an implementation relationship.
-  string type_id = 1;
-  // interface_id identifies the interface type in an implementation relationship.
-  string interface_id = 2;
-}
-
-// ── LSP Operations (require language server) ───────────
-
-// ListSymbolsRequest carries optional filters for listing symbols.
-message ListSymbolsRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-}
-
-// ListSymbolsResponse returns symbols discovered for the requested scope.
-message ListSymbolsResponse {
-  // symbols are code entities returned by language analysis.
-  repeated Symbol symbols = 1;
-}
-
-// GetDiagnosticsRequest identifies the diagnostics data to retrieve.
-message GetDiagnosticsRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-}
-
-// GetDiagnosticsResponse returns diagnostics from the active language tooling.
-message GetDiagnosticsResponse {
-  // diagnostics are compiler, linter, or language-server findings.
-  repeated Diagnostic diagnostics = 1;
-}
-
-// GoToDefinitionRequest identifies a source position whose declaration should be resolved.
-message GoToDefinitionRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // line is the 1-based source line number.
-  int32 line = 2;
-  // column is the 1-based source column number when known.
-  int32 column = 3;
-}
-
-// GoToDefinitionResponse returns declaration locations for the selected symbol.
-message GoToDefinitionResponse {
-  // locations are declaration locations returned by the language server.
-  repeated Location locations = 1;
-}
-
-// FindReferencesRequest identifies a source position whose usages should be resolved.
-message FindReferencesRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // line is the 1-based source line number.
-  int32 line = 2;
-  // column is the 1-based source column number when known.
-  int32 column = 3;
-}
-
-// FindReferencesResponse returns usage locations for the selected symbol.
-message FindReferencesResponse {
-  // locations are reference locations returned by the language server.
-  repeated Location locations = 1;
-}
-
-// RenameSymbolRequest asks the language server to rename a symbol.
-message RenameSymbolRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // line is the 1-based source line number.
-  int32 line = 2;
-  // column is the 1-based source column number when known.
-  int32 column = 3;
-  // new_name is the replacement symbol name requested by the caller.
-  string new_name = 4;
-}
-
-// RenameSymbolResponse reports the edits produced and applied for a rename.
-message RenameSymbolResponse {
-  // success is true when the requested operation completed successfully.
-  bool success = 1;
-  // error explains why the operation failed; empty means success at this layer.
-  string error = 2;
-  // edits contains the source replacements produced by the language server.
-  repeated TextEdit edits = 3;
-  // files lists files modified by the rename.
-  repeated string files = 4;
-}
-
-// GetHoverInfoRequest identifies the hover info data to retrieve.
-message GetHoverInfoRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // line is the 1-based source line number.
-  int32 line = 2;
-  // column is the 1-based source column number when known.
-  int32 column = 3;
-}
-
-// GetHoverInfoResponse returns hover text and the source range it describes.
-message GetHoverInfoResponse {
-  // content is the hover content, often markdown from the language server.
-  string content = 1;
-  // language is the implementation language reported by tooling or project metadata.
-  string language = 2;
-  // range is the source range covered by hover or diagnostic information.
-  Location range = 3;
-}
-
-// GetCompletionsRequest identifies the completions data to retrieve.
-message GetCompletionsRequest {
-  // file is a workspace- or service-relative source file path.
-  string file = 1;
-  // line is the 1-based source line number.
-  int32 line = 2;
-  // column is the 1-based source column number when known.
-  int32 column = 3;
-}
-
-// GetCompletionsResponse returns suggestions for the requested source position.
-message GetCompletionsResponse {
-  // items are completion suggestions returned by the language server.
-  repeated CompletionItem items = 1;
-  // is_incomplete is true when more completion results may be available.
-  bool is_incomplete = 2;
 }
 
 // ── Code Modification (require language-aware formatter) ─
@@ -460,7 +173,7 @@ message RemoveDependencyResponse {
   string error = 2;
 }
 
-// ── Analysis (require compiler / VTA) ───────────────────
+// ── Project Metadata ────────────────────────────────────
 
 // GetProjectInfoRequest identifies the project info data to retrieve.
 message GetProjectInfoRequest {}
@@ -481,26 +194,6 @@ message GetProjectInfoResponse {
   map<string, string> file_hashes = 6;
   // error explains why the operation failed; empty means success at this layer.
   string error = 7;
-}
-
-// GetCallGraphRequest identifies the call graph data to retrieve.
-message GetCallGraphRequest {
-  // algorithm selects the analysis algorithm requested by the caller.
-  string algorithm = 1;
-}
-
-// GetCallGraphResponse returns call edges and interface implementation edges.
-message GetCallGraphResponse {
-  // calls are function-to-function call edges discovered by analysis.
-  repeated CallEdge calls = 1;
-  // implements are type-to-interface relationships discovered by analysis.
-  repeated ImplementsEdge implements = 2;
-  // functions_analyzed is the number of functions included in analysis.
-  int32 functions_analyzed = 3;
-  // algorithm_used reports the actual analysis algorithm that ran.
-  string algorithm_used = 4;
-  // error explains why the operation failed; empty means success at this layer.
-  string error = 5;
 }
 
 // ── Dev Validation (require toolchain) ──────────────────
@@ -564,27 +257,12 @@ message LintResponse {
 
 // ── Service Definition ─────────────────────────────────
 
-// Tooling provides language-specific code operations.
+// Tooling provides command-oriented language operations.
 // Every language agent (go-grpc, python-fastapi, etc.) implements this service.
 //
 // NOTE: File operations (read, write, list, search) and git operations are
 // NOT part of this service. Mind handles those directly via its VFS.
 service Tooling {
-  // LSP operations
-  rpc ListSymbols(ListSymbolsRequest) returns (ListSymbolsResponse);
-  // GetDiagnostics returns compiler, linter, or language-server diagnostics.
-  rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse);
-  // GoToDefinition resolves the declaration for a symbol at a source position.
-  rpc GoToDefinition(GoToDefinitionRequest) returns (GoToDefinitionResponse);
-  // FindReferences resolves usage locations for a symbol at a source position.
-  rpc FindReferences(FindReferencesRequest) returns (FindReferencesResponse);
-  // RenameSymbol applies a language-aware rename across the service.
-  rpc RenameSymbol(RenameSymbolRequest) returns (RenameSymbolResponse);
-  // GetHoverInfo returns hover documentation and type information.
-  rpc GetHoverInfo(GetHoverInfoRequest) returns (GetHoverInfoResponse);
-  // GetCompletions returns completion suggestions at a source position.
-  rpc GetCompletions(GetCompletionsRequest) returns (GetCompletionsResponse);
-
   // Code modification
   rpc Fix(FixRequest) returns (FixResponse);
   // ApplyEdit applies a smart edit and optional language fixers.
@@ -599,8 +277,6 @@ service Tooling {
 
   // Analysis
   rpc GetProjectInfo(GetProjectInfoRequest) returns (GetProjectInfoResponse);
-  // GetCallGraph runs whole-program call graph analysis.
-  rpc GetCallGraph(GetCallGraphRequest) returns (GetCallGraphResponse);
 
   // Dev validation
   rpc Build(BuildRequest) returns (BuildResponse);

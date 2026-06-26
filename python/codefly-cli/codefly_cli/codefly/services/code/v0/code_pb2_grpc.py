@@ -5,7 +5,7 @@ import grpc
 from codefly.services.code.v0 import code_pb2 as codefly_dot_services_dot_code_dot_v0_dot_code__pb2
 
 
-class CodeStub(object):
+class CodeStub:
     """--- Service definition ---
 
     Code exposes language-aware analysis and editing operations backed by a service agent.
@@ -22,40 +22,10 @@ class CodeStub(object):
                 request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.CodeRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.CodeResponse.FromString,
                 _registered_method=True)
-        self.ListSymbols = channel.unary_unary(
-                '/codefly.services.code.v0.Code/ListSymbols',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListSymbolsRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListSymbolsResponse.FromString,
-                _registered_method=True)
-        self.GetDiagnostics = channel.unary_unary(
-                '/codefly.services.code.v0.Code/GetDiagnostics',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetDiagnosticsRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetDiagnosticsResponse.FromString,
-                _registered_method=True)
-        self.GoToDefinition = channel.unary_unary(
-                '/codefly.services.code.v0.Code/GoToDefinition',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GoToDefinitionRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GoToDefinitionResponse.FromString,
-                _registered_method=True)
-        self.FindReferences = channel.unary_unary(
-                '/codefly.services.code.v0.Code/FindReferences',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesResponse.FromString,
-                _registered_method=True)
-        self.GetHoverInfo = channel.unary_unary(
-                '/codefly.services.code.v0.Code/GetHoverInfo',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoResponse.FromString,
-                _registered_method=True)
         self.ApplyEdit = channel.unary_unary(
                 '/codefly.services.code.v0.Code/ApplyEdit',
                 request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditResponse.FromString,
-                _registered_method=True)
-        self.GetCallGraph = channel.unary_unary(
-                '/codefly.services.code.v0.Code/GetCallGraph',
-                request_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetCallGraphRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetCallGraphResponse.FromString,
                 _registered_method=True)
         self.ShellExec = channel.unary_unary(
                 '/codefly.services.code.v0.Code/ShellExec',
@@ -64,7 +34,7 @@ class CodeStub(object):
                 _registered_method=True)
 
 
-class CodeServicer(object):
+class CodeServicer:
     """--- Service definition ---
 
     Code exposes language-aware analysis and editing operations backed by a service agent.
@@ -73,49 +43,7 @@ class CodeServicer(object):
     def Execute(self, request, context):
         """Execute is the unified dispatch entry point for every code operation.
         Clients wrap the specific request type in a CodeRequest oneof; the
-        plugin's Execute handler unwraps + dispatches. This is the path Mind
-        uses for everything except the few direct RPCs below that predate
-        the unification and still have live callers in codefly-cli.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ListSymbols(self, request, context):
-        """--- Direct RPCs kept because cli/pkg/mcp + cli/pkg/gateway call them ---
-        Migrating these to Execute is a follow-up; when those callers move,
-        delete each RPC here the same way we deleted the file/git/dep
-        operations in this cleanup.
-
-        ListSymbols directly exposes symbol listing for older CLI callers.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetDiagnostics(self, request, context):
-        """GetDiagnostics directly exposes language diagnostics for older CLI callers.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GoToDefinition(self, request, context):
-        """GoToDefinition directly exposes definition lookup for older CLI callers.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def FindReferences(self, request, context):
-        """FindReferences directly exposes reference lookup for older CLI callers.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetHoverInfo(self, request, context):
-        """GetHoverInfo directly exposes hover information for older CLI callers.
+        plugin's Execute handler unwraps and dispatches the operation.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -123,13 +51,6 @@ class CodeServicer(object):
 
     def ApplyEdit(self, request, context):
         """ApplyEdit directly exposes smart edits for older CLI callers.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetCallGraph(self, request, context):
-        """GetCallGraph directly exposes call graph analysis for older CLI callers.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -152,40 +73,10 @@ def add_CodeServicer_to_server(servicer, server):
                     request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.CodeRequest.FromString,
                     response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.CodeResponse.SerializeToString,
             ),
-            'ListSymbols': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListSymbols,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListSymbolsRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListSymbolsResponse.SerializeToString,
-            ),
-            'GetDiagnostics': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetDiagnostics,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetDiagnosticsRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetDiagnosticsResponse.SerializeToString,
-            ),
-            'GoToDefinition': grpc.unary_unary_rpc_method_handler(
-                    servicer.GoToDefinition,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GoToDefinitionRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GoToDefinitionResponse.SerializeToString,
-            ),
-            'FindReferences': grpc.unary_unary_rpc_method_handler(
-                    servicer.FindReferences,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesResponse.SerializeToString,
-            ),
-            'GetHoverInfo': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetHoverInfo,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoResponse.SerializeToString,
-            ),
             'ApplyEdit': grpc.unary_unary_rpc_method_handler(
                     servicer.ApplyEdit,
                     request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditRequest.FromString,
                     response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditResponse.SerializeToString,
-            ),
-            'GetCallGraph': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetCallGraph,
-                    request_deserializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetCallGraphRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetCallGraphResponse.SerializeToString,
             ),
             'ShellExec': grpc.unary_unary_rpc_method_handler(
                     servicer.ShellExec,
@@ -200,7 +91,7 @@ def add_CodeServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Code(object):
+class Code:
     """--- Service definition ---
 
     Code exposes language-aware analysis and editing operations backed by a service agent.
@@ -234,141 +125,6 @@ class Code(object):
             _registered_method=True)
 
     @staticmethod
-    def ListSymbols(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/ListSymbols',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListSymbolsRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ListSymbolsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetDiagnostics(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/GetDiagnostics',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetDiagnosticsRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetDiagnosticsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GoToDefinition(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/GoToDefinition',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GoToDefinitionRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GoToDefinitionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def FindReferences(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/FindReferences',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.FindReferencesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetHoverInfo(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/GetHoverInfo',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetHoverInfoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
     def ApplyEdit(request,
             target,
             options=(),
@@ -385,33 +141,6 @@ class Code(object):
             '/codefly.services.code.v0.Code/ApplyEdit',
             codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditRequest.SerializeToString,
             codefly_dot_services_dot_code_dot_v0_dot_code__pb2.ApplyEditResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetCallGraph(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.code.v0.Code/GetCallGraph',
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetCallGraphRequest.SerializeToString,
-            codefly_dot_services_dot_code_dot_v0_dot_code__pb2.GetCallGraphResponse.FromString,
             options,
             channel_credentials,
             insecure,

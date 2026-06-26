@@ -5,10 +5,10 @@ import grpc
 from codefly.services.tooling.v0 import tooling_pb2 as codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2
 
 
-class ToolingStub(object):
+class ToolingStub:
     """── Service Definition ─────────────────────────────────
 
-    Tooling provides language-specific code operations.
+    Tooling provides command-oriented language operations.
     Every language agent (go-grpc, python-fastapi, etc.) implements this service.
 
     NOTE: File operations (read, write, list, search) and git operations are
@@ -21,41 +21,6 @@ class ToolingStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ListSymbols = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/ListSymbols',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.ListSymbolsRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.ListSymbolsResponse.FromString,
-                _registered_method=True)
-        self.GetDiagnostics = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/GetDiagnostics',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetDiagnosticsRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetDiagnosticsResponse.FromString,
-                _registered_method=True)
-        self.GoToDefinition = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/GoToDefinition',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GoToDefinitionRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GoToDefinitionResponse.FromString,
-                _registered_method=True)
-        self.FindReferences = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/FindReferences',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FindReferencesRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FindReferencesResponse.FromString,
-                _registered_method=True)
-        self.RenameSymbol = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/RenameSymbol',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.RenameSymbolRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.RenameSymbolResponse.FromString,
-                _registered_method=True)
-        self.GetHoverInfo = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/GetHoverInfo',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetHoverInfoRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetHoverInfoResponse.FromString,
-                _registered_method=True)
-        self.GetCompletions = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/GetCompletions',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCompletionsRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCompletionsResponse.FromString,
-                _registered_method=True)
         self.Fix = channel.unary_unary(
                 '/codefly.services.tooling.v0.Tooling/Fix',
                 request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FixRequest.SerializeToString,
@@ -86,11 +51,6 @@ class ToolingStub(object):
                 request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetProjectInfoRequest.SerializeToString,
                 response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetProjectInfoResponse.FromString,
                 _registered_method=True)
-        self.GetCallGraph = channel.unary_unary(
-                '/codefly.services.tooling.v0.Tooling/GetCallGraph',
-                request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCallGraphRequest.SerializeToString,
-                response_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCallGraphResponse.FromString,
-                _registered_method=True)
         self.Build = channel.unary_unary(
                 '/codefly.services.tooling.v0.Tooling/Build',
                 request_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.BuildRequest.SerializeToString,
@@ -108,64 +68,15 @@ class ToolingStub(object):
                 _registered_method=True)
 
 
-class ToolingServicer(object):
+class ToolingServicer:
     """── Service Definition ─────────────────────────────────
 
-    Tooling provides language-specific code operations.
+    Tooling provides command-oriented language operations.
     Every language agent (go-grpc, python-fastapi, etc.) implements this service.
 
     NOTE: File operations (read, write, list, search) and git operations are
     NOT part of this service. Mind handles those directly via its VFS.
     """
-
-    def ListSymbols(self, request, context):
-        """LSP operations
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetDiagnostics(self, request, context):
-        """GetDiagnostics returns compiler, linter, or language-server diagnostics.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GoToDefinition(self, request, context):
-        """GoToDefinition resolves the declaration for a symbol at a source position.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def FindReferences(self, request, context):
-        """FindReferences resolves usage locations for a symbol at a source position.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def RenameSymbol(self, request, context):
-        """RenameSymbol applies a language-aware rename across the service.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetHoverInfo(self, request, context):
-        """GetHoverInfo returns hover documentation and type information.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetCompletions(self, request, context):
-        """GetCompletions returns completion suggestions at a source position.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
 
     def Fix(self, request, context):
         """Code modification
@@ -209,13 +120,6 @@ class ToolingServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetCallGraph(self, request, context):
-        """GetCallGraph runs whole-program call graph analysis.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
     def Build(self, request, context):
         """Dev validation
         """
@@ -240,41 +144,6 @@ class ToolingServicer(object):
 
 def add_ToolingServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ListSymbols': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListSymbols,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.ListSymbolsRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.ListSymbolsResponse.SerializeToString,
-            ),
-            'GetDiagnostics': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetDiagnostics,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetDiagnosticsRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetDiagnosticsResponse.SerializeToString,
-            ),
-            'GoToDefinition': grpc.unary_unary_rpc_method_handler(
-                    servicer.GoToDefinition,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GoToDefinitionRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GoToDefinitionResponse.SerializeToString,
-            ),
-            'FindReferences': grpc.unary_unary_rpc_method_handler(
-                    servicer.FindReferences,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FindReferencesRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FindReferencesResponse.SerializeToString,
-            ),
-            'RenameSymbol': grpc.unary_unary_rpc_method_handler(
-                    servicer.RenameSymbol,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.RenameSymbolRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.RenameSymbolResponse.SerializeToString,
-            ),
-            'GetHoverInfo': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetHoverInfo,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetHoverInfoRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetHoverInfoResponse.SerializeToString,
-            ),
-            'GetCompletions': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetCompletions,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCompletionsRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCompletionsResponse.SerializeToString,
-            ),
             'Fix': grpc.unary_unary_rpc_method_handler(
                     servicer.Fix,
                     request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FixRequest.FromString,
@@ -305,11 +174,6 @@ def add_ToolingServicer_to_server(servicer, server):
                     request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetProjectInfoRequest.FromString,
                     response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetProjectInfoResponse.SerializeToString,
             ),
-            'GetCallGraph': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetCallGraph,
-                    request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCallGraphRequest.FromString,
-                    response_serializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCallGraphResponse.SerializeToString,
-            ),
             'Build': grpc.unary_unary_rpc_method_handler(
                     servicer.Build,
                     request_deserializer=codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.BuildRequest.FromString,
@@ -333,204 +197,15 @@ def add_ToolingServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class Tooling(object):
+class Tooling:
     """── Service Definition ─────────────────────────────────
 
-    Tooling provides language-specific code operations.
+    Tooling provides command-oriented language operations.
     Every language agent (go-grpc, python-fastapi, etc.) implements this service.
 
     NOTE: File operations (read, write, list, search) and git operations are
     NOT part of this service. Mind handles those directly via its VFS.
     """
-
-    @staticmethod
-    def ListSymbols(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/ListSymbols',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.ListSymbolsRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.ListSymbolsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetDiagnostics(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/GetDiagnostics',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetDiagnosticsRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetDiagnosticsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GoToDefinition(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/GoToDefinition',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GoToDefinitionRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GoToDefinitionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def FindReferences(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/FindReferences',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FindReferencesRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.FindReferencesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def RenameSymbol(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/RenameSymbol',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.RenameSymbolRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.RenameSymbolResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetHoverInfo(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/GetHoverInfo',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetHoverInfoRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetHoverInfoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetCompletions(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/GetCompletions',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCompletionsRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCompletionsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
 
     @staticmethod
     def Fix(request,
@@ -684,33 +359,6 @@ class Tooling(object):
             '/codefly.services.tooling.v0.Tooling/GetProjectInfo',
             codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetProjectInfoRequest.SerializeToString,
             codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetProjectInfoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetCallGraph(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/codefly.services.tooling.v0.Tooling/GetCallGraph',
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCallGraphRequest.SerializeToString,
-            codefly_dot_services_dot_tooling_dot_v0_dot_tooling__pb2.GetCallGraphResponse.FromString,
             options,
             channel_credentials,
             insecure,

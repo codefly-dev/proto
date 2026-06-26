@@ -21,95 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// SymbolKind enumerates supported symbol kinds.
-type SymbolKind int32
-
-const (
-	// SYMBOL_KIND_UNKNOWN is the default value when symbol kind is not specified.
-	SymbolKind_SYMBOL_KIND_UNKNOWN SymbolKind = 0
-	// SYMBOL_KIND_FUNCTION represents a function symbol.
-	SymbolKind_SYMBOL_KIND_FUNCTION SymbolKind = 1
-	// SYMBOL_KIND_METHOD represents a method symbol.
-	SymbolKind_SYMBOL_KIND_METHOD SymbolKind = 2
-	// SYMBOL_KIND_STRUCT represents a struct symbol.
-	SymbolKind_SYMBOL_KIND_STRUCT SymbolKind = 3
-	// SYMBOL_KIND_INTERFACE represents an interface symbol.
-	SymbolKind_SYMBOL_KIND_INTERFACE SymbolKind = 4
-	// SYMBOL_KIND_CONSTANT represents a constant symbol.
-	SymbolKind_SYMBOL_KIND_CONSTANT SymbolKind = 5
-	// SYMBOL_KIND_VARIABLE represents a variable symbol.
-	SymbolKind_SYMBOL_KIND_VARIABLE SymbolKind = 6
-	// SYMBOL_KIND_TYPE_ALIAS represents a type alias symbol.
-	SymbolKind_SYMBOL_KIND_TYPE_ALIAS SymbolKind = 7
-	// SYMBOL_KIND_PACKAGE represents a package symbol.
-	SymbolKind_SYMBOL_KIND_PACKAGE SymbolKind = 8
-	// SYMBOL_KIND_FIELD represents a field symbol.
-	SymbolKind_SYMBOL_KIND_FIELD SymbolKind = 9
-	// SYMBOL_KIND_ENUM represents an enum symbol.
-	SymbolKind_SYMBOL_KIND_ENUM SymbolKind = 10
-	// SYMBOL_KIND_CLASS represents a class symbol.
-	SymbolKind_SYMBOL_KIND_CLASS SymbolKind = 11
-)
-
-// Enum value maps for SymbolKind.
-var (
-	SymbolKind_name = map[int32]string{
-		0:  "SYMBOL_KIND_UNKNOWN",
-		1:  "SYMBOL_KIND_FUNCTION",
-		2:  "SYMBOL_KIND_METHOD",
-		3:  "SYMBOL_KIND_STRUCT",
-		4:  "SYMBOL_KIND_INTERFACE",
-		5:  "SYMBOL_KIND_CONSTANT",
-		6:  "SYMBOL_KIND_VARIABLE",
-		7:  "SYMBOL_KIND_TYPE_ALIAS",
-		8:  "SYMBOL_KIND_PACKAGE",
-		9:  "SYMBOL_KIND_FIELD",
-		10: "SYMBOL_KIND_ENUM",
-		11: "SYMBOL_KIND_CLASS",
-	}
-	SymbolKind_value = map[string]int32{
-		"SYMBOL_KIND_UNKNOWN":    0,
-		"SYMBOL_KIND_FUNCTION":   1,
-		"SYMBOL_KIND_METHOD":     2,
-		"SYMBOL_KIND_STRUCT":     3,
-		"SYMBOL_KIND_INTERFACE":  4,
-		"SYMBOL_KIND_CONSTANT":   5,
-		"SYMBOL_KIND_VARIABLE":   6,
-		"SYMBOL_KIND_TYPE_ALIAS": 7,
-		"SYMBOL_KIND_PACKAGE":    8,
-		"SYMBOL_KIND_FIELD":      9,
-		"SYMBOL_KIND_ENUM":       10,
-		"SYMBOL_KIND_CLASS":      11,
-	}
-)
-
-func (x SymbolKind) Enum() *SymbolKind {
-	p := new(SymbolKind)
-	*p = x
-	return p
-}
-
-func (x SymbolKind) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (SymbolKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_codefly_services_tooling_v0_tooling_proto_enumTypes[0].Descriptor()
-}
-
-func (SymbolKind) Type() protoreflect.EnumType {
-	return &file_codefly_services_tooling_v0_tooling_proto_enumTypes[0]
-}
-
-func (x SymbolKind) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use SymbolKind.Descriptor instead.
-func (SymbolKind) EnumDescriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{0}
-}
-
 // DiagnosticSeverity enumerates diagnostic severity levels.
 type DiagnosticSeverity int32
 
@@ -155,11 +66,11 @@ func (x DiagnosticSeverity) String() string {
 }
 
 func (DiagnosticSeverity) Descriptor() protoreflect.EnumDescriptor {
-	return file_codefly_services_tooling_v0_tooling_proto_enumTypes[1].Descriptor()
+	return file_codefly_services_tooling_v0_tooling_proto_enumTypes[0].Descriptor()
 }
 
 func (DiagnosticSeverity) Type() protoreflect.EnumType {
-	return &file_codefly_services_tooling_v0_tooling_proto_enumTypes[1]
+	return &file_codefly_services_tooling_v0_tooling_proto_enumTypes[0]
 }
 
 func (x DiagnosticSeverity) Number() protoreflect.EnumNumber {
@@ -168,329 +79,7 @@ func (x DiagnosticSeverity) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DiagnosticSeverity.Descriptor instead.
 func (DiagnosticSeverity) EnumDescriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{1}
-}
-
-// CompletionKind enumerates supported completion kinds.
-type CompletionKind int32
-
-const (
-	// COMPLETION_KIND_UNKNOWN is the default value when completion kind is not specified.
-	CompletionKind_COMPLETION_KIND_UNKNOWN CompletionKind = 0
-	// COMPLETION_KIND_TEXT represents a text completion item.
-	CompletionKind_COMPLETION_KIND_TEXT CompletionKind = 1
-	// COMPLETION_KIND_METHOD represents a method completion item.
-	CompletionKind_COMPLETION_KIND_METHOD CompletionKind = 2
-	// COMPLETION_KIND_FUNCTION represents a function completion item.
-	CompletionKind_COMPLETION_KIND_FUNCTION CompletionKind = 3
-	// COMPLETION_KIND_CONSTRUCTOR represents a constructor completion item.
-	CompletionKind_COMPLETION_KIND_CONSTRUCTOR CompletionKind = 4
-	// COMPLETION_KIND_FIELD represents a field completion item.
-	CompletionKind_COMPLETION_KIND_FIELD CompletionKind = 5
-	// COMPLETION_KIND_VARIABLE represents a variable completion item.
-	CompletionKind_COMPLETION_KIND_VARIABLE CompletionKind = 6
-	// COMPLETION_KIND_CLASS represents a class completion item.
-	CompletionKind_COMPLETION_KIND_CLASS CompletionKind = 7
-	// COMPLETION_KIND_INTERFACE represents an interface completion item.
-	CompletionKind_COMPLETION_KIND_INTERFACE CompletionKind = 8
-	// COMPLETION_KIND_MODULE represents a module completion item.
-	CompletionKind_COMPLETION_KIND_MODULE CompletionKind = 9
-	// COMPLETION_KIND_PROPERTY represents a property completion item.
-	CompletionKind_COMPLETION_KIND_PROPERTY CompletionKind = 10
-	// COMPLETION_KIND_ENUM represents an enum completion item.
-	CompletionKind_COMPLETION_KIND_ENUM CompletionKind = 13
-	// COMPLETION_KIND_KEYWORD represents a keyword completion item.
-	CompletionKind_COMPLETION_KIND_KEYWORD CompletionKind = 14
-	// COMPLETION_KIND_SNIPPET represents a snippet completion item.
-	CompletionKind_COMPLETION_KIND_SNIPPET CompletionKind = 15
-	// COMPLETION_KIND_CONSTANT represents a constant completion item.
-	CompletionKind_COMPLETION_KIND_CONSTANT CompletionKind = 21
-	// COMPLETION_KIND_STRUCT represents a struct completion item.
-	CompletionKind_COMPLETION_KIND_STRUCT CompletionKind = 22
-	// COMPLETION_KIND_TYPE_PARAMETER represents a type parameter completion item.
-	CompletionKind_COMPLETION_KIND_TYPE_PARAMETER CompletionKind = 25
-)
-
-// Enum value maps for CompletionKind.
-var (
-	CompletionKind_name = map[int32]string{
-		0:  "COMPLETION_KIND_UNKNOWN",
-		1:  "COMPLETION_KIND_TEXT",
-		2:  "COMPLETION_KIND_METHOD",
-		3:  "COMPLETION_KIND_FUNCTION",
-		4:  "COMPLETION_KIND_CONSTRUCTOR",
-		5:  "COMPLETION_KIND_FIELD",
-		6:  "COMPLETION_KIND_VARIABLE",
-		7:  "COMPLETION_KIND_CLASS",
-		8:  "COMPLETION_KIND_INTERFACE",
-		9:  "COMPLETION_KIND_MODULE",
-		10: "COMPLETION_KIND_PROPERTY",
-		13: "COMPLETION_KIND_ENUM",
-		14: "COMPLETION_KIND_KEYWORD",
-		15: "COMPLETION_KIND_SNIPPET",
-		21: "COMPLETION_KIND_CONSTANT",
-		22: "COMPLETION_KIND_STRUCT",
-		25: "COMPLETION_KIND_TYPE_PARAMETER",
-	}
-	CompletionKind_value = map[string]int32{
-		"COMPLETION_KIND_UNKNOWN":        0,
-		"COMPLETION_KIND_TEXT":           1,
-		"COMPLETION_KIND_METHOD":         2,
-		"COMPLETION_KIND_FUNCTION":       3,
-		"COMPLETION_KIND_CONSTRUCTOR":    4,
-		"COMPLETION_KIND_FIELD":          5,
-		"COMPLETION_KIND_VARIABLE":       6,
-		"COMPLETION_KIND_CLASS":          7,
-		"COMPLETION_KIND_INTERFACE":      8,
-		"COMPLETION_KIND_MODULE":         9,
-		"COMPLETION_KIND_PROPERTY":       10,
-		"COMPLETION_KIND_ENUM":           13,
-		"COMPLETION_KIND_KEYWORD":        14,
-		"COMPLETION_KIND_SNIPPET":        15,
-		"COMPLETION_KIND_CONSTANT":       21,
-		"COMPLETION_KIND_STRUCT":         22,
-		"COMPLETION_KIND_TYPE_PARAMETER": 25,
-	}
-)
-
-func (x CompletionKind) Enum() *CompletionKind {
-	p := new(CompletionKind)
-	*p = x
-	return p
-}
-
-func (x CompletionKind) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (CompletionKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_codefly_services_tooling_v0_tooling_proto_enumTypes[2].Descriptor()
-}
-
-func (CompletionKind) Type() protoreflect.EnumType {
-	return &file_codefly_services_tooling_v0_tooling_proto_enumTypes[2]
-}
-
-func (x CompletionKind) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use CompletionKind.Descriptor instead.
-func (CompletionKind) EnumDescriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{2}
-}
-
-// Location identifies a source range in a service file.
-type Location struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// line is the 1-based source line number.
-	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	// column is the 1-based source column number when known.
-	Column int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	// end_line is the 1-based ending source line for a range.
-	EndLine int32 `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
-	// end_column is the 1-based ending source column for a range.
-	EndColumn     int32 `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Location) Reset() {
-	*x = Location{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Location) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Location) ProtoMessage() {}
-
-func (x *Location) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Location.ProtoReflect.Descriptor instead.
-func (*Location) Descriptor() ([]byte, []int) {
 	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *Location) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *Location) GetLine() int32 {
-	if x != nil {
-		return x.Line
-	}
-	return 0
-}
-
-func (x *Location) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-func (x *Location) GetEndLine() int32 {
-	if x != nil {
-		return x.EndLine
-	}
-	return 0
-}
-
-func (x *Location) GetEndColumn() int32 {
-	if x != nil {
-		return x.EndColumn
-	}
-	return 0
-}
-
-// Symbol represents a language symbol discovered by the agent's analyzer.
-type Symbol struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// name is the symbol name reported by the language tooling.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// kind classifies the language construct so clients can filter or render it.
-	Kind SymbolKind `protobuf:"varint,2,opt,name=kind,proto3,enum=codefly.services.tooling.v0.SymbolKind" json:"kind,omitempty"`
-	// location points to the declaration or source range for the symbol.
-	Location *Location `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
-	// signature is the declaration text or callable shape for a symbol.
-	Signature string `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
-	// documentation is the doc comment or hover text supplied by language tooling.
-	Documentation string `protobuf:"bytes,5,opt,name=documentation,proto3" json:"documentation,omitempty"`
-	// parent is the containing package, type, or symbol when known.
-	Parent string `protobuf:"bytes,6,opt,name=parent,proto3" json:"parent,omitempty"`
-	// children contains nested symbols such as fields or interface methods.
-	Children []*Symbol `protobuf:"bytes,7,rep,name=children,proto3" json:"children,omitempty"`
-	// qualified_name disambiguates across packages and receivers.
-	// For functions: "<package>.<name>", for methods: "<package>.<Type>.<name>"
-	QualifiedName string `protobuf:"bytes,8,opt,name=qualified_name,json=qualifiedName,proto3" json:"qualified_name,omitempty"`
-	// body_hash is sha256 of the normalized function body text.
-	// Whitespace-insensitive (trailing WS stripped, blank lines dropped).
-	// Changes when implementation changes; stable across reformatting.
-	BodyHash string `protobuf:"bytes,9,opt,name=body_hash,json=bodyHash,proto3" json:"body_hash,omitempty"`
-	// signature_hash is sha256 of the function signature (excluding body).
-	// Changes when the API contract changes (new parameter, return type).
-	SignatureHash string `protobuf:"bytes,10,opt,name=signature_hash,json=signatureHash,proto3" json:"signature_hash,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Symbol) Reset() {
-	*x = Symbol{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Symbol) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Symbol) ProtoMessage() {}
-
-func (x *Symbol) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Symbol.ProtoReflect.Descriptor instead.
-func (*Symbol) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *Symbol) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *Symbol) GetKind() SymbolKind {
-	if x != nil {
-		return x.Kind
-	}
-	return SymbolKind_SYMBOL_KIND_UNKNOWN
-}
-
-func (x *Symbol) GetLocation() *Location {
-	if x != nil {
-		return x.Location
-	}
-	return nil
-}
-
-func (x *Symbol) GetSignature() string {
-	if x != nil {
-		return x.Signature
-	}
-	return ""
-}
-
-func (x *Symbol) GetDocumentation() string {
-	if x != nil {
-		return x.Documentation
-	}
-	return ""
-}
-
-func (x *Symbol) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
-}
-
-func (x *Symbol) GetChildren() []*Symbol {
-	if x != nil {
-		return x.Children
-	}
-	return nil
-}
-
-func (x *Symbol) GetQualifiedName() string {
-	if x != nil {
-		return x.QualifiedName
-	}
-	return ""
-}
-
-func (x *Symbol) GetBodyHash() string {
-	if x != nil {
-		return x.BodyHash
-	}
-	return ""
-}
-
-func (x *Symbol) GetSignatureHash() string {
-	if x != nil {
-		return x.SignatureHash
-	}
-	return ""
 }
 
 // Diagnostic represents a compiler, linter, or language-server finding.
@@ -520,7 +109,7 @@ type Diagnostic struct {
 
 func (x *Diagnostic) Reset() {
 	*x = Diagnostic{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[2]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -532,7 +121,7 @@ func (x *Diagnostic) String() string {
 func (*Diagnostic) ProtoMessage() {}
 
 func (x *Diagnostic) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[2]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -545,7 +134,7 @@ func (x *Diagnostic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Diagnostic.ProtoReflect.Descriptor instead.
 func (*Diagnostic) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{2}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Diagnostic) GetFile() string {
@@ -611,97 +200,6 @@ func (x *Diagnostic) GetCode() string {
 	return ""
 }
 
-// TextEdit represents one source replacement produced by language tooling.
-type TextEdit struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// start_line is the 1-based starting line for an edit range.
-	StartLine int32 `protobuf:"varint,2,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
-	// start_column is the 1-based starting column for an edit range.
-	StartColumn int32 `protobuf:"varint,3,opt,name=start_column,json=startColumn,proto3" json:"start_column,omitempty"`
-	// end_line is the 1-based ending source line for a range.
-	EndLine int32 `protobuf:"varint,4,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
-	// end_column is the 1-based ending source column for a range.
-	EndColumn int32 `protobuf:"varint,5,opt,name=end_column,json=endColumn,proto3" json:"end_column,omitempty"`
-	// new_text is the replacement text inserted by this edit.
-	NewText       string `protobuf:"bytes,6,opt,name=new_text,json=newText,proto3" json:"new_text,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *TextEdit) Reset() {
-	*x = TextEdit{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TextEdit) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TextEdit) ProtoMessage() {}
-
-func (x *TextEdit) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TextEdit.ProtoReflect.Descriptor instead.
-func (*TextEdit) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *TextEdit) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *TextEdit) GetStartLine() int32 {
-	if x != nil {
-		return x.StartLine
-	}
-	return 0
-}
-
-func (x *TextEdit) GetStartColumn() int32 {
-	if x != nil {
-		return x.StartColumn
-	}
-	return 0
-}
-
-func (x *TextEdit) GetEndLine() int32 {
-	if x != nil {
-		return x.EndLine
-	}
-	return 0
-}
-
-func (x *TextEdit) GetEndColumn() int32 {
-	if x != nil {
-		return x.EndColumn
-	}
-	return 0
-}
-
-func (x *TextEdit) GetNewText() string {
-	if x != nil {
-		return x.NewText
-	}
-	return ""
-}
-
 // Dependency represents a package or module dependency.
 type Dependency struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -717,7 +215,7 @@ type Dependency struct {
 
 func (x *Dependency) Reset() {
 	*x = Dependency{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[4]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -729,7 +227,7 @@ func (x *Dependency) String() string {
 func (*Dependency) ProtoMessage() {}
 
 func (x *Dependency) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[4]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -742,7 +240,7 @@ func (x *Dependency) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Dependency.ProtoReflect.Descriptor instead.
 func (*Dependency) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{4}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Dependency) GetName() string {
@@ -766,97 +264,6 @@ func (x *Dependency) GetDirect() bool {
 	return false
 }
 
-// CompletionItem represents one language-server completion suggestion.
-type CompletionItem struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// label is the text displayed for a completion or option.
-	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
-	// kind classifies the suggestion using LSP-style categories.
-	Kind CompletionKind `protobuf:"varint,2,opt,name=kind,proto3,enum=codefly.services.tooling.v0.CompletionKind" json:"kind,omitempty"`
-	// detail is a short description such as a type signature.
-	Detail string `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"`
-	// documentation is the doc comment or hover text supplied by language tooling.
-	Documentation string `protobuf:"bytes,4,opt,name=documentation,proto3" json:"documentation,omitempty"`
-	// insert_text is the text inserted when a completion is accepted.
-	InsertText string `protobuf:"bytes,5,opt,name=insert_text,json=insertText,proto3" json:"insert_text,omitempty"`
-	// sort_text controls stable ordering of completion items.
-	SortText      string `protobuf:"bytes,6,opt,name=sort_text,json=sortText,proto3" json:"sort_text,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CompletionItem) Reset() {
-	*x = CompletionItem{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CompletionItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CompletionItem) ProtoMessage() {}
-
-func (x *CompletionItem) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CompletionItem.ProtoReflect.Descriptor instead.
-func (*CompletionItem) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *CompletionItem) GetLabel() string {
-	if x != nil {
-		return x.Label
-	}
-	return ""
-}
-
-func (x *CompletionItem) GetKind() CompletionKind {
-	if x != nil {
-		return x.Kind
-	}
-	return CompletionKind_COMPLETION_KIND_UNKNOWN
-}
-
-func (x *CompletionItem) GetDetail() string {
-	if x != nil {
-		return x.Detail
-	}
-	return ""
-}
-
-func (x *CompletionItem) GetDocumentation() string {
-	if x != nil {
-		return x.Documentation
-	}
-	return ""
-}
-
-func (x *CompletionItem) GetInsertText() string {
-	if x != nil {
-		return x.InsertText
-	}
-	return ""
-}
-
-func (x *CompletionItem) GetSortText() string {
-	if x != nil {
-		return x.SortText
-	}
-	return ""
-}
-
 // PackageInfo describes one language package or module in the project.
 type PackageInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -876,7 +283,7 @@ type PackageInfo struct {
 
 func (x *PackageInfo) Reset() {
 	*x = PackageInfo{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[6]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -888,7 +295,7 @@ func (x *PackageInfo) String() string {
 func (*PackageInfo) ProtoMessage() {}
 
 func (x *PackageInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[6]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -901,7 +308,7 @@ func (x *PackageInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PackageInfo.ProtoReflect.Descriptor instead.
 func (*PackageInfo) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{6}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PackageInfo) GetName() string {
@@ -939,931 +346,6 @@ func (x *PackageInfo) GetDoc() string {
 	return ""
 }
 
-// CallEdge represents a function call discovered by call graph analysis.
-type CallEdge struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// caller_id identifies the calling symbol in the graph.
-	CallerId string `protobuf:"bytes,1,opt,name=caller_id,json=callerId,proto3" json:"caller_id,omitempty"`
-	// callee_id identifies the called symbol in the graph.
-	CalleeId string `protobuf:"bytes,2,opt,name=callee_id,json=calleeId,proto3" json:"callee_id,omitempty"`
-	// call_type describes whether the call is static, dynamic, interface, or inferred.
-	CallType string `protobuf:"bytes,3,opt,name=call_type,json=callType,proto3" json:"call_type,omitempty"`
-	// call_site is the source location where a call occurs.
-	CallSite      *Location `protobuf:"bytes,4,opt,name=call_site,json=callSite,proto3" json:"call_site,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CallEdge) Reset() {
-	*x = CallEdge{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CallEdge) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CallEdge) ProtoMessage() {}
-
-func (x *CallEdge) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CallEdge.ProtoReflect.Descriptor instead.
-func (*CallEdge) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *CallEdge) GetCallerId() string {
-	if x != nil {
-		return x.CallerId
-	}
-	return ""
-}
-
-func (x *CallEdge) GetCalleeId() string {
-	if x != nil {
-		return x.CalleeId
-	}
-	return ""
-}
-
-func (x *CallEdge) GetCallType() string {
-	if x != nil {
-		return x.CallType
-	}
-	return ""
-}
-
-func (x *CallEdge) GetCallSite() *Location {
-	if x != nil {
-		return x.CallSite
-	}
-	return nil
-}
-
-// ImplementsEdge records that a concrete type implements an interface.
-type ImplementsEdge struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// type_id identifies the concrete type in an implementation relationship.
-	TypeId string `protobuf:"bytes,1,opt,name=type_id,json=typeId,proto3" json:"type_id,omitempty"`
-	// interface_id identifies the interface type in an implementation relationship.
-	InterfaceId   string `protobuf:"bytes,2,opt,name=interface_id,json=interfaceId,proto3" json:"interface_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ImplementsEdge) Reset() {
-	*x = ImplementsEdge{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ImplementsEdge) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ImplementsEdge) ProtoMessage() {}
-
-func (x *ImplementsEdge) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ImplementsEdge.ProtoReflect.Descriptor instead.
-func (*ImplementsEdge) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *ImplementsEdge) GetTypeId() string {
-	if x != nil {
-		return x.TypeId
-	}
-	return ""
-}
-
-func (x *ImplementsEdge) GetInterfaceId() string {
-	if x != nil {
-		return x.InterfaceId
-	}
-	return ""
-}
-
-// ListSymbolsRequest carries optional filters for listing symbols.
-type ListSymbolsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File          string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListSymbolsRequest) Reset() {
-	*x = ListSymbolsRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListSymbolsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListSymbolsRequest) ProtoMessage() {}
-
-func (x *ListSymbolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListSymbolsRequest.ProtoReflect.Descriptor instead.
-func (*ListSymbolsRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *ListSymbolsRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-// ListSymbolsResponse returns symbols discovered for the requested scope.
-type ListSymbolsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// symbols are code entities returned by language analysis.
-	Symbols       []*Symbol `protobuf:"bytes,1,rep,name=symbols,proto3" json:"symbols,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListSymbolsResponse) Reset() {
-	*x = ListSymbolsResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListSymbolsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListSymbolsResponse) ProtoMessage() {}
-
-func (x *ListSymbolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListSymbolsResponse.ProtoReflect.Descriptor instead.
-func (*ListSymbolsResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *ListSymbolsResponse) GetSymbols() []*Symbol {
-	if x != nil {
-		return x.Symbols
-	}
-	return nil
-}
-
-// GetDiagnosticsRequest identifies the diagnostics data to retrieve.
-type GetDiagnosticsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File          string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetDiagnosticsRequest) Reset() {
-	*x = GetDiagnosticsRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetDiagnosticsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetDiagnosticsRequest) ProtoMessage() {}
-
-func (x *GetDiagnosticsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetDiagnosticsRequest.ProtoReflect.Descriptor instead.
-func (*GetDiagnosticsRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *GetDiagnosticsRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-// GetDiagnosticsResponse returns diagnostics from the active language tooling.
-type GetDiagnosticsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// diagnostics are compiler, linter, or language-server findings.
-	Diagnostics   []*Diagnostic `protobuf:"bytes,1,rep,name=diagnostics,proto3" json:"diagnostics,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetDiagnosticsResponse) Reset() {
-	*x = GetDiagnosticsResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetDiagnosticsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetDiagnosticsResponse) ProtoMessage() {}
-
-func (x *GetDiagnosticsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetDiagnosticsResponse.ProtoReflect.Descriptor instead.
-func (*GetDiagnosticsResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *GetDiagnosticsResponse) GetDiagnostics() []*Diagnostic {
-	if x != nil {
-		return x.Diagnostics
-	}
-	return nil
-}
-
-// GoToDefinitionRequest identifies a source position whose declaration should be resolved.
-type GoToDefinitionRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// line is the 1-based source line number.
-	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	// column is the 1-based source column number when known.
-	Column        int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GoToDefinitionRequest) Reset() {
-	*x = GoToDefinitionRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GoToDefinitionRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GoToDefinitionRequest) ProtoMessage() {}
-
-func (x *GoToDefinitionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[13]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GoToDefinitionRequest.ProtoReflect.Descriptor instead.
-func (*GoToDefinitionRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *GoToDefinitionRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *GoToDefinitionRequest) GetLine() int32 {
-	if x != nil {
-		return x.Line
-	}
-	return 0
-}
-
-func (x *GoToDefinitionRequest) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-// GoToDefinitionResponse returns declaration locations for the selected symbol.
-type GoToDefinitionResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// locations are declaration locations returned by the language server.
-	Locations     []*Location `protobuf:"bytes,1,rep,name=locations,proto3" json:"locations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GoToDefinitionResponse) Reset() {
-	*x = GoToDefinitionResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GoToDefinitionResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GoToDefinitionResponse) ProtoMessage() {}
-
-func (x *GoToDefinitionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[14]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GoToDefinitionResponse.ProtoReflect.Descriptor instead.
-func (*GoToDefinitionResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *GoToDefinitionResponse) GetLocations() []*Location {
-	if x != nil {
-		return x.Locations
-	}
-	return nil
-}
-
-// FindReferencesRequest identifies a source position whose usages should be resolved.
-type FindReferencesRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// line is the 1-based source line number.
-	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	// column is the 1-based source column number when known.
-	Column        int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *FindReferencesRequest) Reset() {
-	*x = FindReferencesRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *FindReferencesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindReferencesRequest) ProtoMessage() {}
-
-func (x *FindReferencesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[15]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindReferencesRequest.ProtoReflect.Descriptor instead.
-func (*FindReferencesRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *FindReferencesRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *FindReferencesRequest) GetLine() int32 {
-	if x != nil {
-		return x.Line
-	}
-	return 0
-}
-
-func (x *FindReferencesRequest) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-// FindReferencesResponse returns usage locations for the selected symbol.
-type FindReferencesResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// locations are reference locations returned by the language server.
-	Locations     []*Location `protobuf:"bytes,1,rep,name=locations,proto3" json:"locations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *FindReferencesResponse) Reset() {
-	*x = FindReferencesResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *FindReferencesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindReferencesResponse) ProtoMessage() {}
-
-func (x *FindReferencesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[16]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindReferencesResponse.ProtoReflect.Descriptor instead.
-func (*FindReferencesResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{16}
-}
-
-func (x *FindReferencesResponse) GetLocations() []*Location {
-	if x != nil {
-		return x.Locations
-	}
-	return nil
-}
-
-// RenameSymbolRequest asks the language server to rename a symbol.
-type RenameSymbolRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// line is the 1-based source line number.
-	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	// column is the 1-based source column number when known.
-	Column int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	// new_name is the replacement symbol name requested by the caller.
-	NewName       string `protobuf:"bytes,4,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RenameSymbolRequest) Reset() {
-	*x = RenameSymbolRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RenameSymbolRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RenameSymbolRequest) ProtoMessage() {}
-
-func (x *RenameSymbolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RenameSymbolRequest.ProtoReflect.Descriptor instead.
-func (*RenameSymbolRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{17}
-}
-
-func (x *RenameSymbolRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *RenameSymbolRequest) GetLine() int32 {
-	if x != nil {
-		return x.Line
-	}
-	return 0
-}
-
-func (x *RenameSymbolRequest) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-func (x *RenameSymbolRequest) GetNewName() string {
-	if x != nil {
-		return x.NewName
-	}
-	return ""
-}
-
-// RenameSymbolResponse reports the edits produced and applied for a rename.
-type RenameSymbolResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// success is true when the requested operation completed successfully.
-	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	// error explains why the operation failed; empty means success at this layer.
-	Error string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	// edits contains the source replacements produced by the language server.
-	Edits []*TextEdit `protobuf:"bytes,3,rep,name=edits,proto3" json:"edits,omitempty"`
-	// files lists files modified by the rename.
-	Files         []string `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RenameSymbolResponse) Reset() {
-	*x = RenameSymbolResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RenameSymbolResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RenameSymbolResponse) ProtoMessage() {}
-
-func (x *RenameSymbolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RenameSymbolResponse.ProtoReflect.Descriptor instead.
-func (*RenameSymbolResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{18}
-}
-
-func (x *RenameSymbolResponse) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *RenameSymbolResponse) GetError() string {
-	if x != nil {
-		return x.Error
-	}
-	return ""
-}
-
-func (x *RenameSymbolResponse) GetEdits() []*TextEdit {
-	if x != nil {
-		return x.Edits
-	}
-	return nil
-}
-
-func (x *RenameSymbolResponse) GetFiles() []string {
-	if x != nil {
-		return x.Files
-	}
-	return nil
-}
-
-// GetHoverInfoRequest identifies the hover info data to retrieve.
-type GetHoverInfoRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// line is the 1-based source line number.
-	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	// column is the 1-based source column number when known.
-	Column        int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetHoverInfoRequest) Reset() {
-	*x = GetHoverInfoRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[19]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetHoverInfoRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetHoverInfoRequest) ProtoMessage() {}
-
-func (x *GetHoverInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[19]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetHoverInfoRequest.ProtoReflect.Descriptor instead.
-func (*GetHoverInfoRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{19}
-}
-
-func (x *GetHoverInfoRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *GetHoverInfoRequest) GetLine() int32 {
-	if x != nil {
-		return x.Line
-	}
-	return 0
-}
-
-func (x *GetHoverInfoRequest) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-// GetHoverInfoResponse returns hover text and the source range it describes.
-type GetHoverInfoResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// content is the hover content, often markdown from the language server.
-	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
-	// language is the implementation language reported by tooling or project metadata.
-	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
-	// range is the source range covered by hover or diagnostic information.
-	Range         *Location `protobuf:"bytes,3,opt,name=range,proto3" json:"range,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetHoverInfoResponse) Reset() {
-	*x = GetHoverInfoResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetHoverInfoResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetHoverInfoResponse) ProtoMessage() {}
-
-func (x *GetHoverInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetHoverInfoResponse.ProtoReflect.Descriptor instead.
-func (*GetHoverInfoResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{20}
-}
-
-func (x *GetHoverInfoResponse) GetContent() string {
-	if x != nil {
-		return x.Content
-	}
-	return ""
-}
-
-func (x *GetHoverInfoResponse) GetLanguage() string {
-	if x != nil {
-		return x.Language
-	}
-	return ""
-}
-
-func (x *GetHoverInfoResponse) GetRange() *Location {
-	if x != nil {
-		return x.Range
-	}
-	return nil
-}
-
-// GetCompletionsRequest identifies the completions data to retrieve.
-type GetCompletionsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// file is a workspace- or service-relative source file path.
-	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
-	// line is the 1-based source line number.
-	Line int32 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
-	// column is the 1-based source column number when known.
-	Column        int32 `protobuf:"varint,3,opt,name=column,proto3" json:"column,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetCompletionsRequest) Reset() {
-	*x = GetCompletionsRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetCompletionsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetCompletionsRequest) ProtoMessage() {}
-
-func (x *GetCompletionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[21]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetCompletionsRequest.ProtoReflect.Descriptor instead.
-func (*GetCompletionsRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{21}
-}
-
-func (x *GetCompletionsRequest) GetFile() string {
-	if x != nil {
-		return x.File
-	}
-	return ""
-}
-
-func (x *GetCompletionsRequest) GetLine() int32 {
-	if x != nil {
-		return x.Line
-	}
-	return 0
-}
-
-func (x *GetCompletionsRequest) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-// GetCompletionsResponse returns suggestions for the requested source position.
-type GetCompletionsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// items are completion suggestions returned by the language server.
-	Items []*CompletionItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	// is_incomplete is true when more completion results may be available.
-	IsIncomplete  bool `protobuf:"varint,2,opt,name=is_incomplete,json=isIncomplete,proto3" json:"is_incomplete,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetCompletionsResponse) Reset() {
-	*x = GetCompletionsResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[22]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetCompletionsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetCompletionsResponse) ProtoMessage() {}
-
-func (x *GetCompletionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[22]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetCompletionsResponse.ProtoReflect.Descriptor instead.
-func (*GetCompletionsResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{22}
-}
-
-func (x *GetCompletionsResponse) GetItems() []*CompletionItem {
-	if x != nil {
-		return x.Items
-	}
-	return nil
-}
-
-func (x *GetCompletionsResponse) GetIsIncomplete() bool {
-	if x != nil {
-		return x.IsIncomplete
-	}
-	return false
-}
-
 // FixRequest asks the agent to format or auto-fix one file.
 type FixRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1875,7 +357,7 @@ type FixRequest struct {
 
 func (x *FixRequest) Reset() {
 	*x = FixRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[23]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1887,7 +369,7 @@ func (x *FixRequest) String() string {
 func (*FixRequest) ProtoMessage() {}
 
 func (x *FixRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[23]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1900,7 +382,7 @@ func (x *FixRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FixRequest.ProtoReflect.Descriptor instead.
 func (*FixRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{23}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *FixRequest) GetFile() string {
@@ -1927,7 +409,7 @@ type FixResponse struct {
 
 func (x *FixResponse) Reset() {
 	*x = FixResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[24]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1939,7 +421,7 @@ func (x *FixResponse) String() string {
 func (*FixResponse) ProtoMessage() {}
 
 func (x *FixResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[24]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1952,7 +434,7 @@ func (x *FixResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FixResponse.ProtoReflect.Descriptor instead.
 func (*FixResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{24}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FixResponse) GetSuccess() bool {
@@ -2000,7 +482,7 @@ type ApplyEditRequest struct {
 
 func (x *ApplyEditRequest) Reset() {
 	*x = ApplyEditRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[25]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2012,7 +494,7 @@ func (x *ApplyEditRequest) String() string {
 func (*ApplyEditRequest) ProtoMessage() {}
 
 func (x *ApplyEditRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[25]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2025,7 +507,7 @@ func (x *ApplyEditRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyEditRequest.ProtoReflect.Descriptor instead.
 func (*ApplyEditRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{25}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ApplyEditRequest) GetFile() string {
@@ -2075,7 +557,7 @@ type ApplyEditResponse struct {
 
 func (x *ApplyEditResponse) Reset() {
 	*x = ApplyEditResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[26]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2087,7 +569,7 @@ func (x *ApplyEditResponse) String() string {
 func (*ApplyEditResponse) ProtoMessage() {}
 
 func (x *ApplyEditResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[26]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2100,7 +582,7 @@ func (x *ApplyEditResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyEditResponse.ProtoReflect.Descriptor instead.
 func (*ApplyEditResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{26}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ApplyEditResponse) GetSuccess() bool {
@@ -2147,7 +629,7 @@ type ListDependenciesRequest struct {
 
 func (x *ListDependenciesRequest) Reset() {
 	*x = ListDependenciesRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[27]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2159,7 +641,7 @@ func (x *ListDependenciesRequest) String() string {
 func (*ListDependenciesRequest) ProtoMessage() {}
 
 func (x *ListDependenciesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[27]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2172,7 +654,7 @@ func (x *ListDependenciesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDependenciesRequest.ProtoReflect.Descriptor instead.
 func (*ListDependenciesRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{27}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{7}
 }
 
 // ListDependenciesResponse returns dependencies discovered by the native package manager.
@@ -2188,7 +670,7 @@ type ListDependenciesResponse struct {
 
 func (x *ListDependenciesResponse) Reset() {
 	*x = ListDependenciesResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[28]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2200,7 +682,7 @@ func (x *ListDependenciesResponse) String() string {
 func (*ListDependenciesResponse) ProtoMessage() {}
 
 func (x *ListDependenciesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[28]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2213,7 +695,7 @@ func (x *ListDependenciesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDependenciesResponse.ProtoReflect.Descriptor instead.
 func (*ListDependenciesResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{28}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListDependenciesResponse) GetDependencies() []*Dependency {
@@ -2243,7 +725,7 @@ type AddDependencyRequest struct {
 
 func (x *AddDependencyRequest) Reset() {
 	*x = AddDependencyRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[29]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2255,7 +737,7 @@ func (x *AddDependencyRequest) String() string {
 func (*AddDependencyRequest) ProtoMessage() {}
 
 func (x *AddDependencyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[29]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2268,7 +750,7 @@ func (x *AddDependencyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDependencyRequest.ProtoReflect.Descriptor instead.
 func (*AddDependencyRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{29}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AddDependencyRequest) GetPackageName() string {
@@ -2300,7 +782,7 @@ type AddDependencyResponse struct {
 
 func (x *AddDependencyResponse) Reset() {
 	*x = AddDependencyResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[30]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2312,7 +794,7 @@ func (x *AddDependencyResponse) String() string {
 func (*AddDependencyResponse) ProtoMessage() {}
 
 func (x *AddDependencyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[30]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2325,7 +807,7 @@ func (x *AddDependencyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDependencyResponse.ProtoReflect.Descriptor instead.
 func (*AddDependencyResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{30}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AddDependencyResponse) GetSuccess() bool {
@@ -2360,7 +842,7 @@ type RemoveDependencyRequest struct {
 
 func (x *RemoveDependencyRequest) Reset() {
 	*x = RemoveDependencyRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[31]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2372,7 +854,7 @@ func (x *RemoveDependencyRequest) String() string {
 func (*RemoveDependencyRequest) ProtoMessage() {}
 
 func (x *RemoveDependencyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[31]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2385,7 +867,7 @@ func (x *RemoveDependencyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveDependencyRequest.ProtoReflect.Descriptor instead.
 func (*RemoveDependencyRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{31}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RemoveDependencyRequest) GetPackageName() string {
@@ -2408,7 +890,7 @@ type RemoveDependencyResponse struct {
 
 func (x *RemoveDependencyResponse) Reset() {
 	*x = RemoveDependencyResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[32]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2420,7 +902,7 @@ func (x *RemoveDependencyResponse) String() string {
 func (*RemoveDependencyResponse) ProtoMessage() {}
 
 func (x *RemoveDependencyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[32]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2433,7 +915,7 @@ func (x *RemoveDependencyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveDependencyResponse.ProtoReflect.Descriptor instead.
 func (*RemoveDependencyResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{32}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *RemoveDependencyResponse) GetSuccess() bool {
@@ -2459,7 +941,7 @@ type GetProjectInfoRequest struct {
 
 func (x *GetProjectInfoRequest) Reset() {
 	*x = GetProjectInfoRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[33]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2471,7 +953,7 @@ func (x *GetProjectInfoRequest) String() string {
 func (*GetProjectInfoRequest) ProtoMessage() {}
 
 func (x *GetProjectInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[33]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2484,7 +966,7 @@ func (x *GetProjectInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProjectInfoRequest.ProtoReflect.Descriptor instead.
 func (*GetProjectInfoRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{33}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{13}
 }
 
 // GetProjectInfoResponse returns language metadata useful for ingestion and planning.
@@ -2510,7 +992,7 @@ type GetProjectInfoResponse struct {
 
 func (x *GetProjectInfoResponse) Reset() {
 	*x = GetProjectInfoResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[34]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2522,7 +1004,7 @@ func (x *GetProjectInfoResponse) String() string {
 func (*GetProjectInfoResponse) ProtoMessage() {}
 
 func (x *GetProjectInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[34]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2535,7 +1017,7 @@ func (x *GetProjectInfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProjectInfoResponse.ProtoReflect.Descriptor instead.
 func (*GetProjectInfoResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{34}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetProjectInfoResponse) GetModule() string {
@@ -2587,134 +1069,6 @@ func (x *GetProjectInfoResponse) GetError() string {
 	return ""
 }
 
-// GetCallGraphRequest identifies the call graph data to retrieve.
-type GetCallGraphRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// algorithm selects the analysis algorithm requested by the caller.
-	Algorithm     string `protobuf:"bytes,1,opt,name=algorithm,proto3" json:"algorithm,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetCallGraphRequest) Reset() {
-	*x = GetCallGraphRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[35]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetCallGraphRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetCallGraphRequest) ProtoMessage() {}
-
-func (x *GetCallGraphRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[35]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetCallGraphRequest.ProtoReflect.Descriptor instead.
-func (*GetCallGraphRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{35}
-}
-
-func (x *GetCallGraphRequest) GetAlgorithm() string {
-	if x != nil {
-		return x.Algorithm
-	}
-	return ""
-}
-
-// GetCallGraphResponse returns call edges and interface implementation edges.
-type GetCallGraphResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// calls are function-to-function call edges discovered by analysis.
-	Calls []*CallEdge `protobuf:"bytes,1,rep,name=calls,proto3" json:"calls,omitempty"`
-	// implements are type-to-interface relationships discovered by analysis.
-	Implements []*ImplementsEdge `protobuf:"bytes,2,rep,name=implements,proto3" json:"implements,omitempty"`
-	// functions_analyzed is the number of functions included in analysis.
-	FunctionsAnalyzed int32 `protobuf:"varint,3,opt,name=functions_analyzed,json=functionsAnalyzed,proto3" json:"functions_analyzed,omitempty"`
-	// algorithm_used reports the actual analysis algorithm that ran.
-	AlgorithmUsed string `protobuf:"bytes,4,opt,name=algorithm_used,json=algorithmUsed,proto3" json:"algorithm_used,omitempty"`
-	// error explains why the operation failed; empty means success at this layer.
-	Error         string `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetCallGraphResponse) Reset() {
-	*x = GetCallGraphResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[36]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetCallGraphResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetCallGraphResponse) ProtoMessage() {}
-
-func (x *GetCallGraphResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[36]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetCallGraphResponse.ProtoReflect.Descriptor instead.
-func (*GetCallGraphResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{36}
-}
-
-func (x *GetCallGraphResponse) GetCalls() []*CallEdge {
-	if x != nil {
-		return x.Calls
-	}
-	return nil
-}
-
-func (x *GetCallGraphResponse) GetImplements() []*ImplementsEdge {
-	if x != nil {
-		return x.Implements
-	}
-	return nil
-}
-
-func (x *GetCallGraphResponse) GetFunctionsAnalyzed() int32 {
-	if x != nil {
-		return x.FunctionsAnalyzed
-	}
-	return 0
-}
-
-func (x *GetCallGraphResponse) GetAlgorithmUsed() string {
-	if x != nil {
-		return x.AlgorithmUsed
-	}
-	return ""
-}
-
-func (x *GetCallGraphResponse) GetError() string {
-	if x != nil {
-		return x.Error
-	}
-	return ""
-}
-
 // BuildRequest asks the agent to run the native build command.
 type BuildRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -2724,7 +1078,7 @@ type BuildRequest struct {
 
 func (x *BuildRequest) Reset() {
 	*x = BuildRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[37]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2736,7 +1090,7 @@ func (x *BuildRequest) String() string {
 func (*BuildRequest) ProtoMessage() {}
 
 func (x *BuildRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[37]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2749,7 +1103,7 @@ func (x *BuildRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildRequest.ProtoReflect.Descriptor instead.
 func (*BuildRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{37}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{15}
 }
 
 // BuildResponse returns build output and diagnostics from the native toolchain.
@@ -2767,7 +1121,7 @@ type BuildResponse struct {
 
 func (x *BuildResponse) Reset() {
 	*x = BuildResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[38]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2779,7 +1133,7 @@ func (x *BuildResponse) String() string {
 func (*BuildResponse) ProtoMessage() {}
 
 func (x *BuildResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[38]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2792,7 +1146,7 @@ func (x *BuildResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildResponse.ProtoReflect.Descriptor instead.
 func (*BuildResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{38}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *BuildResponse) GetSuccess() bool {
@@ -2829,7 +1183,7 @@ type TestRequest struct {
 
 func (x *TestRequest) Reset() {
 	*x = TestRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[39]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2841,7 +1195,7 @@ func (x *TestRequest) String() string {
 func (*TestRequest) ProtoMessage() {}
 
 func (x *TestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[39]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2854,7 +1208,7 @@ func (x *TestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestRequest.ProtoReflect.Descriptor instead.
 func (*TestRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{39}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *TestRequest) GetPath() string {
@@ -2896,7 +1250,7 @@ type TestResponse struct {
 
 func (x *TestResponse) Reset() {
 	*x = TestResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[40]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2908,7 +1262,7 @@ func (x *TestResponse) String() string {
 func (*TestResponse) ProtoMessage() {}
 
 func (x *TestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[40]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2921,7 +1275,7 @@ func (x *TestResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestResponse.ProtoReflect.Descriptor instead.
 func (*TestResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{40}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *TestResponse) GetSuccess() bool {
@@ -2991,7 +1345,7 @@ type LintRequest struct {
 
 func (x *LintRequest) Reset() {
 	*x = LintRequest{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[41]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3003,7 +1357,7 @@ func (x *LintRequest) String() string {
 func (*LintRequest) ProtoMessage() {}
 
 func (x *LintRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[41]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3016,7 +1370,7 @@ func (x *LintRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LintRequest.ProtoReflect.Descriptor instead.
 func (*LintRequest) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{41}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *LintRequest) GetFile() string {
@@ -3041,7 +1395,7 @@ type LintResponse struct {
 
 func (x *LintResponse) Reset() {
 	*x = LintResponse{}
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[42]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3053,7 +1407,7 @@ func (x *LintResponse) String() string {
 func (*LintResponse) ProtoMessage() {}
 
 func (x *LintResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[42]
+	mi := &file_codefly_services_tooling_v0_tooling_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3066,7 +1420,7 @@ func (x *LintResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LintResponse.ProtoReflect.Descriptor instead.
 func (*LintResponse) Descriptor() ([]byte, []int) {
-	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{42}
+	return file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *LintResponse) GetSuccess() bool {
@@ -3094,26 +1448,7 @@ var File_codefly_services_tooling_v0_tooling_proto protoreflect.FileDescriptor
 
 const file_codefly_services_tooling_v0_tooling_proto_rawDesc = "" +
 	"\n" +
-	")codefly/services/tooling/v0/tooling.proto\x12\x1bcodefly.services.tooling.v0\"\x84\x01\n" +
-	"\bLocation\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
-	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n" +
-	"\x06column\x18\x03 \x01(\x05R\x06column\x12\x19\n" +
-	"\bend_line\x18\x04 \x01(\x05R\aendLine\x12\x1d\n" +
-	"\n" +
-	"end_column\x18\x05 \x01(\x05R\tendColumn\"\xa4\x03\n" +
-	"\x06Symbol\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
-	"\x04kind\x18\x02 \x01(\x0e2'.codefly.services.tooling.v0.SymbolKindR\x04kind\x12A\n" +
-	"\blocation\x18\x03 \x01(\v2%.codefly.services.tooling.v0.LocationR\blocation\x12\x1c\n" +
-	"\tsignature\x18\x04 \x01(\tR\tsignature\x12$\n" +
-	"\rdocumentation\x18\x05 \x01(\tR\rdocumentation\x12\x16\n" +
-	"\x06parent\x18\x06 \x01(\tR\x06parent\x12?\n" +
-	"\bchildren\x18\a \x03(\v2#.codefly.services.tooling.v0.SymbolR\bchildren\x12%\n" +
-	"\x0equalified_name\x18\b \x01(\tR\rqualifiedName\x12\x1b\n" +
-	"\tbody_hash\x18\t \x01(\tR\bbodyHash\x12%\n" +
-	"\x0esignature_hash\x18\n" +
-	" \x01(\tR\rsignatureHash\"\x99\x02\n" +
+	")codefly/services/tooling/v0/tooling.proto\x12\x1bcodefly.services.tooling.v0\"\x99\x02\n" +
 	"\n" +
 	"Diagnostic\x12\x12\n" +
 	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
@@ -3125,88 +1460,18 @@ const file_codefly_services_tooling_v0_tooling_proto_rawDesc = "" +
 	"\amessage\x18\x06 \x01(\tR\amessage\x12K\n" +
 	"\bseverity\x18\a \x01(\x0e2/.codefly.services.tooling.v0.DiagnosticSeverityR\bseverity\x12\x16\n" +
 	"\x06source\x18\b \x01(\tR\x06source\x12\x12\n" +
-	"\x04code\x18\t \x01(\tR\x04code\"\xb5\x01\n" +
-	"\bTextEdit\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x1d\n" +
-	"\n" +
-	"start_line\x18\x02 \x01(\x05R\tstartLine\x12!\n" +
-	"\fstart_column\x18\x03 \x01(\x05R\vstartColumn\x12\x19\n" +
-	"\bend_line\x18\x04 \x01(\x05R\aendLine\x12\x1d\n" +
-	"\n" +
-	"end_column\x18\x05 \x01(\x05R\tendColumn\x12\x19\n" +
-	"\bnew_text\x18\x06 \x01(\tR\anewText\"R\n" +
+	"\x04code\x18\t \x01(\tR\x04code\"R\n" +
 	"\n" +
 	"Dependency\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x16\n" +
-	"\x06direct\x18\x03 \x01(\bR\x06direct\"\xe3\x01\n" +
-	"\x0eCompletionItem\x12\x14\n" +
-	"\x05label\x18\x01 \x01(\tR\x05label\x12?\n" +
-	"\x04kind\x18\x02 \x01(\x0e2+.codefly.services.tooling.v0.CompletionKindR\x04kind\x12\x16\n" +
-	"\x06detail\x18\x03 \x01(\tR\x06detail\x12$\n" +
-	"\rdocumentation\x18\x04 \x01(\tR\rdocumentation\x12\x1f\n" +
-	"\vinsert_text\x18\x05 \x01(\tR\n" +
-	"insertText\x12\x1b\n" +
-	"\tsort_text\x18\x06 \x01(\tR\bsortText\"\x88\x01\n" +
+	"\x06direct\x18\x03 \x01(\bR\x06direct\"\x88\x01\n" +
 	"\vPackageInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12#\n" +
 	"\rrelative_path\x18\x02 \x01(\tR\frelativePath\x12\x14\n" +
 	"\x05files\x18\x03 \x03(\tR\x05files\x12\x18\n" +
 	"\aimports\x18\x04 \x03(\tR\aimports\x12\x10\n" +
-	"\x03doc\x18\x05 \x01(\tR\x03doc\"\xa5\x01\n" +
-	"\bCallEdge\x12\x1b\n" +
-	"\tcaller_id\x18\x01 \x01(\tR\bcallerId\x12\x1b\n" +
-	"\tcallee_id\x18\x02 \x01(\tR\bcalleeId\x12\x1b\n" +
-	"\tcall_type\x18\x03 \x01(\tR\bcallType\x12B\n" +
-	"\tcall_site\x18\x04 \x01(\v2%.codefly.services.tooling.v0.LocationR\bcallSite\"L\n" +
-	"\x0eImplementsEdge\x12\x17\n" +
-	"\atype_id\x18\x01 \x01(\tR\x06typeId\x12!\n" +
-	"\finterface_id\x18\x02 \x01(\tR\vinterfaceId\"(\n" +
-	"\x12ListSymbolsRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\"T\n" +
-	"\x13ListSymbolsResponse\x12=\n" +
-	"\asymbols\x18\x01 \x03(\v2#.codefly.services.tooling.v0.SymbolR\asymbols\"+\n" +
-	"\x15GetDiagnosticsRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\"c\n" +
-	"\x16GetDiagnosticsResponse\x12I\n" +
-	"\vdiagnostics\x18\x01 \x03(\v2'.codefly.services.tooling.v0.DiagnosticR\vdiagnostics\"W\n" +
-	"\x15GoToDefinitionRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
-	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n" +
-	"\x06column\x18\x03 \x01(\x05R\x06column\"]\n" +
-	"\x16GoToDefinitionResponse\x12C\n" +
-	"\tlocations\x18\x01 \x03(\v2%.codefly.services.tooling.v0.LocationR\tlocations\"W\n" +
-	"\x15FindReferencesRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
-	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n" +
-	"\x06column\x18\x03 \x01(\x05R\x06column\"]\n" +
-	"\x16FindReferencesResponse\x12C\n" +
-	"\tlocations\x18\x01 \x03(\v2%.codefly.services.tooling.v0.LocationR\tlocations\"p\n" +
-	"\x13RenameSymbolRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
-	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n" +
-	"\x06column\x18\x03 \x01(\x05R\x06column\x12\x19\n" +
-	"\bnew_name\x18\x04 \x01(\tR\anewName\"\x99\x01\n" +
-	"\x14RenameSymbolResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\x12;\n" +
-	"\x05edits\x18\x03 \x03(\v2%.codefly.services.tooling.v0.TextEditR\x05edits\x12\x14\n" +
-	"\x05files\x18\x04 \x03(\tR\x05files\"U\n" +
-	"\x13GetHoverInfoRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
-	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n" +
-	"\x06column\x18\x03 \x01(\x05R\x06column\"\x89\x01\n" +
-	"\x14GetHoverInfoResponse\x12\x18\n" +
-	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1a\n" +
-	"\blanguage\x18\x02 \x01(\tR\blanguage\x12;\n" +
-	"\x05range\x18\x03 \x01(\v2%.codefly.services.tooling.v0.LocationR\x05range\"W\n" +
-	"\x15GetCompletionsRequest\x12\x12\n" +
-	"\x04file\x18\x01 \x01(\tR\x04file\x12\x12\n" +
-	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n" +
-	"\x06column\x18\x03 \x01(\x05R\x06column\"\x80\x01\n" +
-	"\x16GetCompletionsResponse\x12A\n" +
-	"\x05items\x18\x01 \x03(\v2+.codefly.services.tooling.v0.CompletionItemR\x05items\x12#\n" +
-	"\ris_incomplete\x18\x02 \x01(\bR\fisIncomplete\" \n" +
+	"\x03doc\x18\x05 \x01(\tR\x03doc\" \n" +
 	"\n" +
 	"FixRequest\x12\x12\n" +
 	"\x04file\x18\x01 \x01(\tR\x04file\"q\n" +
@@ -3255,17 +1520,7 @@ const file_codefly_services_tooling_v0_tooling_proto_rawDesc = "" +
 	"\x05error\x18\a \x01(\tR\x05error\x1a=\n" +
 	"\x0fFileHashesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"3\n" +
-	"\x13GetCallGraphRequest\x12\x1c\n" +
-	"\talgorithm\x18\x01 \x01(\tR\talgorithm\"\x8c\x02\n" +
-	"\x14GetCallGraphResponse\x12;\n" +
-	"\x05calls\x18\x01 \x03(\v2%.codefly.services.tooling.v0.CallEdgeR\x05calls\x12K\n" +
-	"\n" +
-	"implements\x18\x02 \x03(\v2+.codefly.services.tooling.v0.ImplementsEdgeR\n" +
-	"implements\x12-\n" +
-	"\x12functions_analyzed\x18\x03 \x01(\x05R\x11functionsAnalyzed\x12%\n" +
-	"\x0ealgorithm_used\x18\x04 \x01(\tR\ralgorithmUsed\x12\x14\n" +
-	"\x05error\x18\x05 \x01(\tR\x05error\"\x0e\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x0e\n" +
 	"\fBuildRequest\"\x8c\x01\n" +
 	"\rBuildResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x16\n" +
@@ -3288,62 +1543,20 @@ const file_codefly_services_tooling_v0_tooling_proto_rawDesc = "" +
 	"\fLintResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x16\n" +
 	"\x06output\x18\x02 \x01(\tR\x06output\x12I\n" +
-	"\vdiagnostics\x18\x03 \x03(\v2'.codefly.services.tooling.v0.DiagnosticR\vdiagnostics*\xb7\x02\n" +
-	"\n" +
-	"SymbolKind\x12\x17\n" +
-	"\x13SYMBOL_KIND_UNKNOWN\x10\x00\x12\x18\n" +
-	"\x14SYMBOL_KIND_FUNCTION\x10\x01\x12\x16\n" +
-	"\x12SYMBOL_KIND_METHOD\x10\x02\x12\x16\n" +
-	"\x12SYMBOL_KIND_STRUCT\x10\x03\x12\x19\n" +
-	"\x15SYMBOL_KIND_INTERFACE\x10\x04\x12\x18\n" +
-	"\x14SYMBOL_KIND_CONSTANT\x10\x05\x12\x18\n" +
-	"\x14SYMBOL_KIND_VARIABLE\x10\x06\x12\x1a\n" +
-	"\x16SYMBOL_KIND_TYPE_ALIAS\x10\a\x12\x17\n" +
-	"\x13SYMBOL_KIND_PACKAGE\x10\b\x12\x15\n" +
-	"\x11SYMBOL_KIND_FIELD\x10\t\x12\x14\n" +
-	"\x10SYMBOL_KIND_ENUM\x10\n" +
-	"\x12\x15\n" +
-	"\x11SYMBOL_KIND_CLASS\x10\v*\xb8\x01\n" +
+	"\vdiagnostics\x18\x03 \x03(\v2'.codefly.services.tooling.v0.DiagnosticR\vdiagnostics*\xb8\x01\n" +
 	"\x12DiagnosticSeverity\x12\x1f\n" +
 	"\x1bDIAGNOSTIC_SEVERITY_UNKNOWN\x10\x00\x12\x1d\n" +
 	"\x19DIAGNOSTIC_SEVERITY_ERROR\x10\x01\x12\x1f\n" +
 	"\x1bDIAGNOSTIC_SEVERITY_WARNING\x10\x02\x12#\n" +
 	"\x1fDIAGNOSTIC_SEVERITY_INFORMATION\x10\x03\x12\x1c\n" +
-	"\x18DIAGNOSTIC_SEVERITY_HINT\x10\x04*\x81\x04\n" +
-	"\x0eCompletionKind\x12\x1b\n" +
-	"\x17COMPLETION_KIND_UNKNOWN\x10\x00\x12\x18\n" +
-	"\x14COMPLETION_KIND_TEXT\x10\x01\x12\x1a\n" +
-	"\x16COMPLETION_KIND_METHOD\x10\x02\x12\x1c\n" +
-	"\x18COMPLETION_KIND_FUNCTION\x10\x03\x12\x1f\n" +
-	"\x1bCOMPLETION_KIND_CONSTRUCTOR\x10\x04\x12\x19\n" +
-	"\x15COMPLETION_KIND_FIELD\x10\x05\x12\x1c\n" +
-	"\x18COMPLETION_KIND_VARIABLE\x10\x06\x12\x19\n" +
-	"\x15COMPLETION_KIND_CLASS\x10\a\x12\x1d\n" +
-	"\x19COMPLETION_KIND_INTERFACE\x10\b\x12\x1a\n" +
-	"\x16COMPLETION_KIND_MODULE\x10\t\x12\x1c\n" +
-	"\x18COMPLETION_KIND_PROPERTY\x10\n" +
-	"\x12\x18\n" +
-	"\x14COMPLETION_KIND_ENUM\x10\r\x12\x1b\n" +
-	"\x17COMPLETION_KIND_KEYWORD\x10\x0e\x12\x1b\n" +
-	"\x17COMPLETION_KIND_SNIPPET\x10\x0f\x12\x1c\n" +
-	"\x18COMPLETION_KIND_CONSTANT\x10\x15\x12\x1a\n" +
-	"\x16COMPLETION_KIND_STRUCT\x10\x16\x12\"\n" +
-	"\x1eCOMPLETION_KIND_TYPE_PARAMETER\x10\x192\x9b\x0f\n" +
-	"\aTooling\x12p\n" +
-	"\vListSymbols\x12/.codefly.services.tooling.v0.ListSymbolsRequest\x1a0.codefly.services.tooling.v0.ListSymbolsResponse\x12y\n" +
-	"\x0eGetDiagnostics\x122.codefly.services.tooling.v0.GetDiagnosticsRequest\x1a3.codefly.services.tooling.v0.GetDiagnosticsResponse\x12y\n" +
-	"\x0eGoToDefinition\x122.codefly.services.tooling.v0.GoToDefinitionRequest\x1a3.codefly.services.tooling.v0.GoToDefinitionResponse\x12y\n" +
-	"\x0eFindReferences\x122.codefly.services.tooling.v0.FindReferencesRequest\x1a3.codefly.services.tooling.v0.FindReferencesResponse\x12s\n" +
-	"\fRenameSymbol\x120.codefly.services.tooling.v0.RenameSymbolRequest\x1a1.codefly.services.tooling.v0.RenameSymbolResponse\x12s\n" +
-	"\fGetHoverInfo\x120.codefly.services.tooling.v0.GetHoverInfoRequest\x1a1.codefly.services.tooling.v0.GetHoverInfoResponse\x12y\n" +
-	"\x0eGetCompletions\x122.codefly.services.tooling.v0.GetCompletionsRequest\x1a3.codefly.services.tooling.v0.GetCompletionsResponse\x12X\n" +
+	"\x18DIAGNOSTIC_SEVERITY_HINT\x10\x042\xde\a\n" +
+	"\aTooling\x12X\n" +
 	"\x03Fix\x12'.codefly.services.tooling.v0.FixRequest\x1a(.codefly.services.tooling.v0.FixResponse\x12j\n" +
 	"\tApplyEdit\x12-.codefly.services.tooling.v0.ApplyEditRequest\x1a..codefly.services.tooling.v0.ApplyEditResponse\x12\x7f\n" +
 	"\x10ListDependencies\x124.codefly.services.tooling.v0.ListDependenciesRequest\x1a5.codefly.services.tooling.v0.ListDependenciesResponse\x12v\n" +
 	"\rAddDependency\x121.codefly.services.tooling.v0.AddDependencyRequest\x1a2.codefly.services.tooling.v0.AddDependencyResponse\x12\x7f\n" +
 	"\x10RemoveDependency\x124.codefly.services.tooling.v0.RemoveDependencyRequest\x1a5.codefly.services.tooling.v0.RemoveDependencyResponse\x12y\n" +
-	"\x0eGetProjectInfo\x122.codefly.services.tooling.v0.GetProjectInfoRequest\x1a3.codefly.services.tooling.v0.GetProjectInfoResponse\x12s\n" +
-	"\fGetCallGraph\x120.codefly.services.tooling.v0.GetCallGraphRequest\x1a1.codefly.services.tooling.v0.GetCallGraphResponse\x12^\n" +
+	"\x0eGetProjectInfo\x122.codefly.services.tooling.v0.GetProjectInfoRequest\x1a3.codefly.services.tooling.v0.GetProjectInfoResponse\x12^\n" +
 	"\x05Build\x12).codefly.services.tooling.v0.BuildRequest\x1a*.codefly.services.tooling.v0.BuildResponse\x12[\n" +
 	"\x04Test\x12(.codefly.services.tooling.v0.TestRequest\x1a).codefly.services.tooling.v0.TestResponse\x12[\n" +
 	"\x04Lint\x12(.codefly.services.tooling.v0.LintRequest\x1a).codefly.services.tooling.v0.LintResponseB\x85\x02\n" +
@@ -3361,118 +1574,64 @@ func file_codefly_services_tooling_v0_tooling_proto_rawDescGZIP() []byte {
 	return file_codefly_services_tooling_v0_tooling_proto_rawDescData
 }
 
-var file_codefly_services_tooling_v0_tooling_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_codefly_services_tooling_v0_tooling_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_codefly_services_tooling_v0_tooling_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_codefly_services_tooling_v0_tooling_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_codefly_services_tooling_v0_tooling_proto_goTypes = []any{
-	(SymbolKind)(0),                  // 0: codefly.services.tooling.v0.SymbolKind
-	(DiagnosticSeverity)(0),          // 1: codefly.services.tooling.v0.DiagnosticSeverity
-	(CompletionKind)(0),              // 2: codefly.services.tooling.v0.CompletionKind
-	(*Location)(nil),                 // 3: codefly.services.tooling.v0.Location
-	(*Symbol)(nil),                   // 4: codefly.services.tooling.v0.Symbol
-	(*Diagnostic)(nil),               // 5: codefly.services.tooling.v0.Diagnostic
-	(*TextEdit)(nil),                 // 6: codefly.services.tooling.v0.TextEdit
-	(*Dependency)(nil),               // 7: codefly.services.tooling.v0.Dependency
-	(*CompletionItem)(nil),           // 8: codefly.services.tooling.v0.CompletionItem
-	(*PackageInfo)(nil),              // 9: codefly.services.tooling.v0.PackageInfo
-	(*CallEdge)(nil),                 // 10: codefly.services.tooling.v0.CallEdge
-	(*ImplementsEdge)(nil),           // 11: codefly.services.tooling.v0.ImplementsEdge
-	(*ListSymbolsRequest)(nil),       // 12: codefly.services.tooling.v0.ListSymbolsRequest
-	(*ListSymbolsResponse)(nil),      // 13: codefly.services.tooling.v0.ListSymbolsResponse
-	(*GetDiagnosticsRequest)(nil),    // 14: codefly.services.tooling.v0.GetDiagnosticsRequest
-	(*GetDiagnosticsResponse)(nil),   // 15: codefly.services.tooling.v0.GetDiagnosticsResponse
-	(*GoToDefinitionRequest)(nil),    // 16: codefly.services.tooling.v0.GoToDefinitionRequest
-	(*GoToDefinitionResponse)(nil),   // 17: codefly.services.tooling.v0.GoToDefinitionResponse
-	(*FindReferencesRequest)(nil),    // 18: codefly.services.tooling.v0.FindReferencesRequest
-	(*FindReferencesResponse)(nil),   // 19: codefly.services.tooling.v0.FindReferencesResponse
-	(*RenameSymbolRequest)(nil),      // 20: codefly.services.tooling.v0.RenameSymbolRequest
-	(*RenameSymbolResponse)(nil),     // 21: codefly.services.tooling.v0.RenameSymbolResponse
-	(*GetHoverInfoRequest)(nil),      // 22: codefly.services.tooling.v0.GetHoverInfoRequest
-	(*GetHoverInfoResponse)(nil),     // 23: codefly.services.tooling.v0.GetHoverInfoResponse
-	(*GetCompletionsRequest)(nil),    // 24: codefly.services.tooling.v0.GetCompletionsRequest
-	(*GetCompletionsResponse)(nil),   // 25: codefly.services.tooling.v0.GetCompletionsResponse
-	(*FixRequest)(nil),               // 26: codefly.services.tooling.v0.FixRequest
-	(*FixResponse)(nil),              // 27: codefly.services.tooling.v0.FixResponse
-	(*ApplyEditRequest)(nil),         // 28: codefly.services.tooling.v0.ApplyEditRequest
-	(*ApplyEditResponse)(nil),        // 29: codefly.services.tooling.v0.ApplyEditResponse
-	(*ListDependenciesRequest)(nil),  // 30: codefly.services.tooling.v0.ListDependenciesRequest
-	(*ListDependenciesResponse)(nil), // 31: codefly.services.tooling.v0.ListDependenciesResponse
-	(*AddDependencyRequest)(nil),     // 32: codefly.services.tooling.v0.AddDependencyRequest
-	(*AddDependencyResponse)(nil),    // 33: codefly.services.tooling.v0.AddDependencyResponse
-	(*RemoveDependencyRequest)(nil),  // 34: codefly.services.tooling.v0.RemoveDependencyRequest
-	(*RemoveDependencyResponse)(nil), // 35: codefly.services.tooling.v0.RemoveDependencyResponse
-	(*GetProjectInfoRequest)(nil),    // 36: codefly.services.tooling.v0.GetProjectInfoRequest
-	(*GetProjectInfoResponse)(nil),   // 37: codefly.services.tooling.v0.GetProjectInfoResponse
-	(*GetCallGraphRequest)(nil),      // 38: codefly.services.tooling.v0.GetCallGraphRequest
-	(*GetCallGraphResponse)(nil),     // 39: codefly.services.tooling.v0.GetCallGraphResponse
-	(*BuildRequest)(nil),             // 40: codefly.services.tooling.v0.BuildRequest
-	(*BuildResponse)(nil),            // 41: codefly.services.tooling.v0.BuildResponse
-	(*TestRequest)(nil),              // 42: codefly.services.tooling.v0.TestRequest
-	(*TestResponse)(nil),             // 43: codefly.services.tooling.v0.TestResponse
-	(*LintRequest)(nil),              // 44: codefly.services.tooling.v0.LintRequest
-	(*LintResponse)(nil),             // 45: codefly.services.tooling.v0.LintResponse
-	nil,                              // 46: codefly.services.tooling.v0.GetProjectInfoResponse.FileHashesEntry
+	(DiagnosticSeverity)(0),          // 0: codefly.services.tooling.v0.DiagnosticSeverity
+	(*Diagnostic)(nil),               // 1: codefly.services.tooling.v0.Diagnostic
+	(*Dependency)(nil),               // 2: codefly.services.tooling.v0.Dependency
+	(*PackageInfo)(nil),              // 3: codefly.services.tooling.v0.PackageInfo
+	(*FixRequest)(nil),               // 4: codefly.services.tooling.v0.FixRequest
+	(*FixResponse)(nil),              // 5: codefly.services.tooling.v0.FixResponse
+	(*ApplyEditRequest)(nil),         // 6: codefly.services.tooling.v0.ApplyEditRequest
+	(*ApplyEditResponse)(nil),        // 7: codefly.services.tooling.v0.ApplyEditResponse
+	(*ListDependenciesRequest)(nil),  // 8: codefly.services.tooling.v0.ListDependenciesRequest
+	(*ListDependenciesResponse)(nil), // 9: codefly.services.tooling.v0.ListDependenciesResponse
+	(*AddDependencyRequest)(nil),     // 10: codefly.services.tooling.v0.AddDependencyRequest
+	(*AddDependencyResponse)(nil),    // 11: codefly.services.tooling.v0.AddDependencyResponse
+	(*RemoveDependencyRequest)(nil),  // 12: codefly.services.tooling.v0.RemoveDependencyRequest
+	(*RemoveDependencyResponse)(nil), // 13: codefly.services.tooling.v0.RemoveDependencyResponse
+	(*GetProjectInfoRequest)(nil),    // 14: codefly.services.tooling.v0.GetProjectInfoRequest
+	(*GetProjectInfoResponse)(nil),   // 15: codefly.services.tooling.v0.GetProjectInfoResponse
+	(*BuildRequest)(nil),             // 16: codefly.services.tooling.v0.BuildRequest
+	(*BuildResponse)(nil),            // 17: codefly.services.tooling.v0.BuildResponse
+	(*TestRequest)(nil),              // 18: codefly.services.tooling.v0.TestRequest
+	(*TestResponse)(nil),             // 19: codefly.services.tooling.v0.TestResponse
+	(*LintRequest)(nil),              // 20: codefly.services.tooling.v0.LintRequest
+	(*LintResponse)(nil),             // 21: codefly.services.tooling.v0.LintResponse
+	nil,                              // 22: codefly.services.tooling.v0.GetProjectInfoResponse.FileHashesEntry
 }
 var file_codefly_services_tooling_v0_tooling_proto_depIdxs = []int32{
-	0,  // 0: codefly.services.tooling.v0.Symbol.kind:type_name -> codefly.services.tooling.v0.SymbolKind
-	3,  // 1: codefly.services.tooling.v0.Symbol.location:type_name -> codefly.services.tooling.v0.Location
-	4,  // 2: codefly.services.tooling.v0.Symbol.children:type_name -> codefly.services.tooling.v0.Symbol
-	1,  // 3: codefly.services.tooling.v0.Diagnostic.severity:type_name -> codefly.services.tooling.v0.DiagnosticSeverity
-	2,  // 4: codefly.services.tooling.v0.CompletionItem.kind:type_name -> codefly.services.tooling.v0.CompletionKind
-	3,  // 5: codefly.services.tooling.v0.CallEdge.call_site:type_name -> codefly.services.tooling.v0.Location
-	4,  // 6: codefly.services.tooling.v0.ListSymbolsResponse.symbols:type_name -> codefly.services.tooling.v0.Symbol
-	5,  // 7: codefly.services.tooling.v0.GetDiagnosticsResponse.diagnostics:type_name -> codefly.services.tooling.v0.Diagnostic
-	3,  // 8: codefly.services.tooling.v0.GoToDefinitionResponse.locations:type_name -> codefly.services.tooling.v0.Location
-	3,  // 9: codefly.services.tooling.v0.FindReferencesResponse.locations:type_name -> codefly.services.tooling.v0.Location
-	6,  // 10: codefly.services.tooling.v0.RenameSymbolResponse.edits:type_name -> codefly.services.tooling.v0.TextEdit
-	3,  // 11: codefly.services.tooling.v0.GetHoverInfoResponse.range:type_name -> codefly.services.tooling.v0.Location
-	8,  // 12: codefly.services.tooling.v0.GetCompletionsResponse.items:type_name -> codefly.services.tooling.v0.CompletionItem
-	7,  // 13: codefly.services.tooling.v0.ListDependenciesResponse.dependencies:type_name -> codefly.services.tooling.v0.Dependency
-	9,  // 14: codefly.services.tooling.v0.GetProjectInfoResponse.packages:type_name -> codefly.services.tooling.v0.PackageInfo
-	7,  // 15: codefly.services.tooling.v0.GetProjectInfoResponse.dependencies:type_name -> codefly.services.tooling.v0.Dependency
-	46, // 16: codefly.services.tooling.v0.GetProjectInfoResponse.file_hashes:type_name -> codefly.services.tooling.v0.GetProjectInfoResponse.FileHashesEntry
-	10, // 17: codefly.services.tooling.v0.GetCallGraphResponse.calls:type_name -> codefly.services.tooling.v0.CallEdge
-	11, // 18: codefly.services.tooling.v0.GetCallGraphResponse.implements:type_name -> codefly.services.tooling.v0.ImplementsEdge
-	5,  // 19: codefly.services.tooling.v0.BuildResponse.diagnostics:type_name -> codefly.services.tooling.v0.Diagnostic
-	5,  // 20: codefly.services.tooling.v0.LintResponse.diagnostics:type_name -> codefly.services.tooling.v0.Diagnostic
-	12, // 21: codefly.services.tooling.v0.Tooling.ListSymbols:input_type -> codefly.services.tooling.v0.ListSymbolsRequest
-	14, // 22: codefly.services.tooling.v0.Tooling.GetDiagnostics:input_type -> codefly.services.tooling.v0.GetDiagnosticsRequest
-	16, // 23: codefly.services.tooling.v0.Tooling.GoToDefinition:input_type -> codefly.services.tooling.v0.GoToDefinitionRequest
-	18, // 24: codefly.services.tooling.v0.Tooling.FindReferences:input_type -> codefly.services.tooling.v0.FindReferencesRequest
-	20, // 25: codefly.services.tooling.v0.Tooling.RenameSymbol:input_type -> codefly.services.tooling.v0.RenameSymbolRequest
-	22, // 26: codefly.services.tooling.v0.Tooling.GetHoverInfo:input_type -> codefly.services.tooling.v0.GetHoverInfoRequest
-	24, // 27: codefly.services.tooling.v0.Tooling.GetCompletions:input_type -> codefly.services.tooling.v0.GetCompletionsRequest
-	26, // 28: codefly.services.tooling.v0.Tooling.Fix:input_type -> codefly.services.tooling.v0.FixRequest
-	28, // 29: codefly.services.tooling.v0.Tooling.ApplyEdit:input_type -> codefly.services.tooling.v0.ApplyEditRequest
-	30, // 30: codefly.services.tooling.v0.Tooling.ListDependencies:input_type -> codefly.services.tooling.v0.ListDependenciesRequest
-	32, // 31: codefly.services.tooling.v0.Tooling.AddDependency:input_type -> codefly.services.tooling.v0.AddDependencyRequest
-	34, // 32: codefly.services.tooling.v0.Tooling.RemoveDependency:input_type -> codefly.services.tooling.v0.RemoveDependencyRequest
-	36, // 33: codefly.services.tooling.v0.Tooling.GetProjectInfo:input_type -> codefly.services.tooling.v0.GetProjectInfoRequest
-	38, // 34: codefly.services.tooling.v0.Tooling.GetCallGraph:input_type -> codefly.services.tooling.v0.GetCallGraphRequest
-	40, // 35: codefly.services.tooling.v0.Tooling.Build:input_type -> codefly.services.tooling.v0.BuildRequest
-	42, // 36: codefly.services.tooling.v0.Tooling.Test:input_type -> codefly.services.tooling.v0.TestRequest
-	44, // 37: codefly.services.tooling.v0.Tooling.Lint:input_type -> codefly.services.tooling.v0.LintRequest
-	13, // 38: codefly.services.tooling.v0.Tooling.ListSymbols:output_type -> codefly.services.tooling.v0.ListSymbolsResponse
-	15, // 39: codefly.services.tooling.v0.Tooling.GetDiagnostics:output_type -> codefly.services.tooling.v0.GetDiagnosticsResponse
-	17, // 40: codefly.services.tooling.v0.Tooling.GoToDefinition:output_type -> codefly.services.tooling.v0.GoToDefinitionResponse
-	19, // 41: codefly.services.tooling.v0.Tooling.FindReferences:output_type -> codefly.services.tooling.v0.FindReferencesResponse
-	21, // 42: codefly.services.tooling.v0.Tooling.RenameSymbol:output_type -> codefly.services.tooling.v0.RenameSymbolResponse
-	23, // 43: codefly.services.tooling.v0.Tooling.GetHoverInfo:output_type -> codefly.services.tooling.v0.GetHoverInfoResponse
-	25, // 44: codefly.services.tooling.v0.Tooling.GetCompletions:output_type -> codefly.services.tooling.v0.GetCompletionsResponse
-	27, // 45: codefly.services.tooling.v0.Tooling.Fix:output_type -> codefly.services.tooling.v0.FixResponse
-	29, // 46: codefly.services.tooling.v0.Tooling.ApplyEdit:output_type -> codefly.services.tooling.v0.ApplyEditResponse
-	31, // 47: codefly.services.tooling.v0.Tooling.ListDependencies:output_type -> codefly.services.tooling.v0.ListDependenciesResponse
-	33, // 48: codefly.services.tooling.v0.Tooling.AddDependency:output_type -> codefly.services.tooling.v0.AddDependencyResponse
-	35, // 49: codefly.services.tooling.v0.Tooling.RemoveDependency:output_type -> codefly.services.tooling.v0.RemoveDependencyResponse
-	37, // 50: codefly.services.tooling.v0.Tooling.GetProjectInfo:output_type -> codefly.services.tooling.v0.GetProjectInfoResponse
-	39, // 51: codefly.services.tooling.v0.Tooling.GetCallGraph:output_type -> codefly.services.tooling.v0.GetCallGraphResponse
-	41, // 52: codefly.services.tooling.v0.Tooling.Build:output_type -> codefly.services.tooling.v0.BuildResponse
-	43, // 53: codefly.services.tooling.v0.Tooling.Test:output_type -> codefly.services.tooling.v0.TestResponse
-	45, // 54: codefly.services.tooling.v0.Tooling.Lint:output_type -> codefly.services.tooling.v0.LintResponse
-	38, // [38:55] is the sub-list for method output_type
-	21, // [21:38] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	0,  // 0: codefly.services.tooling.v0.Diagnostic.severity:type_name -> codefly.services.tooling.v0.DiagnosticSeverity
+	2,  // 1: codefly.services.tooling.v0.ListDependenciesResponse.dependencies:type_name -> codefly.services.tooling.v0.Dependency
+	3,  // 2: codefly.services.tooling.v0.GetProjectInfoResponse.packages:type_name -> codefly.services.tooling.v0.PackageInfo
+	2,  // 3: codefly.services.tooling.v0.GetProjectInfoResponse.dependencies:type_name -> codefly.services.tooling.v0.Dependency
+	22, // 4: codefly.services.tooling.v0.GetProjectInfoResponse.file_hashes:type_name -> codefly.services.tooling.v0.GetProjectInfoResponse.FileHashesEntry
+	1,  // 5: codefly.services.tooling.v0.BuildResponse.diagnostics:type_name -> codefly.services.tooling.v0.Diagnostic
+	1,  // 6: codefly.services.tooling.v0.LintResponse.diagnostics:type_name -> codefly.services.tooling.v0.Diagnostic
+	4,  // 7: codefly.services.tooling.v0.Tooling.Fix:input_type -> codefly.services.tooling.v0.FixRequest
+	6,  // 8: codefly.services.tooling.v0.Tooling.ApplyEdit:input_type -> codefly.services.tooling.v0.ApplyEditRequest
+	8,  // 9: codefly.services.tooling.v0.Tooling.ListDependencies:input_type -> codefly.services.tooling.v0.ListDependenciesRequest
+	10, // 10: codefly.services.tooling.v0.Tooling.AddDependency:input_type -> codefly.services.tooling.v0.AddDependencyRequest
+	12, // 11: codefly.services.tooling.v0.Tooling.RemoveDependency:input_type -> codefly.services.tooling.v0.RemoveDependencyRequest
+	14, // 12: codefly.services.tooling.v0.Tooling.GetProjectInfo:input_type -> codefly.services.tooling.v0.GetProjectInfoRequest
+	16, // 13: codefly.services.tooling.v0.Tooling.Build:input_type -> codefly.services.tooling.v0.BuildRequest
+	18, // 14: codefly.services.tooling.v0.Tooling.Test:input_type -> codefly.services.tooling.v0.TestRequest
+	20, // 15: codefly.services.tooling.v0.Tooling.Lint:input_type -> codefly.services.tooling.v0.LintRequest
+	5,  // 16: codefly.services.tooling.v0.Tooling.Fix:output_type -> codefly.services.tooling.v0.FixResponse
+	7,  // 17: codefly.services.tooling.v0.Tooling.ApplyEdit:output_type -> codefly.services.tooling.v0.ApplyEditResponse
+	9,  // 18: codefly.services.tooling.v0.Tooling.ListDependencies:output_type -> codefly.services.tooling.v0.ListDependenciesResponse
+	11, // 19: codefly.services.tooling.v0.Tooling.AddDependency:output_type -> codefly.services.tooling.v0.AddDependencyResponse
+	13, // 20: codefly.services.tooling.v0.Tooling.RemoveDependency:output_type -> codefly.services.tooling.v0.RemoveDependencyResponse
+	15, // 21: codefly.services.tooling.v0.Tooling.GetProjectInfo:output_type -> codefly.services.tooling.v0.GetProjectInfoResponse
+	17, // 22: codefly.services.tooling.v0.Tooling.Build:output_type -> codefly.services.tooling.v0.BuildResponse
+	19, // 23: codefly.services.tooling.v0.Tooling.Test:output_type -> codefly.services.tooling.v0.TestResponse
+	21, // 24: codefly.services.tooling.v0.Tooling.Lint:output_type -> codefly.services.tooling.v0.LintResponse
+	16, // [16:25] is the sub-list for method output_type
+	7,  // [7:16] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_codefly_services_tooling_v0_tooling_proto_init() }
@@ -3485,8 +1644,8 @@ func file_codefly_services_tooling_v0_tooling_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_codefly_services_tooling_v0_tooling_proto_rawDesc), len(file_codefly_services_tooling_v0_tooling_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   44,
+			NumEnums:      1,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
